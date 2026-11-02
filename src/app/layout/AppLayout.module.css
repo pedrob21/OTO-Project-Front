@@ -1,0 +1,12 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.conteudo {
+  flex: 1;
+  width: var(--largura-util);
+  margin-inline: auto;
+  padding-bottom: 66px;
+}

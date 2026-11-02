@@ -1,0 +1,21 @@
+.cabecalho {
+  display: flex;
+  align-items: center;
+  width: var(--largura-util);
+  height: 122px;
+  margin: 26px auto 0;
+  padding-left: 18px;
+}
+
+.logoOto {
+  flex: none;
+  margin-top: -14px;
+  margin-right: 22px;
+  border-radius: var(--raio-chip);
+}
+
+.logoPrefeitura {
+  flex: none;
+  margin-bottom: 3px;
+  margin-right: 75px;
+}

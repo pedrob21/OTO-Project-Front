@@ -164,7 +164,8 @@ describe('login', () => {
     fetchFalso.mockResolvedValue(json(200, ADMIN))
     const router = abrir('/')
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Sair' }))
+    await userEvent.click(await screen.findByRole('button', { name: /Admin OTO/ }))
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Sair' }))
 
     await waitFor(() => expect(router.state.location.pathname).toBe('/login'))
     expect(lerToken()).toBeNull()

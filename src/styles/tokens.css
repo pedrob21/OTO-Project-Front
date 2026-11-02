@@ -78,6 +78,7 @@
   --tipo-select: 500 17px/24px var(--fonte-select);
   --tipo-menu: 400 14.5px/20px var(--fonte-texto);
   --tipo-nome: 600 14.5px/20px var(--fonte-texto);
+  --tipo-usuario: 400 14px/20px var(--fonte-texto);
   --tipo-rotulo: 700 14px/20px var(--fonte-texto);
   --tipo-botao: 700 14px/20px var(--fonte-texto);
   --tipo-rotulo-kpi: 700 13.5px/18px var(--fonte-texto);
@@ -109,6 +110,7 @@
   /* Página */
   --largura-conteudo: 1280px;
   --margem-pagina: 80px;
+  --largura-util: min(var(--largura-conteudo), 100% - 2 * var(--margem-pagina));
   --vao-cards: 16px;
   --borda-card: 1px solid var(--cor-borda);
 }
