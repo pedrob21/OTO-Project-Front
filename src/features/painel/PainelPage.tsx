@@ -1,13 +1,44 @@
-import { useAuth } from '@/features/auth/AuthContext'
+import { Card } from '@/components/ui/Card'
+import { PainelFiltros } from './components/PainelFiltros'
+import styles from './PainelPage.module.css'
 
-// Provisório até a T06.
 export function PainelPage() {
-  const { usuario } = useAuth()
-
   return (
     <>
-      <h1 style={{ font: 'var(--tipo-titulo-pagina)' }}>Painel de indicadores do turismo</h1>
-      <p>Entrou como {usuario?.nome}</p>
+      <div className={styles.titulos}>
+        <p className={styles.sobrelinha}>Estância Turística de Olímpia · SP</p>
+        <h1 className={styles.titulo}>Painel de indicadores do turismo</h1>
+      </div>
+
+      <PainelFiltros />
+
+      {/* Reservas com a altura do design: cada uma é substituída nas tasks T07 a T14. */}
+      <div className={styles.destaque} />
+
+      <div className={styles.indicadores}>
+        <Card className={styles.reservaKpi} />
+        <Card className={styles.reservaKpi} />
+        <Card className={styles.reservaKpi} />
+        <Card className={styles.reservaKpi} />
+      </div>
+
+      <div className={styles.linhaMensal}>
+        <Card className={styles.reservaMensal} titulo="Taxa de ocupação mensal" />
+        <Card className={styles.reservaMensal} titulo="Faixas de ocupação" />
+      </div>
+
+      <div className={styles.linhaFluxo}>
+        <Card className={styles.reservaFluxo} titulo="Fluxo estimado de turistas" />
+        <Card className={styles.reservaFluxo} titulo="Expectativa × realizado" />
+      </div>
+
+      <div className={styles.desempenho}>
+        <Card className={styles.reservaDesempenho} titulo="Desempenho por tipo de hospedagem" />
+      </div>
+
+      <div className={styles.pesquisas}>
+        <Card className={styles.reservaPesquisas} titulo="Pesquisas com os parceiros" />
+      </div>
     </>
   )
 }

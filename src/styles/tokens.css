@@ -69,7 +69,7 @@
   --fonte-select: 'Open Sans Variable', 'Public Sans Variable', sans-serif;
 
   /* Tipografia: use com a propriedade `font` */
-  --tipo-titulo-pagina: 700 54px/46px var(--fonte-titulo);
+  --tipo-titulo-pagina: 700 54px/44px var(--fonte-titulo);
   --tipo-titulo-card: 700 20px/26px var(--fonte-titulo);
   --tipo-numero-destaque: 700 60px/64px var(--fonte-texto);
   --tipo-numero-fluxo: 700 32px/40px var(--fonte-texto);

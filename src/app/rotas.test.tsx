@@ -60,7 +60,9 @@ describe('rota protegida', () => {
 
     abrir('/')
 
-    expect(await screen.findByText('Entrou como Admin OTO')).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', { name: 'Painel de indicadores do turismo' }),
+    ).toBeInTheDocument()
   })
 
   it('token recusado pela API volta ao login, avisa e apaga a sessão', async () => {
@@ -86,7 +88,9 @@ describe('rota protegida', () => {
     fetchFalso.mockResolvedValue(json(200, ADMIN))
     await userEvent.click(screen.getByRole('button', { name: 'Tentar novamente' }))
 
-    expect(await screen.findByText('Entrou como Admin OTO')).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', { name: 'Painel de indicadores do turismo' }),
+    ).toBeInTheDocument()
   })
 
   it('perfil sem acesso vê o aviso, não a página', async () => {
@@ -119,7 +123,9 @@ describe('login', () => {
 
     await preencherEEntrar()
 
-    expect(await screen.findByText('Entrou como Admin OTO')).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', { name: 'Painel de indicadores do turismo' }),
+    ).toBeInTheDocument()
     expect(router.state.location.pathname).toBe('/')
     expect(lerToken()).toBe('novo')
     // os dados do usuário vêm do login: não precisa chamar /api/me
