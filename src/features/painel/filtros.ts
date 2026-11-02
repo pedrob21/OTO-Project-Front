@@ -1,6 +1,7 @@
 import type { OpcaoSelect } from '@/components/ui/Select'
 import { formatarMes } from '@/lib/formatos'
 import type { Esquemas } from '@/types/dominio'
+import { partesDoPeriodo } from './periodo'
 
 type Campanha = Esquemas['CampanhaPublicadaResponse'] & { codigoRodada?: string }
 
@@ -22,11 +23,11 @@ export function opcoesComparacao(
   campanha: Pick<Campanha, 'periodoInicio'> | undefined,
   anosAnteriores = 2,
 ): OpcaoSelect[] {
-  const partes = campanha?.periodoInicio?.match(/^(\d{4})-(\d{2})/)
+  const partes = partesDoPeriodo(campanha?.periodoInicio)
   if (!partes) return []
 
-  const ano = Number(partes[1])
-  const mes = formatarMes(Number(partes[2]))
+  const { ano } = partes
+  const mes = formatarMes(partes.mes)
   const mesNoTitulo = mes.charAt(0).toUpperCase() + mes.slice(1)
 
   return Array.from({ length: anosAnteriores }, (_, indice) => {
