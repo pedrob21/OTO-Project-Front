@@ -1,7 +1,7 @@
 .trilha {
   overflow: hidden;
-  height: 6px;
-  border-radius: var(--raio-pilula);
+  height: var(--barra-altura, 6px);
+  border-radius: var(--barra-raio, var(--raio-pilula));
   background: var(--cor-trilha-forte);
 }
 
