@@ -1,0 +1,35 @@
+.cartao {
+  display: flex;
+  flex-direction: column;
+  min-height: 175.5px;
+  padding: 19.5px 22px 20.5px;
+  background: var(--cor-superficie);
+  border: var(--borda-card);
+  border-radius: var(--raio-card);
+}
+
+.rotulo {
+  color: var(--cor-texto-rotulo);
+  font: var(--tipo-rotulo-kpi);
+}
+
+.valor {
+  margin-top: 6.5px;
+  color: var(--cor-texto-forte);
+  font: var(--tipo-numero-kpi);
+}
+
+.descricao {
+  margin-top: 7.5px;
+  color: var(--cor-texto-suave);
+  font: var(--tipo-corpo);
+  line-height: 19.5px;
+}
+
+.rodape {
+  --variacao-tamanho-referencia: 12.5px;
+
+  display: grid;
+  justify-items: start;
+  margin-top: auto;
+}

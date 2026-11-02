@@ -1,8 +1,8 @@
 import { Badge } from '@/components/ui/Badge'
 import { VariacaoBadge } from '@/components/ui/VariacaoBadge'
-import { formatarMesAno, formatarPercentual } from '@/lib/formatos'
+import { formatarPercentual } from '@/lib/formatos'
 import type { Esquemas } from '@/types/dominio'
-import { partesDoPeriodo, textoDoPeriodo } from '../periodo'
+import { referenciaDaComparacao, textoDoPeriodo } from '../periodo'
 import { FaixaRegua } from './FaixaRegua'
 import styles from './TaxaOcupacaoDestaque.module.css'
 
@@ -19,8 +19,7 @@ export function TaxaOcupacaoDestaque({
 }: TaxaOcupacaoDestaqueProps) {
   const { campanha, taxaOcupacao, faixa, qtdMhRespondentes } = resultado
   const periodo = textoDoPeriodo(campanha)
-  const mes = partesDoPeriodo(campanha?.periodoInicio)?.mes
-  const referencia = mes && comparativo?.ano ? formatarMesAno(mes, comparativo.ano) : undefined
+  const referencia = referenciaDaComparacao(campanha, comparativo)
 
   return (
     <section className={styles.destaque}>

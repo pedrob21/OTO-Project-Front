@@ -1,0 +1,11 @@
+.trilha {
+  overflow: hidden;
+  height: 6px;
+  border-radius: var(--raio-pilula);
+  background: var(--cor-trilha-forte);
+}
+
+.preenchido {
+  height: 100%;
+  background: var(--cor-primaria);
+}
