@@ -1,0 +1,111 @@
+/*
+ * Tokens do design (tela painel-oto-desktop).
+ * Cores amostradas dos pixels da tela exportada; tamanhos e raios medidos nela.
+ * Veja os valores ao lado da referência em /dev/tokens.html (npm run dev).
+ */
+:root {
+  /* Fundos e superfícies */
+  --cor-fundo: #eef3f2;
+  --cor-fundo-rodape: #e5edec;
+  --cor-superficie: #ffffff;
+  --cor-superficie-suave: #f6faf9;
+  --cor-superficie-total: #f4f8f7;
+  --cor-destaque: #e4f1f1;
+  --cor-chip-usuario: #f1eecd;
+  --cor-avatar: #f4f1d7;
+
+  /* Bordas e trilhas */
+  --cor-borda: #d7e2e1;
+  --cor-borda-destaque: #bfdcdd;
+  --cor-trilha: #e3eeee;
+  --cor-trilha-forte: #d6ebec;
+
+  /* Textos */
+  --cor-texto-titulo: #000000;
+  --cor-texto-forte: #0f2529;
+  --cor-texto: #141d1e;
+  --cor-texto-rotulo: #2e4a4f;
+  --cor-texto-suave: #3a555a;
+  --cor-texto-sobrelinha: #0d373b;
+
+  /* Marca e ações */
+  --cor-amarelo: #ffcc00;
+  --cor-texto-amarelo: #313144;
+  --cor-primaria: #0b6f7c;
+  --cor-primaria-texto: #ffffff;
+  --cor-menu-ativo: #7fd6de;
+
+  /* Séries dos gráficos */
+  --cor-serie-atual: #008a9e;
+  --cor-serie-anterior: #7e9194;
+  --cor-serie-antiga: #b6c4c6;
+  --cor-serie-area: #e6f4f6;
+  --cor-fluxo-hospedagem: #008a9e;
+  --cor-fluxo-rhc: #eb6834;
+  --cor-fluxo-day-use: #4a3aa7;
+  --cor-expectativa: #3a9fa9;
+  --cor-realizado: #0b616e;
+
+  /* Faixas de ocupação */
+  --cor-faixa-ruim: #74bcc4;
+  --cor-faixa-regular: #3a9fa9;
+  --cor-faixa-boa: #15808c;
+  --cor-faixa-otima: #0b616e;
+  --cor-faixa-excelente: #073f4b;
+
+  /* Situações */
+  --cor-positivo: #1d6b35;
+  --cor-negativo: #a3361a;
+  --cor-publicada-fundo: #e6f4ea;
+  --cor-aberta-fundo: #fff1d6;
+  --cor-aberta-texto: #7a4e00;
+
+  /* Famílias */
+  --fonte-titulo: 'Bricolage Grotesque Variable', 'Public Sans Variable', sans-serif;
+  --fonte-texto: 'Public Sans Variable', system-ui, sans-serif;
+  --fonte-select: 'Open Sans Variable', 'Public Sans Variable', sans-serif;
+
+  /* Tipografia: use com a propriedade `font` */
+  --tipo-titulo-pagina: 700 54px/46px var(--fonte-titulo);
+  --tipo-titulo-card: 700 20px/26px var(--fonte-titulo);
+  --tipo-numero-destaque: 700 60px/64px var(--fonte-texto);
+  --tipo-numero-fluxo: 700 32px/40px var(--fonte-texto);
+  --tipo-numero-kpi: 700 30px/36px var(--fonte-texto);
+  --tipo-titulo-rodada: 700 17px/24px var(--fonte-texto);
+  --tipo-select: 500 17px/24px var(--fonte-select);
+  --tipo-menu: 400 14.5px/20px var(--fonte-texto);
+  --tipo-nome: 600 14.5px/20px var(--fonte-texto);
+  --tipo-rotulo: 700 14px/20px var(--fonte-texto);
+  --tipo-botao: 700 14px/20px var(--fonte-texto);
+  --tipo-rotulo-kpi: 700 13.5px/18px var(--fonte-texto);
+  --tipo-subtitulo: 400 13.5px/20px var(--fonte-texto);
+  --tipo-corpo: 400 13px/18px var(--fonte-texto);
+  --tipo-corpo-forte: 700 13px/18px var(--fonte-texto);
+  --tipo-sobrelinha: 700 12.5px/16px var(--fonte-texto);
+  --tipo-pequeno: 400 12.5px/16px var(--fonte-texto);
+  --tipo-rotulo-campo: 700 12px/16px var(--fonte-texto);
+  --tipo-minimo: 400 11.5px/14px var(--fonte-texto);
+  --espacamento-letras-select: 0.04em;
+
+  /* Espaçamentos */
+  --espaco-1: 4px;
+  --espaco-2: 8px;
+  --espaco-3: 12px;
+  --espaco-4: 16px;
+  --espaco-5: 20px;
+  --espaco-6: 24px;
+  --espaco-8: 32px;
+
+  /* Raios */
+  --raio-chip: 10px;
+  --raio-controle: 12px;
+  --raio-interno: 14px;
+  --raio-card: 16px;
+  --raio-pilula: 999px;
+
+  /* Página */
+  --largura-conteudo: 1280px;
+  --margem-pagina: 80px;
+  --vao-cards: 16px;
+  --borda-card: 1px solid var(--cor-borda);
+}
