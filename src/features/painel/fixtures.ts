@@ -37,7 +37,7 @@ export const referencias: Esquemas['Referencias'] = {
     { codigo: 'TIRADENTES', nome: 'Tiradentes', ordem: 3 },
     { codigo: 'DIA_DO_TRABALHO', nome: '1º de Maio', ordem: 4 },
     { codigo: 'CORPUS_CHRISTI', nome: 'Corpus Christi', ordem: 5 },
-    { codigo: 'FEFOL', nome: 'FEFOL', ordem: 6 },
+    { codigo: 'FEFOL', nome: 'Festival do Folclore de Olímpia (FEFOL)', ordem: 6 },
   ],
   faixasOcupacao: [
     { codigo: 'RUIM', nome: 'Ruim', percentualMinimo: 0 },
