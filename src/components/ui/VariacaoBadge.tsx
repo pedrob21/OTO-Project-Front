@@ -25,9 +25,9 @@ export function VariacaoBadge({ valor, unidade, referencia }: VariacaoBadgeProps
       <span className={`${styles.valor} ${tom}`}>
         {!neutro &&
           (positivo ? (
-            <IconeAlta tamanho={14} strokeWidth={2.5} />
+            <IconeAlta tamanho={13} strokeWidth={2.5} />
           ) : (
-            <IconeBaixa tamanho={14} strokeWidth={2.5} />
+            <IconeBaixa tamanho={13} strokeWidth={2.5} />
           ))}
         {texto}
       </span>

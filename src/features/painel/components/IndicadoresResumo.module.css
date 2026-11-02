@@ -1,0 +1,16 @@
+.leitos {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+}
+
+.textoLeitos {
+  color: var(--cor-texto-suave);
+  font: var(--tipo-pequeno);
+  line-height: 18px;
+}
+
+.textoLeitos strong {
+  color: var(--cor-texto-forte);
+  font: var(--tipo-corpo-forte);
+}

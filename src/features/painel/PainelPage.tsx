@@ -1,4 +1,5 @@
 import { Card } from '@/components/ui/Card'
+import { IndicadoresResumo } from './components/IndicadoresResumo'
 import { PainelFiltros } from './components/PainelFiltros'
 import { TaxaOcupacaoDestaque } from './components/TaxaOcupacaoDestaque'
 import { comparativo, referencias, resultado } from './fixtures'
@@ -22,14 +23,11 @@ export function PainelPage() {
         />
       </div>
 
-      {/* Reservas com a altura do design: cada uma é substituída nas tasks T08 a T14. */}
-
       <div className={styles.indicadores}>
-        <Card className={styles.reservaKpi} />
-        <Card className={styles.reservaKpi} />
-        <Card className={styles.reservaKpi} />
-        <Card className={styles.reservaKpi} />
+        <IndicadoresResumo resultado={resultado} comparativo={comparativo} />
       </div>
+
+      {/* Reservas com a altura do design: cada uma é substituída nas tasks T09 a T14. */}
 
       <div className={styles.linhaMensal}>
         <Card className={styles.reservaMensal} titulo="Taxa de ocupação mensal" />

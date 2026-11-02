@@ -27,4 +27,5 @@
 
 .referencia {
   color: var(--cor-texto-suave);
+  font-size: var(--variacao-tamanho-referencia, 13px);
 }
