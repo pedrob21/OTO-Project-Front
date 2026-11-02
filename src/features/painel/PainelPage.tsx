@@ -1,4 +1,5 @@
 import { Card } from '@/components/ui/Card'
+import { DesempenhoPorTipoCard } from './components/DesempenhoPorTipoCard'
 import { ExpectativaRealizadoCard } from './components/ExpectativaRealizadoCard'
 import { FaixasOcupacaoCard } from './components/FaixasOcupacaoCard'
 import { FluxoTuristasCard } from './components/FluxoTuristasCard'
@@ -41,8 +42,6 @@ export function PainelPage() {
         <IndicadoresResumo resultado={resultado} comparativo={comparativo} />
       </div>
 
-      {/* Reservas com a altura do design: cada uma é substituída nas tasks T13 e T14. */}
-
       <div className={styles.linhaMensal}>
         <OcupacaoMensalCard serie={serieMensal} />
         <FaixasOcupacaoCard resultado={resultado} />
@@ -58,7 +57,7 @@ export function PainelPage() {
       </div>
 
       <div className={styles.desempenho}>
-        <Card className={styles.reservaDesempenho} titulo="Desempenho por tipo de hospedagem" />
+        <DesempenhoPorTipoCard resultado={resultado} tipos={referencias.tiposHospedagem ?? []} />
       </div>
 
       <div className={styles.pesquisas}>
