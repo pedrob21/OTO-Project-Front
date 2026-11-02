@@ -1,10 +1,18 @@
 import { Card } from '@/components/ui/Card'
 import { FaixasOcupacaoCard } from './components/FaixasOcupacaoCard'
+import { FluxoTuristasCard } from './components/FluxoTuristasCard'
 import { IndicadoresResumo } from './components/IndicadoresResumo'
 import { OcupacaoMensalCard } from './components/OcupacaoMensalCard'
 import { PainelFiltros } from './components/PainelFiltros'
 import { TaxaOcupacaoDestaque } from './components/TaxaOcupacaoDestaque'
-import { comparativo, referencias, resultado, serieMensal } from './fixtures'
+import {
+  comparativo,
+  parametrosVigentes,
+  referencias,
+  resultado,
+  rhcVigente,
+  serieMensal,
+} from './fixtures'
 import styles from './PainelPage.module.css'
 
 export function PainelPage() {
@@ -29,7 +37,7 @@ export function PainelPage() {
         <IndicadoresResumo resultado={resultado} comparativo={comparativo} />
       </div>
 
-      {/* Reservas com a altura do design: cada uma é substituída nas tasks T11 a T14. */}
+      {/* Reservas com a altura do design: cada uma é substituída nas tasks T12 a T14. */}
 
       <div className={styles.linhaMensal}>
         <OcupacaoMensalCard serie={serieMensal} />
@@ -37,7 +45,7 @@ export function PainelPage() {
       </div>
 
       <div className={styles.linhaFluxo}>
-        <Card className={styles.reservaFluxo} titulo="Fluxo estimado de turistas" />
+        <FluxoTuristasCard resultado={resultado} rhc={rhcVigente} parametros={parametrosVigentes} />
         <Card className={styles.reservaFluxo} titulo="Expectativa × realizado" />
       </div>
 

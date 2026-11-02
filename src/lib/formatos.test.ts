@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  capitalizar,
   formatarCompacto,
   formatarData,
   formatarInteiro,
@@ -82,6 +83,13 @@ describe('datas', () => {
     expect(formatarData('2026-09-18')).toBe('18/09/2026')
     expect(formatarData('2026-03-01T00:30:00Z')).toBe('01/03/2026')
     expect(formatarData('ontem')).toBe('—')
+  })
+})
+
+describe('capitalizar', () => {
+  it('só muda a primeira letra', () => {
+    expect(capitalizar('agosto de 2026')).toBe('Agosto de 2026')
+    expect(capitalizar('')).toBe('')
   })
 })
 

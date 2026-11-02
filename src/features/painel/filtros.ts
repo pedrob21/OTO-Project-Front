@@ -1,5 +1,5 @@
 import type { OpcaoSelect } from '@/components/ui/Select'
-import { formatarMes } from '@/lib/formatos'
+import { capitalizar, formatarMes } from '@/lib/formatos'
 import type { Esquemas } from '@/types/dominio'
 import { partesDoPeriodo } from './periodo'
 
@@ -27,8 +27,7 @@ export function opcoesComparacao(
   if (!partes) return []
 
   const { ano } = partes
-  const mes = formatarMes(partes.mes)
-  const mesNoTitulo = mes.charAt(0).toUpperCase() + mes.slice(1)
+  const mesNoTitulo = capitalizar(formatarMes(partes.mes))
 
   return Array.from({ length: anosAnteriores }, (_, indice) => {
     const anoComparado = ano - indice - 1
