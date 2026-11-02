@@ -1,0 +1,56 @@
+.destaque {
+  display: grid;
+  grid-template-columns: 538px 1fr;
+  min-height: 168.5px;
+  padding: 23px 28px 0 28px;
+  background: var(--cor-destaque);
+  border: 1px solid var(--cor-borda-destaque);
+  border-radius: var(--raio-card);
+}
+
+.titulo {
+  color: var(--cor-texto-rotulo);
+  font: var(--tipo-rotulo);
+}
+
+.valores {
+  display: flex;
+  align-items: flex-start;
+  gap: 5.5px;
+  margin-top: 7px;
+}
+
+.numero {
+  color: var(--cor-texto-forte);
+  font: var(--tipo-numero-destaque);
+}
+
+.situacao {
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.variacao {
+  padding-left: 1.5px;
+}
+
+.nota {
+  margin-top: 8.5px;
+  color: var(--cor-texto-suave);
+  font: var(--tipo-corpo);
+}
+
+.faixas {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  padding-top: 16px;
+}
+
+.tituloFaixas {
+  color: var(--cor-texto);
+  font: var(--tipo-rotulo-campo);
+  text-transform: uppercase;
+}

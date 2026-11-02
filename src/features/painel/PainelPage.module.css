@@ -19,11 +19,7 @@
 }
 
 .destaque {
-  height: 168px;
   margin-top: 33px;
-  background: var(--cor-destaque);
-  border: 1px solid var(--cor-borda-destaque);
-  border-radius: var(--raio-card);
 }
 
 .indicadores {

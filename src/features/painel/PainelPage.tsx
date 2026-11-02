@@ -1,5 +1,7 @@
 import { Card } from '@/components/ui/Card'
 import { PainelFiltros } from './components/PainelFiltros'
+import { TaxaOcupacaoDestaque } from './components/TaxaOcupacaoDestaque'
+import { comparativo, referencias, resultado } from './fixtures'
 import styles from './PainelPage.module.css'
 
 export function PainelPage() {
@@ -12,8 +14,15 @@ export function PainelPage() {
 
       <PainelFiltros />
 
-      {/* Reservas com a altura do design: cada uma é substituída nas tasks T07 a T14. */}
-      <div className={styles.destaque} />
+      <div className={styles.destaque}>
+        <TaxaOcupacaoDestaque
+          resultado={resultado}
+          faixas={referencias.faixasOcupacao ?? []}
+          comparativo={comparativo}
+        />
+      </div>
+
+      {/* Reservas com a altura do design: cada uma é substituída nas tasks T08 a T14. */}
 
       <div className={styles.indicadores}>
         <Card className={styles.reservaKpi} />
