@@ -116,5 +116,6 @@
   --margem-pagina: 80px;
   --largura-util: min(var(--largura-conteudo), 100% - 2 * var(--margem-pagina));
   --vao-cards: 16px;
+  --altura-cabecalho: 122px;
   --borda-card: 1px solid var(--cor-borda);
 }

@@ -2,9 +2,19 @@
   display: flex;
   align-items: center;
   width: var(--largura-util);
-  height: 122px;
+  height: var(--altura-cabecalho);
   margin: 26px auto 0;
   padding-left: 18px;
+}
+
+/* Em janelas baixas, ou com muito zoom, as barras fixas tomariam a maior parte da tela. */
+@media (min-height: 600px) {
+  .cabecalho {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: var(--cor-fundo);
+  }
 }
 
 .logoOto {
