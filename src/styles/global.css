@@ -14,6 +14,13 @@ html {
   text-size-adjust: 100%;
 }
 
+/* O foco pelo teclado não pode parar atrás do cabeçalho e dos filtros fixos. */
+@media (min-height: 600px) {
+  html {
+    scroll-padding-top: 228px;
+  }
+}
+
 body {
   margin: 0;
   background: var(--cor-fundo);

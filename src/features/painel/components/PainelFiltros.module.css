@@ -4,7 +4,26 @@
   grid-template-columns: 436fr 296fr 275fr 201fr;
   column-gap: 24px;
   align-items: end;
+  margin-block: -12px;
   margin-inline: -2.5px 2.5px;
+  padding-block: 12px;
+}
+
+@media (min-height: 600px) {
+  .filtros {
+    position: sticky;
+    top: var(--altura-cabecalho);
+    z-index: 20;
+  }
+
+  /* A barra é 2,5 px deslocada dos cartões: o fundo sobra dos lados para cobri-los por inteiro. */
+  .filtros::before {
+    content: '';
+    position: absolute;
+    inset: 0 -4px;
+    z-index: -1;
+    background: var(--cor-fundo);
+  }
 }
 
 .campanha {
