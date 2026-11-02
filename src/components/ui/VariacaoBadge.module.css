@@ -1,0 +1,30 @@
+.variacao {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font: var(--tipo-corpo);
+  white-space: nowrap;
+}
+
+.valor {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: var(--tipo-corpo-forte);
+}
+
+.positivo {
+  color: var(--cor-positivo);
+}
+
+.negativo {
+  color: var(--cor-negativo);
+}
+
+.neutro {
+  color: var(--cor-texto-suave);
+}
+
+.referencia {
+  color: var(--cor-texto-suave);
+}

@@ -17,6 +17,7 @@
   /* Bordas e trilhas */
   --cor-borda: #d7e2e1;
   --cor-borda-destaque: #bfdcdd;
+  --cor-borda-botao: #bfd3d2;
   --cor-trilha: #e3eeee;
   --cor-trilha-forte: #d6ebec;
 
@@ -30,8 +31,10 @@
 
   /* Marca e ações */
   --cor-amarelo: #ffcc00;
+  --cor-amarelo-hover: #f2c200; /* sem referência no design */
   --cor-texto-amarelo: #313144;
   --cor-primaria: #0b6f7c;
+  --cor-primaria-escura: #0b616e;
   --cor-primaria-texto: #ffffff;
   --cor-menu-ativo: #7fd6de;
 
