@@ -1,0 +1,28 @@
+.campo {
+  display: grid;
+  gap: 6px;
+}
+
+.rotulo {
+  color: var(--cor-texto-rotulo);
+  font: var(--tipo-rotulo-kpi);
+}
+
+.entrada {
+  width: 100%;
+  height: 44px;
+  padding: 0 var(--espaco-3);
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda-botao);
+  border-radius: var(--raio-controle);
+  color: var(--cor-texto);
+  font: var(--tipo-subtitulo);
+}
+
+.entrada[aria-invalid='true'] {
+  border-color: var(--cor-negativo);
+}
+
+.erro {
+  color: var(--cor-negativo);
+}
