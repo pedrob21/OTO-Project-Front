@@ -1,0 +1,56 @@
+.grupo {
+  display: inline-flex;
+  flex: none;
+  margin: 0;
+  padding: 3px;
+  background: var(--cor-superficie);
+  border: var(--borda-card);
+  border-radius: var(--raio-interno);
+}
+
+.legenda {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.opcao {
+  position: relative;
+  cursor: pointer;
+}
+
+.radio {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.texto {
+  display: block;
+  min-width: 77px;
+  padding: 11px 15px;
+  border-radius: 11px;
+  color: var(--cor-texto-suave);
+  font: var(--tipo-botao);
+  text-align: center;
+  transition: background-color 0.12s ease;
+}
+
+.radio:hover:not(:checked) + .texto {
+  background: var(--cor-destaque);
+}
+
+.radio:checked + .texto {
+  background: var(--cor-primaria);
+  color: var(--cor-primaria-texto);
+}
+
+.radio:focus-visible + .texto {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 2px;
+}

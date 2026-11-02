@@ -1,0 +1,58 @@
+.campo {
+  display: grid;
+  gap: var(--espaco-2);
+  min-width: 0;
+}
+
+.rotulo {
+  font: var(--tipo-rotulo-campo);
+  color: var(--cor-texto-sobrelinha);
+  text-transform: uppercase;
+}
+
+.controle {
+  position: relative;
+}
+
+.select {
+  display: block;
+  width: 100%;
+  height: 46px;
+  padding: 0 64px 0 30px;
+  border: 0;
+  border-radius: var(--raio-controle);
+  appearance: none;
+  background: var(--cor-amarelo);
+  color: var(--cor-texto-amarelo);
+  font: var(--tipo-select);
+  letter-spacing: var(--espacamento-letras-select);
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.select:hover:not(:disabled) {
+  background: var(--cor-amarelo-hover);
+}
+
+.select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.select option {
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
+}
+
+.seta {
+  position: absolute;
+  top: 3px;
+  right: 21px;
+  color: var(--cor-texto-amarelo);
+  pointer-events: none;
+}
+
+.select:disabled + .seta {
+  opacity: 0.5;
+}

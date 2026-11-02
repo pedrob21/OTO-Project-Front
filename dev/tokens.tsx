@@ -14,8 +14,7 @@ import logoOto from '@/assets/logo-oto.png'
 import logoPrefeitura from '@/assets/logo-prefeitura-olimpia.png'
 import selo from '@/assets/selo-observatorio.png'
 import '@/styles/global.css'
-
-const REFERENCIA = '/docs/referencia/painel-oto-desktop.png'
+import { Recorte, type Area } from './Recorte'
 
 type Amostra = {
   nome: string
@@ -24,7 +23,7 @@ type Amostra = {
   texto: ReactNode
   fundo?: string
   letras?: string
-  recorte: [x: number, y: number, largura: number, altura: number]
+  recorte: Area
 }
 
 const AMOSTRAS: Amostra[] = [
@@ -222,20 +221,6 @@ const CORES = [
 
 const secao: CSSProperties = { padding: 32, display: 'grid', gap: 12 }
 
-function Recorte({ recorte: [x, y, largura, altura] }: { recorte: Amostra['recorte'] }) {
-  return (
-    <div
-      style={{
-        width: largura,
-        height: altura,
-        backgroundImage: `url(${REFERENCIA})`,
-        backgroundSize: '1440px auto',
-        backgroundPosition: `${-x}px ${-(y + 1)}px`,
-      }}
-    />
-  )
-}
-
 function Tokens() {
   return (
     <>
@@ -250,7 +235,7 @@ function Tokens() {
           >
             <code>{amostra.nome}</code>
             <div style={{ display: 'grid', gap: 2 }}>
-              <Recorte recorte={amostra.recorte} />
+              <Recorte area={amostra.recorte} />
               <div
                 style={{
                   font: `var(${amostra.tipo})`,
@@ -292,7 +277,7 @@ function Tokens() {
           Raios: referência à esquerda, tokens à direita
         </h2>
         <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
-          <Recorte recorte={[70, 335, 80, 62]} />
+          <Recorte area={[70, 335, 80, 62]} />
           <div
             style={{
               width: 72,
@@ -301,7 +286,7 @@ function Tokens() {
               borderRadius: 'var(--raio-controle)',
             }}
           />
-          <Recorte recorte={[72, 597, 80, 62]} />
+          <Recorte area={[72, 597, 80, 62]} />
           <div
             style={{
               width: 72,
@@ -311,7 +296,7 @@ function Tokens() {
               borderRadius: 'var(--raio-card)',
             }}
           />
-          <Recorte recorte={[1178, 58, 80, 50]} />
+          <Recorte area={[1178, 58, 80, 50]} />
           <div
             style={{
               width: 72,

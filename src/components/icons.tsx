@@ -30,6 +30,14 @@ export function IconeSetaBaixo(props: IconeProps) {
   )
 }
 
+export function IconeSetaBaixoLarga(props: IconeProps) {
+  return (
+    <Icone {...props}>
+      <path d="m4 10 8 4 8-4" />
+    </Icone>
+  )
+}
+
 export function IconeDownload(props: IconeProps) {
   return (
     <Icone {...props}>
