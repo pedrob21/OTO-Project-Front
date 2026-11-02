@@ -1,3 +1,4 @@
+import { formatarPercentual } from '@/lib/formatos'
 import type { Esquemas } from '@/types/dominio'
 
 export type FaixaDaRegua = {
@@ -49,4 +50,29 @@ export function corDaFaixa(codigo: string): string {
 /** Posição do marcador na régua, em %. */
 export function posicaoNaRegua(taxa: number): number {
   return Math.min(Math.max(taxa, 0), 100)
+}
+
+const NOMES_NO_PLURAL: Record<string, string> = {
+  RESORT: 'Os resorts',
+  HOTEL: 'Os hotéis',
+  POUSADA: 'As pousadas',
+  HOTEL_FAZENDA: 'Os hotéis fazenda',
+  FLAT: 'Os flats',
+  HOSTEL: 'Os hostels',
+}
+
+/** "Os resorts concentram 78% das UH da cidade e por isso pesam mais na taxa geral." */
+export function notaDeConcentracao(porTipo: Esquemas['ResultadoTipoResponse'][]): string | null {
+  const total = porTipo.reduce((soma, tipo) => soma + (tipo.qtdUh ?? 0), 0)
+  if (total === 0) return null
+
+  const maior = porTipo.reduce((atual, tipo) =>
+    (tipo.qtdUh ?? 0) > (atual.qtdUh ?? 0) ? tipo : atual,
+  )
+  const parte = formatarPercentual(((maior.qtdUh ?? 0) / total) * 100, 0)
+  const plural = NOMES_NO_PLURAL[maior.tipoHospedagemCodigo ?? '']
+
+  return plural
+    ? `${plural} concentram ${parte} das UH da cidade e por isso pesam mais na taxa geral.`
+    : `O tipo ${maior.nome?.toLowerCase()} concentra ${parte} das UH da cidade e por isso pesa mais na taxa geral.`
 }

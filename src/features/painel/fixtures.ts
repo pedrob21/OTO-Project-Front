@@ -142,6 +142,15 @@ export const resultado: Esquemas['ResultadoResponse'] = {
       receitaEstimada: 4_500_000,
       omitido: false,
     },
+    // Fora da tabela e da receita, mas somam nas UH da cidade: é o que dá os 78% da nota.
+    { tipoHospedagemCodigo: 'FLAT', nome: 'Flat', qtdMh: 3, qtdUh: 70, omitido: false },
+    {
+      tipoHospedagemCodigo: 'HOTEL_FAZENDA',
+      nome: 'Hotel fazenda',
+      qtdMh: 1,
+      qtdUh: 19,
+      omitido: false,
+    },
   ],
   distribuicaoFaixas: [
     { codigo: 'RUIM', nome: 'Ruim', percentualMinimo: 0, qtdMh: 2 },
