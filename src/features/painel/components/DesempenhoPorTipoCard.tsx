@@ -14,7 +14,7 @@ import styles from './DesempenhoPorTipoCard.module.css'
 
 type DesempenhoPorTipoCardProps = {
   resultado: Esquemas['ResultadoResponse']
-  tipos: Esquemas['TipoHospedagemRef'][]
+  tipos: Esquemas['TipoRef'][]
 }
 
 function estabelecimentos(quantidade: number | undefined): string {

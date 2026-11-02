@@ -19,7 +19,7 @@ type PesquisasParceirosCardProps = {
   acompanhamento: Esquemas['AcompanhamentoResponse'] | undefined
   rodadas: Esquemas['RodadaResponse'][]
   acompanhamentos: Esquemas['AcompanhamentoResponse'][]
-  tipos: Esquemas['TipoHospedagemRef'][]
+  tipos: Esquemas['TipoRef'][]
   /** "2026-10-05" */
   hoje: string
 }
