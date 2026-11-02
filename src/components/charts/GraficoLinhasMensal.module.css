@@ -1,0 +1,104 @@
+.grafico {
+  position: relative;
+  border-radius: var(--raio-chip);
+  touch-action: pan-y;
+}
+
+.desenho {
+  display: block;
+  overflow: visible;
+}
+
+.area {
+  fill: var(--cor-serie-area);
+}
+
+.grade,
+.base {
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.grade {
+  stroke: var(--cor-grade);
+}
+
+.base {
+  stroke: var(--cor-grade-base);
+}
+
+.marcaY,
+.marcaX {
+  fill: var(--cor-texto);
+  font: var(--tipo-pequeno);
+}
+
+.marcaX {
+  font: var(--tipo-minimo);
+}
+
+.linha {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rotuloPonto {
+  fill: var(--cor-texto-suave);
+  font: var(--tipo-corpo);
+}
+
+.rotuloValor {
+  fill: var(--cor-texto-forte);
+  font: var(--tipo-corpo-forte);
+}
+
+.guia {
+  stroke: var(--cor-serie-antiga);
+  stroke-width: 1;
+}
+
+.pontoAtivo {
+  stroke: var(--cor-superficie);
+  stroke-width: 2;
+}
+
+.leitura {
+  position: absolute;
+  top: 10px;
+  z-index: 1;
+  padding: var(--espaco-2) var(--espaco-3);
+  background: var(--cor-superficie);
+  border: var(--borda-card);
+  border-radius: var(--raio-chip);
+  pointer-events: none;
+}
+
+.leituraMes {
+  margin-bottom: var(--espaco-1);
+  color: var(--cor-texto-suave);
+  font: var(--tipo-pequeno);
+  text-transform: capitalize;
+}
+
+.leituraLinha {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--cor-texto-forte);
+  font: var(--tipo-corpo-forte);
+}
+
+.leituraTraco {
+  flex: none;
+  width: 12px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.leituraNome {
+  margin-left: auto;
+  color: var(--cor-texto-suave);
+  font: var(--tipo-corpo);
+}

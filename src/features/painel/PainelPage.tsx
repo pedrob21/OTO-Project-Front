@@ -1,8 +1,9 @@
 import { Card } from '@/components/ui/Card'
 import { IndicadoresResumo } from './components/IndicadoresResumo'
+import { OcupacaoMensalCard } from './components/OcupacaoMensalCard'
 import { PainelFiltros } from './components/PainelFiltros'
 import { TaxaOcupacaoDestaque } from './components/TaxaOcupacaoDestaque'
-import { comparativo, referencias, resultado } from './fixtures'
+import { comparativo, referencias, resultado, serieMensal } from './fixtures'
 import styles from './PainelPage.module.css'
 
 export function PainelPage() {
@@ -27,10 +28,10 @@ export function PainelPage() {
         <IndicadoresResumo resultado={resultado} comparativo={comparativo} />
       </div>
 
-      {/* Reservas com a altura do design: cada uma é substituída nas tasks T09 a T14. */}
+      {/* Reservas com a altura do design: cada uma é substituída nas tasks T10 a T14. */}
 
       <div className={styles.linhaMensal}>
-        <Card className={styles.reservaMensal} titulo="Taxa de ocupação mensal" />
+        <OcupacaoMensalCard serie={serieMensal} />
         <Card className={styles.reservaMensal} titulo="Faixas de ocupação" />
       </div>
 

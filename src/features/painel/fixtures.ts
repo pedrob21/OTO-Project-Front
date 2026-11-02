@@ -1,17 +1,17 @@
 // Dados da tela exportada, no formato da API, para montar o painel antes da integração (T15).
-// Os totais de leitos e as séries mensais não aparecem como número no design: são aproximados.
+// Os totais de leitos são aproximados, e as séries mensais foram lidas das linhas do gráfico.
 import type { Esquemas } from '@/types/dominio'
 
-const MESES_2026 = [80.9, 66.6, 47.2, 54.9, 45.9, 51.6, 85.2, 62.8]
-const MESES_2025 = [78.2, 63.8, 44.8, 50.9, 42.9, 48.8, 82.2, 58.7, 49.8, 56.9, 60.9, 68.8]
-const MESES_2024 = [75.2, 60.8, 41.9, 47.9, 40.1, 44.9, 79.8, 54.1, 46.4, 53.9, 57.3, 66.2]
+const MESES_2026 = [80.6, 66.4, 47.4, 54.9, 45.9, 51.8, 85.1, 62.8]
+const MESES_2025 = [77.8, 63.1, 44.6, 50.9, 42.7, 48.9, 82.4, 58.7, 49.5, 56.9, 60.8, 68.5]
+const MESES_2024 = [74.2, 60.4, 41.8, 47.6, 39.9, 44.8, 78.9, 54.1, 46.3, 53.8, 57.2, 66.0]
 
 function serie(ano: number, valores: number[]): Esquemas['SerieAno'] {
   return {
     ano,
     meses: Array.from({ length: 12 }, (_, indice) => ({
       mes: indice + 1,
-      valor: valores[indice],
+      valor: valores[indice] ?? undefined,
       origem: ano === 2026 ? 'SISTEMA' : 'HISTORICO',
     })),
   }
