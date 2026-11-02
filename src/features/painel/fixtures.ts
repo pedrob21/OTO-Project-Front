@@ -205,6 +205,9 @@ export const parametrosVigentes: Esquemas['ParametroResponse'] = {
   fonte: 'Pesquisa de Demanda Turística 2024',
 }
 
+/** A data da tela exportada: é dela que sai o "faltam 4 dias". A T15 passa a usar a data de hoje. */
+export const hojeDoDesign = '2026-10-05'
+
 export const rodadaAberta: Esquemas['RodadaResponse'] = {
   id: 17,
   codigo: '017/26',
@@ -263,5 +266,39 @@ export const rodadasRecentes: Esquemas['RodadaResponse'][] = [
     titulo: 'Expectativa FEFOL 2026',
     status: 'ENCERRADA',
     campanhas: [{ publicada: true, publicadaEm: '2026-08-05T12:00:00Z' }],
+  },
+]
+
+const RESPOSTAS_RECENTES: [rodadaId: number, respondentes: number][] = [
+  [15, 58],
+  [13, 61],
+  [11, 52],
+]
+
+export const acompanhamentosRecentes: Esquemas['AcompanhamentoResponse'][] = RESPOSTAS_RECENTES.map(
+  ([rodadaId, qtdRespondentes]) => ({
+    rodadaId,
+    campanhas: [{ qtdMh: 72, qtdRespondentes }],
+  }),
+)
+
+export const pendenciasParceiro: Esquemas['PendenciaResponse'][] = [
+  {
+    campanhaId: 17,
+    campanhaNome: 'Consolidada de setembro',
+    rodadaCodigo: '017/26',
+    prazoResposta: '2026-10-09',
+    estabelecimentoId: 1,
+    nomeFantasia: 'Pousada Exemplo',
+    respondida: false,
+  },
+  {
+    campanhaId: 18,
+    campanhaNome: 'Expectativa da Semana do Saco Cheio',
+    rodadaCodigo: '017/26',
+    prazoResposta: '2026-10-09',
+    estabelecimentoId: 1,
+    nomeFantasia: 'Pousada Exemplo',
+    respondida: true,
   },
 ]

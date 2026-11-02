@@ -63,7 +63,10 @@ export function totalDoDesempenho(
   }
 }
 
-const NOMES_NO_PLURAL: Record<string, string> = {
+export const NOMES_NO_PLURAL: Record<string, string> = {
+  RESORT: 'resorts',
+  HOTEL: 'hotéis',
+  POUSADA: 'pousadas',
   FLAT: 'flats',
   HOTEL_FAZENDA: 'hotéis fazenda',
   HOSTEL: 'hostels',
