@@ -39,7 +39,7 @@ export function LoginPage() {
   return (
     <main className={styles.pagina}>
       <div className={styles.logos}>
-        <img src={logoOto} alt="OTO" width={84} />
+        <img src={logoOto} alt="OTO" width={96} />
         <img src={logoPrefeitura} alt="Prefeitura de Olímpia" width={148} />
       </div>
 
