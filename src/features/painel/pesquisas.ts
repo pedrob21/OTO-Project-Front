@@ -41,7 +41,7 @@ export function campanhaDeReferencia(
   )
 }
 
-function grupoDeFaltantes(codigo: string, qtd: number, tipos: Esquemas['TipoHospedagemRef'][]) {
+function grupoDeFaltantes(codigo: string, qtd: number, tipos: Esquemas['TipoRef'][]) {
   const nome = tipos.find((tipo) => tipo.codigo === codigo)?.nome?.toLowerCase() ?? codigo
   return `${qtd} ${qtd === 1 ? nome : (NOMES_NO_PLURAL[codigo] ?? nome)}`
 }
@@ -49,7 +49,7 @@ function grupoDeFaltantes(codigo: string, qtd: number, tipos: Esquemas['TipoHosp
 /** "Faltam 31 respostas: 19 pousadas, 8 hotéis, 2 resorts e 2 flats." */
 export function textoDasFaltantes(
   campanha: CampanhaAcompanhada,
-  tipos: Esquemas['TipoHospedagemRef'][],
+  tipos: Esquemas['TipoRef'][],
 ): string {
   const faltam = (campanha.qtdMh ?? 0) - (campanha.qtdRespondentes ?? 0)
   if (faltam <= 0) return 'Todos os meios de hospedagem responderam.'

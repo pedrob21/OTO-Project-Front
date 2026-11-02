@@ -11,15 +11,12 @@ export type TotalDesempenho = {
   receitaEstimada: number | null
 }
 
-function codigosDeReceita(tipos: Esquemas['TipoHospedagemRef'][]): Set<string | undefined> {
+function codigosDeReceita(tipos: Esquemas['TipoRef'][]): Set<string | undefined> {
   return new Set(tipos.filter((tipo) => tipo.calculaReceita).map((tipo) => tipo.codigo))
 }
 
 /** Só os tipos que entram na receita, da maior para a menor. Tipos ocultos ficam no fim. */
-export function linhasDeDesempenho(
-  porTipo: Tipo[],
-  tipos: Esquemas['TipoHospedagemRef'][],
-): Tipo[] {
+export function linhasDeDesempenho(porTipo: Tipo[], tipos: Esquemas['TipoRef'][]): Tipo[] {
   const codigos = codigosDeReceita(tipos)
 
   return porTipo
@@ -78,10 +75,7 @@ function nomeComQuantidade({ tipoHospedagemCodigo = '', nome = '', qtdMh = 0 }: 
 }
 
 /** "Flats (3) e hotel fazenda (1) entram na taxa de ocupação geral, mas não no cálculo da receita." */
-export function notaDosForaDaReceita(
-  porTipo: Tipo[],
-  tipos: Esquemas['TipoHospedagemRef'][],
-): string | null {
+export function notaDosForaDaReceita(porTipo: Tipo[], tipos: Esquemas['TipoRef'][]): string | null {
   const codigos = codigosDeReceita(tipos)
   const fora = porTipo
     .filter((tipo) => !codigos.has(tipo.tipoHospedagemCodigo) && (tipo.qtdMh ?? 0) > 0)
