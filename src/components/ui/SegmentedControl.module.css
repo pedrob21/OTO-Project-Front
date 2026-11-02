@@ -1,8 +1,8 @@
 .grupo {
   display: inline-flex;
   flex: none;
-  margin: 0;
-  padding: 3px;
+  margin: -1px 0 0;
+  padding: 4px 2px;
   background: var(--cor-superficie);
   border: var(--borda-card);
   border-radius: var(--raio-interno);
@@ -33,10 +33,10 @@
 .texto {
   display: block;
   min-width: 77px;
-  padding: 11px 15px;
+  padding: 11px 16px;
   border-radius: 11px;
   color: var(--cor-texto-suave);
-  font: var(--tipo-botao);
+  font: var(--tipo-rotulo-kpi);
   text-align: center;
   transition: background-color 0.12s ease;
 }
