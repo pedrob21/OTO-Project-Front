@@ -1,0 +1,35 @@
+/* Os recuos variam de um filtro para outro no design. */
+.filtros {
+  display: grid;
+  grid-template-columns: 436fr 296fr 275fr 201fr;
+  column-gap: 24px;
+  align-items: end;
+  margin-inline: -2.5px 2.5px;
+}
+
+.campanha {
+  --select-recuo-rotulo: 3px;
+  --select-recuo-texto: 30.5px;
+  --select-recuo-seta: 24.5px;
+}
+
+.comparar {
+  --select-recuo-rotulo: 18px;
+  --select-recuo-texto: 34.5px;
+  --select-recuo-seta: 15.5px;
+}
+
+.tipo {
+  --select-recuo-rotulo: 30px;
+  --select-recuo-texto: 29.5px;
+  --select-recuo-seta: 13.5px;
+}
+
+.filtros .exportar {
+  min-width: 0;
+  padding: 0 10.5px 0 18px;
+}
+
+.iconeDownload {
+  color: var(--cor-primaria-escura);
+}

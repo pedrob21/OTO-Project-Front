@@ -48,9 +48,13 @@ export const referencias: Esquemas['Referencias'] = {
   ],
 }
 
-export const campanhasPublicadas: Esquemas['CampanhaPublicadaResponse'][] = [
+/** `codigoRodada` não vem da API hoje (decisão D8). */
+export const campanhasPublicadas: (Esquemas['CampanhaPublicadaResponse'] & {
+  codigoRodada?: string
+})[] = [
   {
     campanhaId: 15,
+    codigoRodada: '015/26',
     nome: 'Agosto de 2026',
     modalidade: 'CONSOLIDADA',
     tipoPeriodo: 'MENSAL',
@@ -64,6 +68,7 @@ export const campanhasPublicadas: Esquemas['CampanhaPublicadaResponse'][] = [
   },
   {
     campanhaId: 13,
+    codigoRodada: '013/26',
     nome: 'Julho de 2026',
     modalidade: 'CONSOLIDADA',
     tipoPeriodo: 'MENSAL',

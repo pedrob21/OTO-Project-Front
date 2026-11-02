@@ -1,12 +1,13 @@
 .campo {
   display: grid;
-  gap: var(--espaco-2);
+  gap: 7px;
   min-width: 0;
 }
 
 .rotulo {
   font: var(--tipo-rotulo-campo);
   color: var(--cor-texto-sobrelinha);
+  padding-left: var(--select-recuo-rotulo, 0);
   text-transform: uppercase;
 }
 
@@ -17,8 +18,8 @@
 .select {
   display: block;
   width: 100%;
-  height: 46px;
-  padding: 0 64px 0 30px;
+  height: 47px;
+  padding: 0 64px 0 var(--select-recuo-texto, 30px);
   border: 0;
   border-radius: var(--raio-controle);
   appearance: none;
@@ -47,8 +48,8 @@
 
 .seta {
   position: absolute;
-  top: 3px;
-  right: 21px;
+  top: 8px;
+  right: var(--select-recuo-seta, 21px);
   color: var(--cor-texto-amarelo);
   pointer-events: none;
 }

@@ -38,7 +38,7 @@ export function Select({ rotulo, valor, opcoes, aoMudar, className, id, ...props
             </option>
           ))}
         </select>
-        <IconeSetaBaixo tamanho={40} strokeWidth={1.8} className={styles.seta} />
+        <IconeSetaBaixo tamanho={34} className={styles.seta} />
       </div>
     </div>
   )

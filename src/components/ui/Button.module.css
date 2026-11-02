@@ -39,7 +39,7 @@
 
 .amarela {
   justify-content: space-between;
-  min-height: 46px;
+  min-height: 47px;
   padding: 0 var(--espaco-4) 0 var(--espaco-5);
   background: var(--cor-amarelo);
   color: var(--cor-texto-amarelo);

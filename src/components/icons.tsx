@@ -43,7 +43,7 @@ export function IconeDownload(props: IconeProps) {
     <Icone {...props}>
       <path d="M12 3v13" />
       <path d="m6 11 6 6 6-6" />
-      <path d="M4 21h16" />
+      <path d="M5 21h14" />
     </Icone>
   )
 }
