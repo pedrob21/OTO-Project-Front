@@ -106,6 +106,7 @@ Se o navegador acusar erro de CORS, confira `CORS_ORIGENS` no `.env` do backend.
 | `npm run format:check` | Confere a formatação sem alterar arquivos |
 | `npm test` | Roda os testes uma vez |
 | `npm run test:watch` | Roda os testes em modo de observação |
+| `npm run test:e2e` | Roda os testes e2e (Playwright) com a API simulada |
 | `npm run api:tipos` | Gera `src/api/schema.d.ts` de novo. Precisa da API no ar |
 
 > [!NOTE]
@@ -175,7 +176,7 @@ Ainda sem task definida: a página de definição de senha do convite (`/definir
 3. Antes de abrir o pull request, confira se tudo passa:
 
    ```bash
-   npm run format:check && npm run lint && npm test && npm run build
+   npm run format:check && npm run lint && npm test && npm run build && npm run test:e2e
    ```
 
 4. Abra o pull request para a `main`, descrevendo a mudança e como testá-la. Em mudanças visuais, compare com a tela de referência.
