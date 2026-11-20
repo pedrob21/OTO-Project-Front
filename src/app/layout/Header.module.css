@@ -1,0 +1,31 @@
+.cabecalho {
+  display: flex;
+  align-items: center;
+  width: var(--largura-util);
+  height: var(--altura-cabecalho);
+  margin: 26px auto 0;
+  padding-left: 18px;
+}
+
+/* Em janelas baixas, ou com muito zoom, as barras fixas tomariam a maior parte da tela. */
+@media (min-height: 600px) {
+  .cabecalho {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: var(--cor-fundo);
+  }
+}
+
+.logoOto {
+  flex: none;
+  margin-top: -14px;
+  margin-right: 22px;
+  border-radius: var(--raio-chip);
+}
+
+.logoPrefeitura {
+  flex: none;
+  margin-bottom: 3px;
+  margin-right: 75px;
+}

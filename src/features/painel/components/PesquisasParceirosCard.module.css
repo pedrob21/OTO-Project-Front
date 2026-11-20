@@ -1,0 +1,162 @@
+/* Mesmo padrão do menu: o que ainda não tem página fica desativado, sem mudar de aparência. */
+.cartao button:disabled {
+  opacity: 1;
+}
+
+.cartao .botaoTopo {
+  min-height: 45.5px;
+  margin-top: -1px;
+  padding: 0 13px;
+}
+
+.cartao .botaoLancar {
+  padding: 0 14.25px;
+}
+
+.acoes button {
+  min-height: 43.5px;
+}
+
+.colunas {
+  display: grid;
+  grid-template-columns: 606.5fr 596.5fr;
+  column-gap: 27.5px;
+  margin-top: 18.5px;
+}
+
+.aberta {
+  --barra-altura: 8px;
+  --barra-raio: 0 var(--raio-pilula) var(--raio-pilula) 0;
+
+  padding: 18.5px 20px 20px;
+  background: var(--cor-superficie-suave);
+  border: 1px solid var(--cor-borda-suave);
+  border-radius: var(--raio-interno);
+}
+
+.situacao {
+  display: flex;
+  align-items: center;
+  gap: 10.5px;
+}
+
+.codigoAberta {
+  color: var(--cor-texto-suave);
+  font: var(--tipo-corpo-forte);
+}
+
+.tituloAberta {
+  margin-top: 11.5px;
+  color: var(--cor-texto-forte);
+  font: var(--tipo-titulo-rodada);
+}
+
+.prazo {
+  margin-top: 13px;
+  color: var(--cor-texto-suave);
+  font: var(--tipo-subtitulo);
+}
+
+.progresso {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  margin-top: 13px;
+}
+
+.rotuloProgresso {
+  color: var(--cor-texto);
+  font: var(--tipo-subtitulo);
+}
+
+.valorProgresso {
+  padding-right: 3.5px;
+  color: var(--cor-texto-forte);
+  font: 700 13.5px/20px var(--fonte-texto);
+}
+
+.barra {
+  grid-column: 1 / -1;
+  margin-top: 6px;
+}
+
+.faltantes {
+  margin-top: 14px;
+  color: var(--cor-texto-suave);
+  font: var(--tipo-subtitulo);
+}
+
+.acoes {
+  display: flex;
+  gap: 10px;
+  margin-top: 15.5px;
+}
+
+.tituloRecentes {
+  color: var(--cor-texto);
+  font: var(--tipo-sobrelinha);
+  text-transform: uppercase;
+}
+
+.tituloRecentes + ul {
+  margin-top: 6.5px;
+}
+
+.linha {
+  display: grid;
+  grid-template-columns: 70.5px 1fr auto 89px;
+  align-items: center;
+  min-height: 62.5px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--cor-borda-suave);
+}
+
+.linha:last-child {
+  border-bottom: 0;
+}
+
+.codigo {
+  color: var(--cor-texto-suave);
+  font: var(--tipo-rotulo-kpi);
+}
+
+.textos,
+.respostas {
+  display: grid;
+}
+
+.tituloLinha {
+  color: var(--cor-texto-forte);
+  font: 700 14.5px/20px var(--fonte-texto);
+}
+
+.detalheLinha {
+  color: var(--cor-texto);
+  font: var(--tipo-pequeno);
+}
+
+.respostas {
+  justify-items: end;
+}
+
+.quantidade {
+  padding-right: 2.5px;
+  color: var(--cor-texto-forte);
+  font: var(--tipo-rotulo);
+}
+
+.pendencias {
+  margin-top: 16px;
+}
+
+.linhaPendencia {
+  display: grid;
+  grid-template-columns: 70.5px 1fr auto;
+  align-items: center;
+  column-gap: 12px;
+  min-height: 62.5px;
+  border-bottom: 1px solid var(--cor-borda-suave);
+}
+
+.linhaPendencia:last-child {
+  border-bottom: 0;
+}

@@ -1,0 +1,56 @@
+.regua {
+  position: relative;
+}
+
+.faixas {
+  display: flex;
+  gap: 2px;
+}
+
+.faixa {
+  display: grid;
+  flex-basis: 0;
+  justify-items: center;
+  min-width: 0;
+  color: var(--cor-texto);
+  text-align: center;
+}
+
+.barra {
+  width: 100%;
+  height: 12px;
+  margin-bottom: 14px;
+}
+
+/* só a primeira faixa tem os cantos arredondados no design */
+.faixa:first-child .barra {
+  border-radius: 5px;
+}
+
+.nome {
+  color: var(--cor-texto-suave);
+  font: var(--tipo-sobrelinha);
+}
+
+.intervalo {
+  font: var(--tipo-minimo);
+}
+
+.faixa[aria-current] .nome {
+  color: var(--cor-texto-forte);
+}
+
+.faixa[aria-current] .intervalo {
+  color: var(--cor-texto-forte);
+  font-weight: 700;
+}
+
+.marcador {
+  position: absolute;
+  top: -7px;
+  width: 3px;
+  height: 26px;
+  border-radius: 2px;
+  background: var(--cor-texto-forte);
+  transform: translateX(-50%);
+}

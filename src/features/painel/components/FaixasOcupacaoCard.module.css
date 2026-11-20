@@ -1,0 +1,59 @@
+.cartao {
+  display: flex;
+  flex-direction: column;
+  min-height: 460.5px;
+}
+
+.lista {
+  display: grid;
+  gap: 20.5px;
+  margin-top: 23px;
+}
+
+.faixa {
+  display: grid;
+  grid-template-columns: 115.5px 1fr;
+  align-items: center;
+}
+
+.textos {
+  display: grid;
+}
+
+.nome {
+  color: var(--cor-texto-forte);
+  font: var(--tipo-rotulo);
+}
+
+.intervalo {
+  margin-top: -1.5px;
+  color: var(--cor-texto);
+  font: 400 12px/16px var(--fonte-texto);
+}
+
+.valores {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 2px;
+}
+
+.barra {
+  flex: none;
+  height: 16px;
+}
+
+.quantidade {
+  color: var(--cor-texto-forte);
+  font: var(--tipo-rotulo);
+}
+
+.nota {
+  margin-top: auto;
+  margin-bottom: 2px;
+  padding-top: 14.5px;
+  border-top: 1px solid var(--cor-grade);
+  color: var(--cor-texto-suave);
+  font: var(--tipo-pequeno);
+  line-height: 18.5px;
+}

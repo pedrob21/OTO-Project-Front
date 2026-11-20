@@ -1,0 +1,83 @@
+.cartao {
+  display: flex;
+  flex-direction: column;
+  min-height: 460.5px;
+}
+
+.legenda {
+  display: flex;
+  gap: 18px;
+  margin-top: 18px;
+  margin-bottom: 11px;
+}
+
+.item,
+.itemPrincipal {
+  display: flex;
+  align-items: center;
+  gap: 8.5px;
+  color: var(--cor-texto-suave);
+  font: var(--tipo-corpo);
+}
+
+.itemPrincipal {
+  color: var(--cor-texto-forte);
+  font: var(--tipo-corpo-forte);
+}
+
+.traco {
+  width: 18px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.fonte {
+  margin-top: auto;
+  padding-top: 14px;
+  margin-bottom: 3px;
+  color: var(--cor-texto);
+  font: var(--tipo-pequeno);
+}
+
+.tabela {
+  width: 100%;
+  margin-top: 14px;
+  border-collapse: collapse;
+  color: var(--cor-texto);
+  font: var(--tipo-corpo);
+  text-align: right;
+}
+
+.legendaTabela {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.tabela th,
+.tabela td {
+  padding: 2.5px var(--espaco-2);
+  border-bottom: 1px solid var(--cor-grade);
+}
+
+.tabela thead th {
+  color: var(--cor-texto-sobrelinha);
+  font: var(--tipo-rotulo-campo);
+}
+
+.tabela th:first-child {
+  padding-left: 0;
+  text-align: left;
+}
+
+.tabela tbody th {
+  font-weight: 400;
+  text-transform: capitalize;
+}
+
+.tabela tbody tr:last-child > * {
+  border-bottom: 0;
+}

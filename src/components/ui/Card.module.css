@@ -1,0 +1,28 @@
+.card {
+  padding: var(--espaco-6);
+  background: var(--cor-superficie);
+  border: var(--borda-card);
+  border-radius: var(--raio-card);
+}
+
+.cabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espaco-4);
+}
+
+.textos {
+  display: grid;
+  gap: 6px;
+}
+
+.titulo {
+  font: var(--tipo-titulo-card);
+  color: var(--cor-texto-forte);
+}
+
+.subtitulo {
+  font: var(--tipo-subtitulo);
+  color: var(--cor-texto);
+}

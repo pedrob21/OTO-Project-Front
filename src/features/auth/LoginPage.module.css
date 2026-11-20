@@ -1,0 +1,46 @@
+.pagina {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: var(--espaco-6);
+  min-height: 100vh;
+  padding: var(--espaco-6) var(--espaco-4);
+}
+
+.logos {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-4);
+}
+
+.formulario {
+  display: grid;
+  gap: var(--espaco-4);
+  width: 100%;
+  max-width: 400px;
+  padding: var(--espaco-6);
+  background: var(--cor-superficie);
+  border: var(--borda-card);
+  border-radius: var(--raio-card);
+}
+
+.titulo {
+  color: var(--cor-texto-forte);
+  font: var(--tipo-titulo-card);
+}
+
+.aviso {
+  padding: var(--espaco-3);
+  border-radius: var(--raio-chip);
+  background: var(--cor-aberta-fundo);
+  color: var(--cor-aberta-texto);
+}
+
+.erro {
+  color: var(--cor-negativo);
+  font: var(--tipo-corpo-forte);
+}
+
+.ajuda {
+  color: var(--cor-texto-suave);
+}

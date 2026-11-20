@@ -1,7 +1,13 @@
+import { createBrowserRouter, RouterProvider } from 'react-router'
+import { Providers } from './Providers'
+import { rotas } from './rotas'
+
+const router = createBrowserRouter(rotas)
+
 export function App() {
   return (
-    <main>
-      <h1>Painel de indicadores do turismo</h1>
-    </main>
+    <Providers>
+      <RouterProvider router={router} />
+    </Providers>
   )
 }

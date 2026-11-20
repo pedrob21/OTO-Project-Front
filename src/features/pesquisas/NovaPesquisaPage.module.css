@@ -1,0 +1,341 @@
+/* Cabeçalho igual ao do painel */
+.titulos {
+  margin-bottom: 32.5px;
+  padding-top: 18.5px;
+}
+
+.sobrelinha {
+  padding-left: 2px;
+  color: var(--cor-texto-sobrelinha);
+  font: var(--tipo-sobrelinha);
+  text-transform: uppercase;
+}
+
+.titulo {
+  max-width: 560px;
+  margin-top: 16px;
+  color: var(--cor-texto-titulo);
+  font: var(--tipo-titulo-pagina);
+}
+
+.introducao {
+  max-width: 62ch;
+  margin-top: 18px;
+  color: var(--cor-texto);
+  font: var(--tipo-subtitulo);
+}
+
+/* Formulário à esquerda; prévia e envio fixos à direita */
+.grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 384px;
+  align-items: start;
+  gap: 20px;
+}
+
+.principal {
+  display: grid;
+  gap: 17.5px;
+  min-width: 0;
+}
+
+@media (min-height: 600px) {
+  .lateral {
+    position: sticky;
+    top: calc(var(--altura-cabecalho) + 16px);
+  }
+}
+
+@media (max-width: 1100px) {
+  .grade {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+fieldset.camposPesquisa,
+fieldset.camposCampanha {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+fieldset.camposPesquisa {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  align-items: start;
+  gap: var(--espaco-4);
+  margin-top: 20px;
+}
+
+/* Resumo de erros, no topo, ocupando a largura toda */
+.resumoErros {
+  grid-column: 1 / -1;
+  padding: var(--espaco-5) var(--espaco-6);
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-negativo);
+  border-radius: var(--raio-card);
+}
+
+.tituloResumo {
+  color: var(--cor-negativo);
+  font: var(--tipo-titulo-rodada);
+}
+
+.listaErros {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+  font: var(--tipo-subtitulo);
+}
+
+.listaErros a {
+  color: var(--cor-negativo);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Campanhas: o mesmo painel interno da rodada aberta no painel */
+.campanhas {
+  display: grid;
+  gap: var(--espaco-4);
+  margin-top: 20px;
+}
+
+.campanha {
+  padding: 18.5px 20px 20px;
+  background: var(--cor-superficie-suave);
+  border: 1px solid var(--cor-borda-suave);
+  border-radius: var(--raio-interno);
+}
+
+.topoCampanha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-4);
+  min-height: 36px;
+}
+
+.tituloCampanha {
+  color: var(--cor-texto-forte);
+  font: var(--tipo-titulo-rodada);
+}
+
+.campanha .remover {
+  min-height: 36px;
+  padding: 0 var(--espaco-3);
+}
+
+.erroCampanha {
+  margin-top: 10px;
+  padding: 10px var(--espaco-3);
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-negativo);
+  border-radius: var(--raio-chip);
+  color: var(--cor-negativo);
+  font: var(--tipo-corpo-forte);
+}
+
+fieldset.camposCampanha {
+  display: grid;
+  gap: 18px;
+  margin-top: 14px;
+}
+
+.linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--espaco-4) 20px;
+}
+
+.campoMes {
+  width: 200px;
+}
+
+.campoAno {
+  width: 120px;
+}
+
+.campoFeriado {
+  flex: 1 1 220px;
+}
+
+.campoData {
+  flex: 0 1 170px;
+}
+
+.campoDiarias {
+  display: grid;
+  justify-items: start;
+  gap: 4px;
+  width: 140px;
+}
+
+.campoNome {
+  display: grid;
+  justify-items: start;
+  gap: 4px;
+  flex: 1 1 280px;
+  min-width: 0;
+}
+
+.campoDiarias > div,
+.campoNome > div {
+  width: 100%;
+}
+
+.erroSolto {
+  flex-basis: 100%;
+  margin-top: -10px;
+  color: var(--cor-negativo);
+}
+
+.usarSugestao {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--cor-primaria-escura);
+  font: var(--tipo-corpo-forte);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.semCampanhas,
+.avisoReferencias {
+  margin-top: 20px;
+  color: var(--cor-texto-suave);
+  font: var(--tipo-subtitulo);
+}
+
+.avisoReferencias {
+  color: var(--cor-negativo);
+}
+
+/* Prévia: mesmo desenho do cartão "Pesquisas com os parceiros" */
+.previa {
+  margin-top: 20px;
+  padding: 18.5px 20px 20px;
+  background: var(--cor-superficie-suave);
+  border: 1px solid var(--cor-borda-suave);
+  border-radius: var(--raio-interno);
+}
+
+.situacao {
+  display: flex;
+  align-items: center;
+  gap: 10.5px;
+}
+
+.codigoPrevia {
+  color: var(--cor-texto-suave);
+  font: var(--tipo-corpo-forte);
+}
+
+.tituloPrevia {
+  margin-top: 11.5px;
+  color: var(--cor-texto-forte);
+  font: var(--tipo-titulo-rodada);
+  overflow-wrap: anywhere;
+}
+
+.vazio {
+  color: var(--cor-texto-suave);
+  font-weight: 400;
+}
+
+.prazoPrevia {
+  margin-top: 13px;
+  color: var(--cor-texto-suave);
+  font: var(--tipo-subtitulo);
+}
+
+.campanhasPrevia,
+.resumoCampanhas {
+  display: grid;
+  margin-top: 12px;
+  color: var(--cor-texto);
+  font: var(--tipo-corpo);
+}
+
+.campanhasPrevia li,
+.resumoCampanhas li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--espaco-3);
+  padding: 8px 0;
+  border-top: 1px solid var(--cor-borda-suave);
+}
+
+.diariasResumo {
+  flex: none;
+  color: var(--cor-texto-suave);
+  font-variant-numeric: tabular-nums;
+}
+
+.envio {
+  display: grid;
+  gap: var(--espaco-4);
+  margin-top: 20px;
+}
+
+.falha {
+  display: grid;
+  gap: 4px;
+  padding: var(--espaco-3);
+  border: 1px solid var(--cor-negativo);
+  border-radius: var(--raio-chip);
+  color: var(--cor-negativo);
+  font: var(--tipo-corpo);
+}
+
+.tituloFalha {
+  font: var(--tipo-corpo-forte);
+}
+
+.salvoAte {
+  color: var(--cor-texto-suave);
+  font: var(--tipo-corpo);
+}
+
+.botaoEnviar {
+  width: 100%;
+}
+
+.etapa {
+  min-height: 18px;
+  margin-top: 8px;
+  color: var(--cor-texto-suave);
+  font: var(--tipo-corpo);
+}
+
+/* Sucesso */
+.sucesso {
+  max-width: 720px;
+}
+
+.sucesso:focus {
+  outline: none;
+}
+
+.resumoCampanhas {
+  margin-top: 20px;
+}
+
+.acoesSucesso {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}

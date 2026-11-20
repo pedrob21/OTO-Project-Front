@@ -1,0 +1,198 @@
+.cartao {
+  min-height: 430px;
+}
+
+.tabela {
+  width: 100%;
+  margin-top: 16px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Larguras do design: 196,5, 120, 378,5, 168, 117,5 e 249,5 em 1230 px. */
+.colunaTipo {
+  width: 15.98%;
+}
+
+.colunaUh {
+  width: 9.76%;
+}
+
+.colunaTaxa {
+  width: 30.77%;
+}
+
+.colunaDiaria {
+  width: 13.66%;
+}
+
+.colunaRevpar {
+  width: 9.55%;
+}
+
+.colunaReceita {
+  width: 20.28%;
+}
+
+thead th {
+  height: 40px;
+  padding-top: 3px;
+  color: var(--cor-texto);
+  font: var(--tipo-rotulo-campo);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+tbody th,
+tbody td {
+  height: 59px;
+  border-bottom: 1px solid var(--cor-fundo);
+}
+
+tbody tr:last-child th,
+tbody tr:last-child td {
+  height: 58px;
+  border-bottom: 0;
+}
+
+tfoot tr {
+  background: var(--cor-superficie-total);
+}
+
+tfoot th,
+tfoot td {
+  height: 59px;
+}
+
+.tabela td {
+  color: var(--cor-texto-forte);
+  font: var(--tipo-usuario);
+}
+
+.tabela tfoot td {
+  font-weight: 700;
+}
+
+.numero {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Os valores ficam 1,5 px acima do centro da linha no design. */
+.tabela td.numero,
+.celulaDiaria,
+.tabela .celulaReceita {
+  padding-bottom: 3px;
+}
+
+.tituloTipo,
+.celulaTipo {
+  padding-left: 12px;
+  text-align: left;
+}
+
+.celulaTipo {
+  padding-bottom: 2px;
+}
+
+tfoot .celulaTipo {
+  padding-bottom: 4px;
+}
+
+.tituloTaxa,
+.celulaTaxa {
+  padding-left: 24.5px;
+  text-align: left;
+}
+
+.tituloDiaria {
+  padding-right: 6.5px;
+  text-align: right;
+}
+
+.tituloReceita {
+  padding-right: 24px;
+  text-align: right;
+}
+
+.celulaDiaria {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.tabela .celulaReceita {
+  padding-right: 15px;
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.nome,
+.estabelecimentos {
+  display: block;
+}
+
+.nome {
+  color: var(--cor-texto-forte);
+  font: 700 14.5px/20px var(--fonte-texto);
+}
+
+.estabelecimentos {
+  color: var(--cor-texto);
+  font: var(--tipo-pequeno);
+}
+
+.taxa {
+  display: grid;
+  grid-template-columns: 1fr 55px;
+  align-items: center;
+  column-gap: 15.5px;
+}
+
+.trilha {
+  overflow: hidden;
+  height: 8px;
+  background: var(--cor-trilha);
+  border-radius: 0 var(--raio-pilula) var(--raio-pilula) 0;
+}
+
+.preenchido,
+.preenchidoTotal {
+  display: block;
+  height: 100%;
+}
+
+.preenchido {
+  background: var(--cor-serie-atual);
+}
+
+.preenchidoTotal {
+  background: var(--cor-primaria-escura);
+}
+
+.percentual {
+  margin-top: -3px;
+  font-weight: 700;
+}
+
+.tabela .celulaOculta {
+  padding-left: 24.5px;
+  color: var(--cor-texto-suave);
+  font: var(--tipo-corpo);
+}
+
+.nota {
+  margin-top: 17px;
+  color: var(--cor-texto-suave);
+  font: var(--tipo-pequeno);
+}
+
+.oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

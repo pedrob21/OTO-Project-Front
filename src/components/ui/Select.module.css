@@ -1,0 +1,94 @@
+.campo {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.rotulo {
+  font: var(--tipo-rotulo-campo);
+  color: var(--cor-texto-sobrelinha);
+  padding-left: var(--select-recuo-rotulo, 0);
+  text-transform: uppercase;
+}
+
+.controle {
+  position: relative;
+}
+
+.select {
+  display: block;
+  width: 100%;
+  height: 47px;
+  padding: 0 64px 0 var(--select-recuo-texto, 30px);
+  border: 0;
+  border-radius: var(--raio-controle);
+  appearance: none;
+  background: var(--cor-amarelo);
+  color: var(--cor-texto-amarelo);
+  font: var(--tipo-select);
+  letter-spacing: var(--espacamento-letras-select);
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.select:hover:not(:disabled) {
+  background: var(--cor-amarelo-hover);
+}
+
+.select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.select option {
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
+}
+
+.seta {
+  position: absolute;
+  top: 8px;
+  right: var(--select-recuo-seta, 21px);
+  color: var(--cor-texto-amarelo);
+  pointer-events: none;
+}
+
+.select:disabled + .seta {
+  opacity: 0.5;
+}
+
+/* Variante de formulário: mesmo desenho dos campos de texto */
+.formulario {
+  gap: 6px;
+}
+
+.formulario .rotulo {
+  padding-left: 0;
+  color: var(--cor-texto-rotulo);
+  font: var(--tipo-rotulo-kpi);
+  text-transform: none;
+}
+
+.formulario .select {
+  height: 44px;
+  padding: 0 40px 0 var(--espaco-3);
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda-botao);
+  color: var(--cor-texto);
+  font: var(--tipo-subtitulo);
+  letter-spacing: normal;
+}
+
+.formulario .select:hover:not(:disabled) {
+  background: var(--cor-superficie);
+  border-color: var(--cor-primaria);
+}
+
+.formulario .seta {
+  top: 13px;
+  right: 12px;
+  width: 18px;
+  height: 18px;
+  color: var(--cor-texto-suave);
+}

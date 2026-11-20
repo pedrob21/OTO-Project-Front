@@ -1,0 +1,17 @@
+.estado {
+  display: grid;
+  justify-items: start;
+  gap: var(--espaco-2);
+  padding: var(--espaco-4) 0;
+  color: var(--cor-texto-suave);
+  font: var(--tipo-subtitulo);
+}
+
+.titulo {
+  color: var(--cor-texto-forte);
+  font: var(--tipo-rotulo);
+}
+
+.acao {
+  margin-top: var(--espaco-1);
+}
