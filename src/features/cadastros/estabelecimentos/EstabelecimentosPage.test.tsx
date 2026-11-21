@@ -82,6 +82,14 @@ describe('lista de estabelecimentos', () => {
     expect(linha('Pousada Sol')).toHaveTextContent('—')
   })
 
+  it('cada linha leva às capacidades do estabelecimento', async () => {
+    const router = abrirTela(<EstabelecimentosPage />)
+
+    await userEvent.click(await screen.findByRole('link', { name: 'Capacidades de Hotel Exemplo' }))
+
+    expect(router.state.location.pathname).toBe('/cadastros/estabelecimentos/12/capacidades')
+  })
+
   it('sem estabelecimentos, mostra o estado vazio', async () => {
     preparar({ 'GET /api/estabelecimentos': { corpo: [] } })
     abrirTela(<EstabelecimentosPage />)

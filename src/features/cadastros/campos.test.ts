@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { erroDoCampo, valorDoCampo, type DefCampo } from './campos'
+import {
+  erroDoCampo,
+  errosDosCampos,
+  formDosCampos,
+  pedidoDosCampos,
+  valorDoCampo,
+  type DefCampo,
+} from './campos'
 
 const nome: DefCampo = { nome: 'nome', rotulo: 'Nome', obrigatorio: true, maximo: 5 }
 const uh: DefCampo = { nome: 'uh', rotulo: 'UH', tipo: 'inteiro', minimo: 1, maximo: 30 }
@@ -49,5 +56,30 @@ describe('valorDoCampo', () => {
     expect(valorDoCampo({ nome: 'c', rotulo: 'CNPJ', tipo: 'cnpj' }, '12.345.678/0001-90')).toBe(
       '12345678000190',
     )
+  })
+})
+
+describe('formulário de campos', () => {
+  const campos = [nome, uh, taxa]
+
+  it('parte do registro, com números em pt-BR, e usa o padrão no que falta', () => {
+    expect(formDosCampos(campos, { nome: 'Ana', taxa: 15.15 }, { uh: '1' })).toEqual({
+      nome: 'Ana',
+      uh: '1',
+      taxa: '15,15',
+    })
+    expect(formDosCampos(campos)).toEqual({ nome: '', uh: '', taxa: '' })
+  })
+
+  it('junta os erros e monta o pedido', () => {
+    expect(errosDosCampos(campos, { nome: '', uh: '3', taxa: 'x' })).toEqual({
+      nome: 'Preencha este campo.',
+      taxa: 'Use um número com até 2 casas decimais.',
+    })
+    expect(pedidoDosCampos(campos, { nome: 'Ana', uh: '3', taxa: '80,5' })).toEqual({
+      nome: 'Ana',
+      uh: 3,
+      taxa: 80.5,
+    })
   })
 })

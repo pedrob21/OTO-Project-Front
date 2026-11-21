@@ -4,6 +4,7 @@ import {
   formatarCompacto,
   formatarData,
   formatarDataHora,
+  formatarDecimal,
   formatarInteiro,
   formatarMes,
   formatarMesAno,
@@ -21,6 +22,13 @@ describe('números', () => {
   it('inteiro com separador de milhar', () => {
     expect(formatarInteiro(4643)).toBe('4.643')
     expect(formatarInteiro(586)).toBe('586')
+  })
+
+  it('decimal sem zeros à direita', () => {
+    expect(formatarDecimal(100.5)).toBe('100,5')
+    expect(formatarDecimal(3600)).toBe('3.600')
+    expect(formatarDecimal(15.155)).toBe('15,16')
+    expect(formatarDecimal(null)).toBe('—')
   })
 
   it('percentual com uma casa por padrão', () => {

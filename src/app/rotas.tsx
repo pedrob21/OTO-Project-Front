@@ -71,6 +71,13 @@ export const rotas: RouteObject[] = [
                   ).EstabelecimentosPage,
                 }),
               },
+              {
+                path: '/cadastros/estabelecimentos/:id/capacidades',
+                lazy: async () => ({
+                  Component: (await import('@/features/cadastros/capacidades/CapacidadesPage'))
+                    .CapacidadesPage,
+                }),
+              },
             ],
           },
           {

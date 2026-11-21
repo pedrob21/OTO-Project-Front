@@ -51,6 +51,12 @@ export function formatarInteiro(valor: Valor): string {
   return semValor(valor) ? VAZIO : numero(valor, 0)
 }
 
+/** 100.5 → "100,5"; 3600 → "3.600". Até `casas` casas, sem zeros à direita. */
+export function formatarDecimal(valor: Valor, casas = 2): string {
+  if (semValor(valor)) return VAZIO
+  return new Intl.NumberFormat('pt-BR', { maximumFractionDigits: casas }).format(valor)
+}
+
 /** 62.8 → "62,8%" */
 export function formatarPercentual(valor: Valor, casas = 1): string {
   return semValor(valor) ? VAZIO : `${numero(valor, casas)}%`
@@ -108,13 +114,6 @@ export function formatarMesCurto(mes: number): string {
 export function formatarMesAno(mes: number, ano: number): string {
   const nome = MESES_CURTOS[mes - 1]
   return nome ? `${nome}./${ano}` : VAZIO
-}
-
-/** 72.5 → "72,5"; 410 → "410"; até duas casas, sem zeros sobrando. */
-export function formatarDecimal(valor: Valor): string {
-  return semValor(valor)
-    ? VAZIO
-    : new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 }).format(valor)
 }
 
 const FUSO = 'America/Sao_Paulo'

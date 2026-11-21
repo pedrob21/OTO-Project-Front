@@ -1,11 +1,15 @@
 import { textoDoNumero } from '@/lib/numeros'
 import type { Esquemas } from '@/types/dominio'
 import { type DefCampo, erroDoCampo, valorDoCampo } from '../campos'
+import {
+  CAMPOS_CAPACIDADE as CAMPOS_DA_CAPACIDADE,
+  errosDaCapacidade,
+} from '../capacidades/capacidades'
 import type { ErrosDoFormulario, RegraDoCampo } from '../falhaDaApi'
 
 export type GrupoDeCampos = { titulo: string; campos: DefCampo[] }
 
-// Limites iguais aos da API (DadosCadastrais, DadosSecretaria e CapacidadeRequest).
+// Limites iguais aos da API (DadosCadastrais e DadosSecretaria).
 export const GRUPOS_DADOS: Record<
   'cadastrais' | 'endereco' | 'contato' | 'cadastur' | 'funcionamento',
   GrupoDeCampos
@@ -97,26 +101,10 @@ export const CAMPOS_SECRETARIA: DefCampo[] = [
   },
 ]
 
-export const CAMPOS_CAPACIDADE: DefCampo[] = [
-  { nome: 'capacidade.vigenteDesde', rotulo: 'Vigente desde', tipo: 'data', obrigatorio: true },
-  { nome: 'capacidade.qtdUh', rotulo: 'UH', tipo: 'inteiro', obrigatorio: true, minimo: 1 },
-  {
-    nome: 'capacidade.qtdUhPcd',
-    rotulo: 'UH PCD',
-    tipo: 'inteiro',
-    obrigatorio: true,
-    minimo: 0,
-  },
-  { nome: 'capacidade.qtdLeitos', rotulo: 'Leitos', tipo: 'inteiro', obrigatorio: true, minimo: 1 },
-  {
-    nome: 'capacidade.maxLeitosPorUh',
-    rotulo: 'Máximo de pessoas por UH',
-    tipo: 'inteiro',
-    obrigatorio: true,
-    minimo: 1,
-    maximo: 30,
-  },
-]
+export const CAMPOS_CAPACIDADE: DefCampo[] = CAMPOS_DA_CAPACIDADE.map((campo) => ({
+  ...campo,
+  nome: `capacidade.${campo.nome}`,
+}))
 
 export const EXIGENCIAS_CADASTUR = [
   { valor: '', rotulo: 'Não informado' },
@@ -182,10 +170,8 @@ export function errosDoEstabelecimento(
   if (!form['secretaria.tipoHospedagemCodigo']) {
     erros['secretaria.tipoHospedagemCodigo'] = 'Escolha o tipo de hospedagem.'
   }
-  const uh = Number(form['capacidade.qtdUh'])
-  if (novo && !erros['capacidade.qtdUhPcd'] && Number(form['capacidade.qtdUhPcd']) > uh) {
-    erros['capacidade.qtdUhPcd'] = 'As UH PCD não podem passar o total de UH.'
-  }
+  if (novo && !erros['capacidade.qtdUhPcd'])
+    Object.assign(erros, errosDaCapacidade(form, 'capacidade.'))
   return erros
 }
 

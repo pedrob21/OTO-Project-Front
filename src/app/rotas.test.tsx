@@ -261,6 +261,7 @@ describe.each(ROTAS_DAS_PESQUISAS)('rota $caminho', ({ caminho, titulo, perfis }
 const ROTAS_CADASTRO = [
   { caminho: '/cadastros/usuarios', titulo: 'Usuários' },
   { caminho: '/cadastros/estabelecimentos', titulo: 'Estabelecimentos' },
+  { caminho: '/cadastros/estabelecimentos/12/capacidades', titulo: 'Capacidade de hospedagem' },
 ]
 
 describe.each(ROTAS_CADASTRO)('$caminho', ({ caminho, titulo }) => {

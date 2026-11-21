@@ -4,10 +4,14 @@ import { ErroRequisicao } from './erros'
 import {
   alterarEstabelecimento,
   buscarEstabelecimento,
+  corrigirCapacidade,
   criarEstabelecimento,
+  excluirCapacidade,
   inativarEstabelecimento,
+  listarCapacidades,
   listarEstabelecimentos,
   reativarEstabelecimento,
+  registrarCapacidade,
 } from './estabelecimentos'
 import { buscarParametrosVigentes } from './parametros'
 import { buscarHistoricoDaResposta, enviarResposta, listarRespostasDaCampanha } from './respostas'
@@ -315,6 +319,32 @@ describe('usuários', () => {
       ['POST', 'http://localhost:8080/api/usuarios/7/link-de-senha'],
     ])
     expect(chamada(0).corpo).toBeUndefined()
+  })
+})
+
+describe('capacidades', () => {
+  it('lista, inclui, corrige e exclui', async () => {
+    const capacidade = {
+      vigenteDesde: '2026-07-01',
+      qtdUh: 42,
+      qtdUhPcd: 2,
+      qtdLeitos: 126,
+      maxLeitosPorUh: 4,
+    }
+    await listarCapacidades(12)
+    await registrarCapacidade(12, capacidade)
+    await corrigirCapacidade(12, 5, capacidade)
+    await excluirCapacidade(12, 5)
+
+    expect(
+      fetchFalso.mock.calls.map((_, indice) => [chamada(indice).metodo, chamada(indice).url]),
+    ).toEqual([
+      ['GET', 'http://localhost:8080/api/estabelecimentos/12/capacidades'],
+      ['POST', 'http://localhost:8080/api/estabelecimentos/12/capacidades'],
+      ['PUT', 'http://localhost:8080/api/estabelecimentos/12/capacidades/5'],
+      ['DELETE', 'http://localhost:8080/api/estabelecimentos/12/capacidades/5'],
+    ])
+    expect(chamada(1).corpo).toEqual(capacidade)
   })
 })
 

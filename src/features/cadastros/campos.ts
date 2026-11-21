@@ -71,3 +71,37 @@ export function valorDoCampo(campo: DefCampo, valor: string): string | number | 
   if (campo.tipo === 'cnpj') return semPontuacao(digitado)
   return digitado
 }
+
+/** Valores digitados, pelo `nome` do campo. */
+export type FormDeCampos = Record<string, string>
+
+function texto(valor: unknown): string {
+  if (valor === null || valor === undefined) return ''
+  return typeof valor === 'number' ? textoDoNumero(valor) : String(valor)
+}
+
+export function formDosCampos(
+  campos: DefCampo[],
+  registro: object = {},
+  padrao: FormDeCampos = {},
+): FormDeCampos {
+  const valores = registro as Record<string, unknown>
+  return Object.fromEntries(
+    campos.map(({ nome }) => [nome, nome in valores ? texto(valores[nome]) : (padrao[nome] ?? '')]),
+  )
+}
+
+export function errosDosCampos(campos: DefCampo[], form: FormDeCampos): Record<string, string> {
+  return Object.fromEntries(
+    campos.flatMap((campo) => {
+      const erro = erroDoCampo(campo, form[campo.nome] ?? '')
+      return erro ? [[campo.nome, erro]] : []
+    }),
+  )
+}
+
+export function pedidoDosCampos(campos: DefCampo[], form: FormDeCampos) {
+  return Object.fromEntries(
+    campos.map((campo) => [campo.nome, valorDoCampo(campo, form[campo.nome] ?? '')]),
+  )
+}

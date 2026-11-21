@@ -41,3 +41,37 @@ export function inativarEstabelecimento(id: number) {
 export function reativarEstabelecimento(id: number) {
   return requisicao<void>(`/api/estabelecimentos/${id}/reativar`, { metodo: 'POST' })
 }
+
+/** Da vigência mais recente para a mais antiga. */
+export function listarCapacidades(id: number, signal?: AbortSignal) {
+  return requisicao<Esquemas['CapacidadeResponse'][]>(`/api/estabelecimentos/${id}/capacidades`, {
+    signal,
+  })
+}
+
+/** Mudança real de UH ou leitos: nova vigência a partir de uma data. */
+export function registrarCapacidade(id: number, dados: Esquemas['CapacidadeRequest']) {
+  return requisicao<Esquemas['CapacidadeResponse']>(`/api/estabelecimentos/${id}/capacidades`, {
+    metodo: 'POST',
+    corpo: dados,
+  })
+}
+
+/** Só ADMIN. Corrige um lançamento digitado errado. */
+export function corrigirCapacidade(
+  id: number,
+  capacidadeId: number,
+  dados: Esquemas['CapacidadeRequest'],
+) {
+  return requisicao<Esquemas['CapacidadeResponse']>(
+    `/api/estabelecimentos/${id}/capacidades/${capacidadeId}`,
+    { metodo: 'PUT', corpo: dados },
+  )
+}
+
+/** Só ADMIN. A única capacidade do estabelecimento não pode sair. */
+export function excluirCapacidade(id: number, capacidadeId: number) {
+  return requisicao<void>(`/api/estabelecimentos/${id}/capacidades/${capacidadeId}`, {
+    metodo: 'DELETE',
+  })
+}

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
+import { Link } from 'react-router'
 import {
   alterarEstabelecimento,
   buscarEstabelecimento,
@@ -11,6 +12,7 @@ import {
 import { buscarReferencias } from '@/api/referencias'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
+import botoes from '@/components/ui/Button.module.css'
 import { Card } from '@/components/ui/Card'
 import { Carregando } from '@/components/ui/Carregando'
 import { Dialogo } from '@/components/ui/Dialogo'
@@ -217,6 +219,13 @@ export function EstabelecimentosPage({ hoje: hojeFixo }: EstabelecimentosPagePro
                 >
                   Editar
                 </Button>
+                <Link
+                  to={`/cadastros/estabelecimentos/${linha.id}/capacidades`}
+                  className={`${botoes.botao} ${botoes.secundaria}`}
+                  aria-label={`Capacidades de ${linha.nomeFantasia}`}
+                >
+                  Capacidades
+                </Link>
                 <Button
                   variante="secundaria"
                   aria-label={`${linha.ativo ? 'Inativar' : 'Reativar'} ${linha.nomeFantasia}`}
