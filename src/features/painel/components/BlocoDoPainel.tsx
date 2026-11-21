@@ -3,6 +3,8 @@ import type { ReactNode } from 'react'
 import { Card } from '@/components/ui/Card'
 import { Carregando } from '@/components/ui/Carregando'
 import { ErroApi } from '@/components/ui/ErroApi'
+import { NotaTodosOsTipos } from './NotaTodosOsTipos'
+import estilos from './NotaTodosOsTipos.module.css'
 
 type BlocoDoPainelProps = {
   titulo: string
@@ -10,6 +12,8 @@ type BlocoDoPainelProps = {
   mensagemDeErro: string
   consultas: UseQueryResult[]
   className?: string
+  /** há um tipo escolhido no filtro e este bloco não é separado por tipo */
+  comNotaDeTipo?: boolean
   children: ReactNode
 }
 
@@ -19,12 +23,22 @@ export function BlocoDoPainel({
   mensagemDeErro,
   consultas,
   className,
+  comNotaDeTipo,
   children,
 }: BlocoDoPainelProps) {
   const falha = consultas.find((consulta) => consulta.isError)
   const carregando = consultas.some((consulta) => consulta.isPending)
 
-  if (!falha && !carregando) return <>{children}</>
+  if (!falha && !carregando) {
+    return comNotaDeTipo ? (
+      <div className={estilos.comNota}>
+        {children}
+        <NotaTodosOsTipos />
+      </div>
+    ) : (
+      <>{children}</>
+    )
+  }
 
   return (
     <Card titulo={titulo} className={className}>

@@ -278,6 +278,52 @@ describe('RHC e parâmetros vigentes no fluxo de turistas', () => {
   })
 })
 
+describe('filtro por tipo de hospedagem', () => {
+  const NOTA = 'Todos os tipos de hospedagem: este indicador não é separado por tipo.'
+
+  it('sem tipo escolhido, não mostra a nota nem filtra a tabela', async () => {
+    abrir()
+
+    await tituloDoDestaque('agosto')
+    expect(screen.queryByText(NOTA)).not.toBeInTheDocument()
+    expect(screen.getByRole('row', { name: /Resort/ })).toBeInTheDocument()
+    expect(screen.getByRole('row', { name: /^Total/ })).toBeInTheDocument()
+  })
+
+  it('com um tipo, só o desempenho por tipo é filtrado e os demais avisam', async () => {
+    abrir('/?tipo=POUSADA')
+
+    await tituloDoDestaque('agosto')
+    expect(screen.getByRole('row', { name: /Pousada/ })).toBeInTheDocument()
+    expect(screen.queryByRole('row', { name: /Resort/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('row', { name: /^Total/ })).not.toBeInTheDocument()
+    await vi.waitFor(() => expect(screen.getAllByText(NOTA).length).toBeGreaterThanOrEqual(4))
+  })
+
+  it('tipo oculto por sigilo mostra o aviso e não inventa valor', async () => {
+    rotas['GET /api/campanhas/15/resultado'] = {
+      corpo: {
+        ...resultado,
+        porTipo: (resultado.porTipo ?? []).map((tipo) =>
+          tipo.tipoHospedagemCodigo === 'HOTEL'
+            ? { tipoHospedagemCodigo: 'HOTEL', nome: 'Hotel', qtdMh: 2, omitido: true }
+            : tipo,
+        ),
+      },
+    }
+    abrir('/?tipo=HOTEL')
+
+    expect(await screen.findByText(/Valores ocultos para preservar o sigilo/)).toBeInTheDocument()
+  })
+
+  it('tipo da URL que não existe nas referências volta para todos', async () => {
+    abrir('/?tipo=NAO_EXISTE')
+
+    await tituloDoDestaque('agosto')
+    expect(screen.queryByText(NOTA)).not.toBeInTheDocument()
+  })
+})
+
 describe('PainelPage com dados da API', () => {
   it('mostra o resultado da campanha mais recente', async () => {
     const api = abrir()

@@ -1,7 +1,12 @@
 import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import type { Esquemas } from '@/types/dominio'
-import { linhasDeDesempenho, notaDosForaDaReceita, totalDoDesempenho } from '../desempenho'
+import {
+  linhasDeDesempenho,
+  linhasDoTipo,
+  notaDosForaDaReceita,
+  totalDoDesempenho,
+} from '../desempenho'
 import { referencias, resultado } from '../fixtures'
 import { DesempenhoPorTipoCard } from './DesempenhoPorTipoCard'
 
@@ -25,8 +30,8 @@ const HOTEL_OCULTO = {
   omitido: true,
 }
 
-function abrir(dados: Esquemas['ResultadoResponse'] = resultado) {
-  return render(<DesempenhoPorTipoCard resultado={dados} tipos={tipos} />)
+function abrir(dados: Esquemas['ResultadoResponse'] = resultado, tipo?: string) {
+  return render(<DesempenhoPorTipoCard resultado={dados} tipos={tipos} tipo={tipo} />)
 }
 
 function textoDaLinha(nome: RegExp): string {
@@ -158,6 +163,45 @@ describe('DesempenhoPorTipoCard', () => {
     abrir({ ...resultado, porTipo: [] })
 
     expect(screen.getByText(/Ainda não há resultados por tipo/)).toBeInTheDocument()
+    expect(screen.queryByRole('table')).not.toBeInTheDocument()
+  })
+})
+
+describe('linhasDoTipo', () => {
+  it('traz só o tipo escolhido, mesmo o que não entra na receita', () => {
+    expect(linhasDoTipo(porTipo, 'POUSADA').map((linha) => linha.nome)).toEqual(['Pousada'])
+    expect(linhasDoTipo(porTipo, 'FLAT').map((linha) => linha.nome)).toEqual(['Flat'])
+    expect(linhasDoTipo(porTipo, 'HOSTEL')).toEqual([])
+  })
+})
+
+describe('DesempenhoPorTipoCard com filtro por tipo', () => {
+  it('mostra só a linha do tipo, sem o total', () => {
+    abrir(resultado, 'POUSADA')
+
+    expect(screen.getByRole('row', { name: /Pousada/ })).toBeInTheDocument()
+    expect(screen.queryByRole('row', { name: /Resort/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('row', { name: /^Total/ })).not.toBeInTheDocument()
+    expect(screen.queryByText(/entram na taxa de ocupação geral/)).not.toBeInTheDocument()
+  })
+
+  it('tipo oculto por sigilo mostra o aviso, sem valores', () => {
+    abrir(comTipo('HOTEL', HOTEL_OCULTO), 'HOTEL')
+
+    expect(screen.getByText(/Valores ocultos para preservar o sigilo/)).toBeInTheDocument()
+    expect(screen.queryByText(/%/)).not.toBeInTheDocument()
+  })
+
+  it('tipo ausente do resultado não inventa valor', () => {
+    abrir(
+      { ...resultado, porTipo: porTipo.filter((tipo) => tipo.tipoHospedagemCodigo !== 'HOTEL') },
+      'HOTEL',
+    )
+
+    expect(screen.getByText('Sem valores para este tipo neste período')).toBeInTheDocument()
+    expect(
+      screen.getByText('Nenhum meio de hospedagem deste tipo entrou nesta campanha.'),
+    ).toBeInTheDocument()
     expect(screen.queryByRole('table')).not.toBeInTheDocument()
   })
 })
