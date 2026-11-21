@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import { useAuth } from '@/features/auth/AuthContext'
 import { DesempenhoPorTipoCard } from './components/DesempenhoPorTipoCard'
 import { ExpectativaRealizadoCard } from './components/ExpectativaRealizadoCard'
@@ -39,6 +40,9 @@ export function PainelPage() {
           faixas={referencias.faixasOcupacao ?? []}
           comparativo={comparativo}
         />
+        <p className={styles.metodologia}>
+          <Link to="/metodologia">Como calculamos a taxa de ocupação e o fluxo de turistas</Link>
+        </p>
       </div>
 
       <div className={styles.indicadores}>
