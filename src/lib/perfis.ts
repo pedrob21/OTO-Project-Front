@@ -21,6 +21,7 @@ export const SUBMENU_CADASTROS: ItemSubmenu[] = [
   { rotulo: 'Parâmetros de cálculo', para: '/cadastros/parametros' },
   { rotulo: 'Hospedagem caseira (RHC)', para: '/cadastros/rhc' },
   { rotulo: 'Referências', para: '/cadastros/referencias' },
+  { rotulo: 'Inventário', para: '/cadastros/inventario' },
   { rotulo: 'Série histórica', para: '/cadastros/historico' },
 ]
 
@@ -32,6 +33,7 @@ export const ITENS_MENU: ItemMenu[] = [
     paginaPorPerfil: { ADMIN: '/pesquisas', PARCEIRO: '/pesquisas/responder' },
     temSubmenu: true,
   },
+  { rotulo: 'Meu estabelecimento', para: '/meu-estabelecimento', perfis: ['PARCEIRO'] },
   { rotulo: 'Indicadores', temSubmenu: true },
   { rotulo: 'Relatórios', temSubmenu: true },
   { rotulo: 'Cadastros', perfis: ['ADMIN'], temSubmenu: true, submenu: SUBMENU_CADASTROS },

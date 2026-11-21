@@ -204,6 +204,7 @@ const ROTAS_DAS_PESQUISAS: { caminho: string; titulo: string | RegExp; perfis: P
     titulo: 'Prévia e publicação',
     perfis: ['ADMIN'],
   },
+  { caminho: '/meu-estabelecimento', titulo: 'Meu estabelecimento', perfis: ['PARCEIRO'] },
   {
     caminho: '/resultados/21',
     titulo: 'Consolidada de setembro de 2026',
@@ -262,9 +263,11 @@ const ROTAS_CADASTRO = [
   { caminho: '/cadastros/usuarios', titulo: 'Usuários' },
   { caminho: '/cadastros/estabelecimentos', titulo: 'Estabelecimentos' },
   { caminho: '/cadastros/estabelecimentos/12/capacidades', titulo: 'Capacidade de hospedagem' },
+  { caminho: '/cadastros/estabelecimentos/12/inventario', titulo: 'Inventário do estabelecimento' },
   { caminho: '/cadastros/parametros', titulo: 'Parâmetros de cálculo' },
   { caminho: '/cadastros/rhc', titulo: 'Hospedagem caseira (RHC)' },
   { caminho: '/cadastros/referencias', titulo: 'Referências' },
+  { caminho: '/cadastros/inventario', titulo: 'Inventário' },
   { caminho: '/cadastros/historico', titulo: 'Série histórica' },
 ]
 

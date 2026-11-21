@@ -1,0 +1,64 @@
+.editor {
+  display: grid;
+  gap: var(--espaco-4);
+}
+
+.atualizado {
+  color: var(--cor-texto-suave);
+  font: var(--tipo-subtitulo);
+}
+
+.grupo {
+  display: grid;
+  gap: var(--espaco-3);
+  margin-top: var(--espaco-4);
+  padding: 0;
+  border: 0;
+}
+
+.nomeDoGrupo {
+  padding: 0;
+  color: var(--cor-texto-forte);
+  font: var(--tipo-rotulo);
+}
+
+.itens {
+  display: grid;
+  gap: var(--espaco-2);
+  list-style: none;
+}
+
+.item {
+  display: grid;
+  gap: var(--espaco-2);
+}
+
+.opcao {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  color: var(--cor-texto);
+  font: var(--tipo-corpo);
+}
+
+.complemento {
+  max-width: 420px;
+  margin-left: 26px;
+}
+
+.rodape {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-3);
+}
+
+.falha {
+  color: var(--cor-negativo);
+  font: var(--tipo-corpo-forte);
+}
+
+.categoria {
+  color: var(--cor-texto-forte);
+  font: var(--tipo-titulo-rodada);
+}

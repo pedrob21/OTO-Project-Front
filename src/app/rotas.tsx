@@ -85,6 +85,14 @@ export const rotas: RouteObject[] = [
                 }),
               },
               {
+                path: '/cadastros/estabelecimentos/:id/inventario',
+                lazy: async () => ({
+                  Component: (
+                    await import('@/features/cadastros/inventario/InventarioDoEstabelecimentoPage')
+                  ).InventarioDoEstabelecimentoPage,
+                }),
+              },
+              {
                 path: '/cadastros/parametros',
                 lazy: async () => ({
                   Component: (await import('@/features/cadastros/parametros/ParametrosPage'))
@@ -105,6 +113,13 @@ export const rotas: RouteObject[] = [
                 }),
               },
               {
+                path: '/cadastros/inventario',
+                lazy: async () => ({
+                  Component: (await import('@/features/cadastros/inventario/InventarioPage'))
+                    .InventarioPage,
+                }),
+              },
+              {
                 path: '/cadastros/historico',
                 lazy: async () => ({
                   Component: (await import('@/features/cadastros/historico/HistoricoPage'))
@@ -121,6 +136,13 @@ export const rotas: RouteObject[] = [
                 lazy: async () => ({
                   Component: (await import('@/features/pesquisas/ResponderPesquisaPage'))
                     .ResponderPesquisaPage,
+                }),
+              },
+              {
+                path: '/meu-estabelecimento',
+                lazy: async () => ({
+                  Component: (await import('@/features/estabelecimento/MeuEstabelecimentoPage'))
+                    .MeuEstabelecimentoPage,
                 }),
               },
             ],

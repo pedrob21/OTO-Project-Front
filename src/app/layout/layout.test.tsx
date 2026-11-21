@@ -67,6 +67,21 @@ describe('menu principal', () => {
     )
   })
 
+  it('Meu estabelecimento é link só para o PARCEIRO', () => {
+    abrir({ usuario: { nome: 'Paula', perfil: 'PARCEIRO' } })
+
+    expect(screen.getByRole('link', { name: 'Meu estabelecimento' })).toHaveAttribute(
+      'href',
+      '/meu-estabelecimento',
+    )
+  })
+
+  it.each(['ADMIN', 'VISUALIZADOR'] as const)('%s não vê Meu estabelecimento', (perfil) => {
+    abrir({ usuario: { nome: 'Vera', perfil } })
+
+    expect(screen.queryByText('Meu estabelecimento')).not.toBeInTheDocument()
+  })
+
   it('páginas que ainda não existem aparecem desativadas', () => {
     abrir()
 
@@ -99,6 +114,17 @@ describe('submenu Cadastros', () => {
     expect(await screen.findByText('tela de usuários')).toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Usuários' })).not.toBeInTheDocument()
     expect(botao()).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('lista Inventário com o destino do catálogo', async () => {
+    abrir()
+
+    await userEvent.click(botao())
+
+    expect(screen.getByRole('link', { name: 'Inventário' })).toHaveAttribute(
+      'href',
+      '/cadastros/inventario',
+    )
   })
 
   it('abre pelo teclado e Esc fecha, devolvendo o foco', async () => {

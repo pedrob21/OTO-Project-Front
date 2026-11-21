@@ -34,11 +34,17 @@ A API fica no repositório [OTO-Project](https://github.com/pedrob21/OTO-Project
   - lançamento da resposta pelo ADMIN: lança ou corrige a resposta de um estabelecimento a partir do acompanhamento, com a versão enviada e o histórico. Um erro da API não apaga o que foi digitado
   - prévia e publicação da campanha, com os impedimentos ligados ao botão "Publicar" e o cancelamento da publicação, em `/pesquisas/:id/campanhas/:campanhaId/previa`
 - Resultado publicado de cada campanha, para todos os perfis, com a ocultação por sigilo e o botão "Baixar CSV", em `/resultados/:campanhaId`
+- Meu estabelecimento, só para o PARCEIRO, no item "Meu estabelecimento" do menu, em `/meu-estabelecimento`. Um cartão por estabelecimento dele:
+  - dados cadastrais e da Secretaria em leitura; "Editar dados" abre o formulário só com os dados cadastrais, porque o bloco da Secretaria é só do ADMIN
+  - capacidade vigente e histórico em leitura, com "Informar nova capacidade" para uma nova vigência; corrigir e excluir continuam só do ADMIN
+  - inventário no mesmo editor de Cadastros, sem os grupos exclusivos da Secretaria
 - Cadastros, só para o ADMIN, no submenu "Cadastros" (os outros perfis não veem o item):
   - usuários, com o link de convite ou de nova senha para enviar ao usuário
   - estabelecimentos, com os dados da Secretaria, e o histórico de capacidade (UH e leitos) de cada um
   - parâmetros de cálculo e totais da hospedagem caseira (RHC), por vigência
   - referências: tipos de hospedagem, feriados e eventos, e faixas de ocupação
+  - inventário: catálogo de grupos e itens por categoria (serviços e equipamentos, acessibilidade e sustentabilidade), com inativação e exclusão de itens nunca marcados e de grupos vazios, em `/cadastros/inventario`
+  - inventário de cada estabelecimento, com um item por checkbox, complemento em texto quando o item permite e a data da última atualização, em `/cadastros/estabelecimentos/:id/inventario`
   - série histórica, com importação de CSV que mostra os erros de cada linha
 - Painel de indicadores, com dados da API e carregamento, vazio e erro independentes em cada bloco:
   - filtros de campanha, comparação e tipo de hospedagem, guardados na URL. A campanha padrão é a publicada mais recente; sem nenhuma publicada, o painel mostra um estado vazio
@@ -144,17 +150,29 @@ Antes dos testes, o Playwright gera o build e sobe o `npm run preview` na porta 
 ## Estrutura do projeto
 
 ```text
-├── dev/                 # Páginas de comparação visual, fora do build de produção
-├── docs/referencia/     # Tela exportada do Figma
+├── dev/                     # Páginas de comparação visual, fora do build de produção
+├── docs/referencia/         # Tela exportada do Figma
 ├── public/
 └── src/
-    ├── api/             # Cliente HTTP, sessão, chamadas por recurso e tipos gerados
-    ├── app/             # Rotas, provedores e layout (cabeçalho, menu e rodapé)
-    ├── assets/          # Logos
+    ├── api/                 # Cliente HTTP, sessão, chamadas por recurso (como `inventario.ts`) e tipos gerados
+    ├── app/                 # Rotas, provedores e layout (cabeçalho, menu e rodapé)
+    ├── assets/              # Logos
     ├── components/
-    │   ├── charts/      # Gráficos reutilizáveis
-    │   └── ui/          # Botão, cartão, select, selo, tabela, diálogo, estados de vazio e de erro
+    │   ├── charts/          # Gráficos reutilizáveis
+    │   └── ui/              # Botão, cartão, select, selo, tabela, diálogo, estados de vazio e de erro
     ├── features/
+    │   ├── auth/            # Contexto de sessão, login, definição e troca de senha e proteção de rotas
+    │   ├── cadastros/       # Telas de cadastro do ADMIN, com formulário em diálogo (inclui o catálogo do inventário em `inventario/`)
+    │   ├── estabelecimento/ # Meu estabelecimento do PARCEIRO: dados, capacidade e inventário
+    │   ├── inventario/      # Editor de inventário de um estabelecimento (`EditorDeInventario`), reaproveitável por outros perfis
+    │   ├── metodologia/     # Página estática do cálculo dos indicadores
+    │   ├── painel/          # Página, cartões, regras de cálculo e dados fixos
+    │   ├── pesquisas/       # Criação, lista, acompanhamento, resposta, prévia e publicação
+    │   └── resultados/      # Resultado publicado de uma campanha e download do CSV
+    ├── lib/                 # Formatadores pt-BR, leitura de decimais, download e regras de perfil
+    ├── styles/              # Tokens do design e estilos globais
+    ├── test/                # Configuração dos testes
+    └── types/               # Tipos de domínio derivados da API
     │   ├── auth/        # Contexto de sessão, login, definição e troca de senha e proteção de rotas
     │   ├── cadastros/   # Telas de cadastro do ADMIN, com formulário em diálogo
     │   ├── metodologia/ # Página estática do cálculo dos indicadores
@@ -189,7 +207,7 @@ Com o servidor local no ar, os tokens e os componentes podem ser conferidos ao l
 | **T17. Responsividade e acessibilidade** | Adaptar para tablet e celular, inclusive as tabelas e os diálogos de Cadastros, corrigir os ajustes pendentes em 1280 px e fazer a auditoria WCAG AA | Sem rolagem horizontal da página em 360 px e sem falhas AA abertas | — |
 | **T18. Otimização e revisão final** | Dividir o código por rota, otimizar fontes e imagens, analisar o tamanho do pacote, adicionar favicon e comparar a tela inteira com o design | Lighthouse medido e registrado, sem pendências visuais abertas | T17 |
 
-Ainda sem task definida: o cadastro do catálogo do inventário (`/api/inventario`) e as telas de Indicadores e Relatórios, que hoje aparecem desativadas no menu.
+Ainda sem task definida: as telas de Indicadores e Relatórios, que hoje aparecem desativadas no menu.
 
 Pendências do fluxo das pesquisas:
 

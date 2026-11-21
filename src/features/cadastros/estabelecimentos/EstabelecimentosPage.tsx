@@ -226,6 +226,13 @@ export function EstabelecimentosPage({ hoje: hojeFixo }: EstabelecimentosPagePro
                 >
                   Capacidades
                 </Link>
+                <Link
+                  to={`/cadastros/estabelecimentos/${linha.id}/inventario`}
+                  className={`${botoes.botao} ${botoes.secundaria}`}
+                  aria-label={`Inventário de ${linha.nomeFantasia}`}
+                >
+                  Inventário
+                </Link>
                 <Button
                   variante="secundaria"
                   aria-label={`${linha.ativo ? 'Inativar' : 'Reativar'} ${linha.nomeFantasia}`}
