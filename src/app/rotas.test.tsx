@@ -265,6 +265,7 @@ const ROTAS_CADASTRO = [
   { caminho: '/cadastros/parametros', titulo: 'Parâmetros de cálculo' },
   { caminho: '/cadastros/rhc', titulo: 'Hospedagem caseira (RHC)' },
   { caminho: '/cadastros/referencias', titulo: 'Referências' },
+  { caminho: '/cadastros/historico', titulo: 'Série histórica' },
 ]
 
 describe.each(ROTAS_CADASTRO)('$caminho', ({ caminho, titulo }) => {

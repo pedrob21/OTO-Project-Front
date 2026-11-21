@@ -2,6 +2,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buscarFeriados, buscarResumo, buscarSerieMensal } from './dashboard'
 import { ErroRequisicao } from './erros'
 import {
+  alterarHistorico,
+  excluirHistorico,
+  gravarHistorico,
+  importarHistorico,
+  listarHistorico,
+} from './historico'
+import {
   alterarEstabelecimento,
   buscarEstabelecimento,
   corrigirCapacidade,
@@ -464,5 +471,75 @@ describe('estabelecimentos', () => {
       ['POST', 'http://localhost:8080/api/estabelecimentos/12/reativar'],
     ])
     expect(chamada(1).corpo).toMatchObject({ capacidade: { qtdUh: 40 }, secretaria })
+  })
+})
+
+describe('série histórica', () => {
+  const valor = {
+    indicador: 'TAXA_OCUPACAO' as const,
+    modalidade: 'CONSOLIDADA' as const,
+    ano: 2024,
+    mes: 7,
+    valor: 68.4,
+    fonte: 'Indicadores do Turismo 2017-2025',
+  }
+
+  it('lista com os filtros, grava, corrige e exclui', async () => {
+    await listarHistorico({ indicador: 'FLUXO_TURISTAS', ano: 2024, tipo: 'HOTEL' })
+    await gravarHistorico(valor)
+    await alterarHistorico(8, valor)
+    await excluirHistorico(8)
+
+    expect(
+      fetchFalso.mock.calls.map((_, indice) => [chamada(indice).metodo, chamada(indice).url]),
+    ).toEqual([
+      ['GET', 'http://localhost:8080/api/historico?indicador=FLUXO_TURISTAS&ano=2024&tipo=HOTEL'],
+      ['POST', 'http://localhost:8080/api/historico'],
+      ['PUT', 'http://localhost:8080/api/historico/8'],
+      ['DELETE', 'http://localhost:8080/api/historico/8'],
+    ])
+    expect(chamada(1).corpo).toEqual(valor)
+  })
+
+  it('importa em multipart, com o arquivo e a fonte', async () => {
+    fetchFalso.mockResolvedValue(
+      new Response(JSON.stringify({ linhasLidas: 3, inseridos: 2, atualizados: 1, erros: [] })),
+    )
+    const arquivo = new File(['indicador;modalidade'], 'serie.csv', { type: 'text/csv' })
+
+    await expect(importarHistorico(arquivo, 'Planilha 2017-2025')).resolves.toMatchObject({
+      inseridos: 2,
+    })
+
+    const [url, init] = fetchFalso.mock.calls[0] ?? []
+    expect(url).toBe('http://localhost:8080/api/historico/importacao')
+    expect(init?.method).toBe('POST')
+    const corpo = init?.body as FormData
+    expect(corpo.get('fonte')).toBe('Planilha 2017-2025')
+    expect((corpo.get('arquivo') as File).name).toBe('serie.csv')
+  })
+
+  it('erros por linha (422) voltam como resultado', async () => {
+    const erros = [{ linha: 3, mensagem: 'feriado inválido: CARNAVALL (veja /api/referencias)' }]
+    fetchFalso.mockResolvedValue(
+      new Response(JSON.stringify({ linhasLidas: 3, inseridos: 0, atualizados: 0, erros }), {
+        status: 422,
+      }),
+    )
+
+    await expect(importarHistorico(new File([''], 'a.csv'), 'x')).resolves.toMatchObject({ erros })
+  })
+
+  it('outras recusas viram erro', async () => {
+    fetchFalso.mockResolvedValue(
+      new Response(JSON.stringify({ detail: 'Informe a fonte dos dados (até 200 caracteres).' }), {
+        status: 422,
+      }),
+    )
+
+    await expect(importarHistorico(new File([''], 'a.csv'), ' ')).rejects.toMatchObject({
+      status: 422,
+      message: 'Informe a fonte dos dados (até 200 caracteres).',
+    })
   })
 })

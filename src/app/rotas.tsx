@@ -98,6 +98,13 @@ export const rotas: RouteObject[] = [
                     .ReferenciasPage,
                 }),
               },
+              {
+                path: '/cadastros/historico',
+                lazy: async () => ({
+                  Component: (await import('@/features/cadastros/historico/HistoricoPage'))
+                    .HistoricoPage,
+                }),
+              },
             ],
           },
           {

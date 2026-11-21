@@ -21,6 +21,7 @@ export const SUBMENU_CADASTROS: ItemSubmenu[] = [
   { rotulo: 'Parâmetros de cálculo', para: '/cadastros/parametros' },
   { rotulo: 'Hospedagem caseira (RHC)', para: '/cadastros/rhc' },
   { rotulo: 'Referências', para: '/cadastros/referencias' },
+  { rotulo: 'Série histórica', para: '/cadastros/historico' },
 ]
 
 export const ITENS_MENU: ItemMenu[] = [

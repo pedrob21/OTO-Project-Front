@@ -1,0 +1,58 @@
+.importacao {
+  display: grid;
+  gap: var(--espaco-4);
+  margin-top: var(--espaco-4);
+}
+
+.importacao code {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.enviar {
+  align-self: end;
+}
+
+.sucesso {
+  padding: 10px var(--espaco-3);
+  background: var(--cor-publicada-fundo);
+  border-radius: var(--raio-chip);
+  color: var(--cor-positivo);
+  font: var(--tipo-corpo-forte);
+}
+
+.errosDaImportacao {
+  display: grid;
+  gap: var(--espaco-2);
+  padding: var(--espaco-3) var(--espaco-4);
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-negativo);
+  border-radius: var(--raio-chip);
+  color: var(--cor-negativo);
+  font: var(--tipo-subtitulo);
+}
+
+.tituloErros {
+  font: var(--tipo-corpo-forte);
+}
+
+.listaErros {
+  display: grid;
+  gap: 4px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-left: var(--espaco-4);
+  list-style: disc;
+}
+
+.filtros {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--espaco-4);
+  margin-top: var(--espaco-4);
+}
+
+.cartoes {
+  display: grid;
+  gap: var(--vao-cards);
+}

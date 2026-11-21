@@ -12,6 +12,16 @@ describe('ErroRequisicao.daResposta', () => {
     expect(erro.name).toBe('ErroRequisicao')
   })
 
+  it('guarda o corpo que não é Problem Details', async () => {
+    const corpo = { linhasLidas: 2, erros: [{ linha: 2, mensagem: 'valor vazio' }] }
+    const resposta = new Response(JSON.stringify(corpo), { status: 422 })
+
+    const erro = await ErroRequisicao.daResposta(resposta)
+
+    expect(erro.corpo).toEqual(corpo)
+    expect(erro.message).toBe('O servidor não conseguiu atender ao pedido. Tente novamente.')
+  })
+
   it('corpo que não é JSON cai na mensagem padrão', async () => {
     const resposta = new Response('<html>erro</html>', { status: 502 })
 
