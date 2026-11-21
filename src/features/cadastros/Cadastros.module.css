@@ -1,0 +1,144 @@
+/* Cabeçalho igual ao do painel e da nova pesquisa */
+.titulos {
+  margin-bottom: 32.5px;
+  padding-top: 18.5px;
+}
+
+.sobrelinha {
+  padding-left: 2px;
+  color: var(--cor-texto-sobrelinha);
+  font: var(--tipo-sobrelinha);
+  text-transform: uppercase;
+}
+
+.sobrelinha a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.titulo {
+  margin-top: 16px;
+  color: var(--cor-texto-titulo);
+  font: var(--tipo-titulo-pagina);
+}
+
+.introducao {
+  max-width: 72ch;
+  margin-top: 18px;
+  color: var(--cor-texto);
+  font: var(--tipo-subtitulo);
+}
+
+.aviso {
+  margin-bottom: var(--espaco-4);
+  color: var(--cor-positivo);
+  font: var(--tipo-corpo-forte);
+}
+
+.aviso:empty {
+  display: none;
+}
+
+.falha {
+  padding: 10px var(--espaco-3);
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-negativo);
+  border-radius: var(--raio-chip);
+  color: var(--cor-negativo);
+  font: var(--tipo-corpo-forte);
+}
+
+.falhaDaPagina {
+  margin-bottom: var(--espaco-4);
+}
+
+.formulario {
+  display: grid;
+  gap: 18px;
+}
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  align-items: start;
+  gap: var(--espaco-4);
+}
+
+.largo {
+  grid-column: 1 / -1;
+}
+
+fieldset.grupo {
+  display: grid;
+  gap: var(--espaco-4);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legenda {
+  padding: 0;
+  color: var(--cor-texto-forte);
+  font: var(--tipo-titulo-rodada);
+}
+
+.legendaCampo {
+  padding: 0;
+  color: var(--cor-texto-rotulo);
+  font: var(--tipo-rotulo-kpi);
+}
+
+.opcoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--espaco-2) var(--espaco-4);
+  max-height: 220px;
+  overflow-y: auto;
+  padding: var(--espaco-3);
+  border: 1px solid var(--cor-borda-botao);
+  border-radius: var(--raio-controle);
+}
+
+.marcacao {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  color: var(--cor-texto);
+  font: var(--tipo-subtitulo);
+  cursor: pointer;
+}
+
+.marcacao input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--cor-primaria);
+}
+
+.ajuda {
+  color: var(--cor-texto-suave);
+  font: var(--tipo-pequeno);
+}
+
+.erroCampo {
+  color: var(--cor-negativo);
+}
+
+.acoesFormulario {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+  padding-top: var(--espaco-2);
+}
+
+.secundario {
+  color: var(--cor-texto-suave);
+  font: var(--tipo-pequeno);
+}
+
+.situacoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-1);
+}

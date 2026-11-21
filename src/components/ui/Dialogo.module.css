@@ -1,0 +1,67 @@
+.fundo {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: var(--espaco-6);
+  background: rgb(15 37 41 / 45%);
+}
+
+.painel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: min(560px, 100%);
+  max-height: calc(100vh - 2 * var(--espaco-6));
+  background: var(--cor-superficie);
+  border: var(--borda-card);
+  border-radius: var(--raio-card);
+}
+
+.larga {
+  width: min(920px, 100%);
+}
+
+.cabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espaco-4);
+  padding: var(--espaco-6) var(--espaco-6) var(--espaco-4);
+  border-bottom: 1px solid var(--cor-borda-suave);
+}
+
+.textos {
+  display: grid;
+  gap: 6px;
+}
+
+.titulo {
+  color: var(--cor-texto-forte);
+  font: var(--tipo-titulo-card);
+}
+
+.descricao {
+  color: var(--cor-texto);
+  font: var(--tipo-subtitulo);
+}
+
+.fechar {
+  flex: none;
+  padding: var(--espaco-1) var(--espaco-2);
+  border: 0;
+  border-radius: var(--raio-chip);
+  background: none;
+  color: var(--cor-primaria-escura);
+  font: var(--tipo-botao);
+  cursor: pointer;
+}
+
+.fechar:hover {
+  background: var(--cor-destaque);
+}
+
+.corpo {
+  overflow-y: auto;
+  padding: var(--espaco-5) var(--espaco-6) var(--espaco-6);
+}

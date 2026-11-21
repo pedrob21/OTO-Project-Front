@@ -117,12 +117,14 @@ export function formatarDecimal(valor: Valor): string {
     : new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 }).format(valor)
 }
 
-/** Instante da API ("2026-11-12T17:30:00Z") no horário de quem usa: "12/11/2026 às 14:30". */
+const FUSO = 'America/Sao_Paulo'
+
+/** Instante da API ("2026-11-12T17:30:00Z") no horário de Olímpia: "12/11/2026 às 14:30". */
 export function formatarDataHora(instante: string | null | undefined): string {
   const data = instante ? new Date(instante) : null
   if (!data || Number.isNaN(data.getTime())) return VAZIO
-  const dia = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short' }).format(data)
-  const hora = new Intl.DateTimeFormat('pt-BR', { timeStyle: 'short' }).format(data)
+  const dia = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeZone: FUSO }).format(data)
+  const hora = new Intl.DateTimeFormat('pt-BR', { timeStyle: 'short', timeZone: FUSO }).format(data)
   return `${dia} às ${hora}`
 }
 

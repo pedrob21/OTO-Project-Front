@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buscarFeriados, buscarResumo, buscarSerieMensal } from './dashboard'
 import { ErroRequisicao } from './erros'
+import { listarEstabelecimentos } from './estabelecimentos'
 import { buscarParametrosVigentes } from './parametros'
 import { buscarHistoricoDaResposta, enviarResposta, listarRespostasDaCampanha } from './respostas'
 import {
@@ -22,6 +23,15 @@ import {
   prorrogarRodada,
   reabrirRodada,
 } from './rodadas'
+import {
+  alterarUsuario,
+  buscarUsuario,
+  criarUsuario,
+  gerarLinkDeSenha,
+  inativarUsuario,
+  listarUsuarios,
+  reativarUsuario,
+} from './usuarios'
 
 const fetchFalso = vi.fn<typeof fetch>()
 
@@ -252,5 +262,61 @@ describe('rodadas', () => {
       metodo: 'POST',
       corpo: { prazoResposta: '2026-11-30' },
     })
+  })
+})
+
+describe('usuários', () => {
+  it('lista e busca', async () => {
+    await listarUsuarios()
+    await buscarUsuario(7)
+
+    expect(chamada(0)).toMatchObject({ url: 'http://localhost:8080/api/usuarios', metodo: 'GET' })
+    expect(chamada(1).url).toBe('http://localhost:8080/api/usuarios/7')
+  })
+
+  it('cria com POST e altera com PUT', async () => {
+    await criarUsuario({
+      nome: 'Ana',
+      email: 'ana@hotel.com',
+      perfil: 'PARCEIRO',
+      estabelecimentoIds: [12],
+    })
+    await alterarUsuario(7, { nome: 'Ana Souza', perfil: 'VISUALIZADOR', estabelecimentoIds: [] })
+
+    expect(chamada(0)).toMatchObject({
+      url: 'http://localhost:8080/api/usuarios',
+      metodo: 'POST',
+      corpo: { email: 'ana@hotel.com', estabelecimentoIds: [12] },
+    })
+    expect(chamada(1)).toMatchObject({
+      url: 'http://localhost:8080/api/usuarios/7',
+      metodo: 'PUT',
+      corpo: { nome: 'Ana Souza', perfil: 'VISUALIZADOR' },
+    })
+  })
+
+  it('inativa, reativa e gera link sem corpo', async () => {
+    await inativarUsuario(7)
+    await reativarUsuario(7)
+    await gerarLinkDeSenha(7)
+
+    expect(
+      fetchFalso.mock.calls.map((_, indice) => [chamada(indice).metodo, chamada(indice).url]),
+    ).toEqual([
+      ['POST', 'http://localhost:8080/api/usuarios/7/inativar'],
+      ['POST', 'http://localhost:8080/api/usuarios/7/reativar'],
+      ['POST', 'http://localhost:8080/api/usuarios/7/link-de-senha'],
+    ])
+    expect(chamada(0).corpo).toBeUndefined()
+  })
+})
+
+describe('estabelecimentos', () => {
+  it('lista com os filtros', async () => {
+    await listarEstabelecimentos({ tipo: 'HOTEL', ativo: true })
+    await listarEstabelecimentos()
+
+    expect(chamada(0).url).toBe('http://localhost:8080/api/estabelecimentos?tipo=HOTEL&ativo=true')
+    expect(chamada(1).url).toBe('http://localhost:8080/api/estabelecimentos')
   })
 })

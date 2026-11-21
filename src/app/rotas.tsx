@@ -56,6 +56,13 @@ export const rotas: RouteObject[] = [
                     .NovaPesquisaPage,
                 }),
               },
+              {
+                path: '/cadastros/usuarios',
+                lazy: async () => ({
+                  Component: (await import('@/features/cadastros/usuarios/UsuariosPage'))
+                    .UsuariosPage,
+                }),
+              },
             ],
           },
           {

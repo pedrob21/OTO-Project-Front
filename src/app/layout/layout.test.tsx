@@ -16,7 +16,13 @@ function abrir(sobrescrever: Partial<Auth> = {}) {
     ...sobrescrever,
   }
   const router = createMemoryRouter([
-    { element: <AppLayout />, children: [{ path: '/', element: <p>conteúdo</p> }] },
+    {
+      element: <AppLayout />,
+      children: [
+        { path: '/', element: <p>conteúdo</p> },
+        { path: '/cadastros/usuarios', element: <p>tela de usuários</p> },
+      ],
+    },
   ])
   render(
     <AuthContext.Provider value={auth}>
@@ -64,7 +70,7 @@ describe('menu principal', () => {
   it('páginas que ainda não existem aparecem desativadas', () => {
     abrir()
 
-    for (const nome of ['Indicadores', 'Relatórios', 'Cadastros']) {
+    for (const nome of ['Indicadores', 'Relatórios']) {
       expect(screen.getByRole('button', { name: nome })).toBeDisabled()
     }
   })
@@ -74,6 +80,54 @@ describe('menu principal', () => {
 
     expect(screen.queryByRole('button', { name: 'Pesquisas' })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Indicadores' })).toBeInTheDocument()
+  })
+})
+
+describe('submenu Cadastros', () => {
+  const botao = () => screen.getByRole('button', { name: 'Cadastros' })
+
+  it('o ADMIN abre e navega para uma tela', async () => {
+    abrir()
+    expect(botao()).toBeEnabled()
+    expect(botao()).toHaveAttribute('aria-expanded', 'false')
+
+    await userEvent.click(botao())
+
+    expect(botao()).toHaveAttribute('aria-expanded', 'true')
+    await userEvent.click(screen.getByRole('link', { name: 'Usuários' }))
+
+    expect(await screen.findByText('tela de usuários')).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Usuários' })).not.toBeInTheDocument()
+    expect(botao()).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('abre pelo teclado e Esc fecha, devolvendo o foco', async () => {
+    abrir()
+    botao().focus()
+
+    await userEvent.keyboard('{Enter}')
+    await userEvent.tab()
+    expect(screen.getByRole('link', { name: 'Usuários' })).toHaveFocus()
+
+    await userEvent.keyboard('{Escape}')
+
+    expect(screen.queryByRole('link', { name: 'Usuários' })).not.toBeInTheDocument()
+    expect(botao()).toHaveFocus()
+  })
+
+  it('clicar fora fecha', async () => {
+    abrir()
+    await userEvent.click(botao())
+
+    await userEvent.click(screen.getByText('conteúdo'))
+
+    expect(botao()).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it.each(['PARCEIRO', 'VISUALIZADOR'] as const)('%s não vê Cadastros', (perfil) => {
+    abrir({ usuario: { nome: 'Paula', perfil } })
+
+    expect(screen.queryByRole('button', { name: 'Cadastros' })).not.toBeInTheDocument()
   })
 })
 

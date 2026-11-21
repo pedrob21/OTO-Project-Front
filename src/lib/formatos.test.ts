@@ -3,6 +3,7 @@ import {
   capitalizar,
   formatarCompacto,
   formatarData,
+  formatarDataHora,
   formatarInteiro,
   formatarMes,
   formatarMesAno,
@@ -83,6 +84,12 @@ describe('datas', () => {
     expect(formatarData('2026-09-18')).toBe('18/09/2026')
     expect(formatarData('2026-03-01T00:30:00Z')).toBe('01/03/2026')
     expect(formatarData('ontem')).toBe('—')
+  })
+
+  it('data e hora no horário de Olímpia', () => {
+    expect(formatarDataHora('2026-10-28T14:00:00Z')).toBe('28/10/2026 às 11:00')
+    expect(formatarDataHora('ontem')).toBe('—')
+    expect(formatarDataHora(undefined)).toBe('—')
   })
 })
 

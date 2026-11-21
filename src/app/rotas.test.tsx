@@ -256,3 +256,45 @@ describe.each(ROTAS_DAS_PESQUISAS)('rota $caminho', ({ caminho, titulo, perfis }
     expect(router.state.location.pathname).toBe('/login')
   })
 })
+
+// FE-05: as telas de Cadastros são só do ADMIN.
+const ROTAS_CADASTRO = [{ caminho: '/cadastros/usuarios', titulo: 'Usuários' }]
+
+describe.each(ROTAS_CADASTRO)('$caminho', ({ caminho, titulo }) => {
+  function responderComo(perfil: string) {
+    fetchFalso.mockImplementation(async (url) => {
+      const { pathname } = new URL(String(url))
+      return pathname === '/api/me' ? json(200, { ...ADMIN, perfil }) : json(200, [])
+    })
+  }
+
+  it('ADMIN vê a tela', async () => {
+    comSessao()
+    responderComo('ADMIN')
+
+    abrir(caminho)
+
+    expect(
+      await screen.findByRole('heading', { level: 1, name: titulo }, { timeout: 5000 }),
+    ).toBeInTheDocument()
+  })
+
+  it.each(['PARCEIRO', 'VISUALIZADOR'])('%s vê o aviso de sem permissão', async (perfil) => {
+    comSessao()
+    responderComo(perfil)
+
+    abrir(caminho)
+
+    expect(await screen.findByText('Sem permissão para esta página')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { level: 1, name: titulo })).not.toBeInTheDocument()
+    const caminhos = fetchFalso.mock.calls.map(([url]) => new URL(String(url)).pathname)
+    expect(caminhos).toEqual(['/api/me'])
+  })
+
+  it('sem sessão, vai para o login', async () => {
+    const router = abrir(caminho)
+
+    expect(await screen.findByRole('heading', { name: 'Entrar no painel' })).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/login')
+  })
+})

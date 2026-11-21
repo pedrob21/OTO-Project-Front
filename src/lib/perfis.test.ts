@@ -12,7 +12,16 @@ describe('itensDoPerfil', () => {
   })
 
   it('VISUALIZADOR não vê Pesquisas', () => {
-    expect(rotulos('VISUALIZADOR')).toEqual(['Painel', 'Indicadores', 'Relatórios', 'Cadastros'])
+    expect(rotulos('VISUALIZADOR')).toEqual(['Painel', 'Indicadores', 'Relatórios'])
+  })
+
+  it('Cadastros só aparece para o ADMIN, com o submenu', () => {
+    const cadastros = itensDoPerfil('ADMIN').find((item) => item.rotulo === 'Cadastros')
+
+    expect(cadastros?.submenu?.map((item) => item.para)).toEqual(['/cadastros/usuarios'])
+    expect(rotulos('PARCEIRO')).not.toContain('Cadastros')
+    expect(rotulos('VISUALIZADOR')).not.toContain('Cadastros')
+    expect(rotulos(undefined)).not.toContain('Cadastros')
   })
 
   it('Pesquisas leva cada perfil à sua página', () => {

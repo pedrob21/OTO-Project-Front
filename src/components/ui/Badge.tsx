@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import styles from './Badge.module.css'
 
 type BadgeProps = {
-  variante: 'aberta' | 'publicada' | 'faixa'
+  variante: 'aberta' | 'publicada' | 'faixa' | 'inativa'
   icone?: ReactNode
   children: ReactNode
 }
