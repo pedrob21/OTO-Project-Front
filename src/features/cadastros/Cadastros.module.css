@@ -78,12 +78,14 @@ fieldset.grupo {
 }
 
 .legenda {
+  margin-bottom: var(--espaco-3);
   padding: 0;
   color: var(--cor-texto-forte);
   font: var(--tipo-titulo-rodada);
 }
 
 .legendaCampo {
+  margin-bottom: 6px;
   padding: 0;
   color: var(--cor-texto-rotulo);
   font: var(--tipo-rotulo-kpi);
