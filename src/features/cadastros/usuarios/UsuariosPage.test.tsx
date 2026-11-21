@@ -2,7 +2,7 @@ import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { criarApiFalsa, type RotasFalsas } from '@/test/apiFalsa'
-import { abrirTela } from '@/test/telas'
+import { abrirTela, preencherCampo } from '@/test/telas'
 import { UsuariosPage } from './UsuariosPage'
 
 const ADMIN = { id: 1, nome: 'Admin OTO', email: 'admin@oto.test', perfil: 'ADMIN', ativo: true }
@@ -112,8 +112,8 @@ describe('novo usuário', () => {
     const dialogo = await abrirNovo()
     expect(within(dialogo).getByLabelText('Nome')).toHaveFocus()
 
-    await userEvent.type(within(dialogo).getByLabelText('Nome'), '  Rui Alves ')
-    await userEvent.type(within(dialogo).getByLabelText('E-mail'), 'rui@oto.test')
+    await preencherCampo(within(dialogo).getByLabelText('Nome'), '  Rui Alves ')
+    await preencherCampo(within(dialogo).getByLabelText('E-mail'), 'rui@oto.test')
     await userEvent.selectOptions(within(dialogo).getByLabelText('Perfil'), 'VISUALIZADOR')
     await userEvent.click(within(dialogo).getByRole('button', { name: 'Criar usuário' }))
 
@@ -154,8 +154,8 @@ describe('novo usuário', () => {
       },
     })
     const dialogo = await abrirNovo()
-    await userEvent.type(within(dialogo).getByLabelText('Nome'), 'Paulo')
-    await userEvent.type(within(dialogo).getByLabelText('E-mail'), 'paulo@hotel.com')
+    await preencherCampo(within(dialogo).getByLabelText('Nome'), 'Paulo')
+    await preencherCampo(within(dialogo).getByLabelText('E-mail'), 'paulo@hotel.com')
     await userEvent.selectOptions(within(dialogo).getByLabelText('Perfil'), 'PARCEIRO')
 
     await userEvent.click(within(dialogo).getByRole('button', { name: 'Criar usuário' }))
@@ -177,7 +177,7 @@ describe('novo usuário', () => {
 
   it('campos obrigatórios e e-mail inválido não vão para a API', async () => {
     const dialogo = await abrirNovo()
-    await userEvent.type(within(dialogo).getByLabelText('E-mail'), 'ana@')
+    await preencherCampo(within(dialogo).getByLabelText('E-mail'), 'ana@')
 
     await userEvent.click(within(dialogo).getByRole('button', { name: 'Criar usuário' }))
 
@@ -195,8 +195,8 @@ describe('novo usuário', () => {
       },
     })
     const dialogo = await abrirNovo()
-    await userEvent.type(within(dialogo).getByLabelText('Nome'), 'Ana')
-    await userEvent.type(within(dialogo).getByLabelText('E-mail'), 'ana@hotel.com')
+    await preencherCampo(within(dialogo).getByLabelText('Nome'), 'Ana')
+    await preencherCampo(within(dialogo).getByLabelText('E-mail'), 'ana@hotel.com')
     await userEvent.selectOptions(within(dialogo).getByLabelText('Perfil'), 'VISUALIZADOR')
 
     await userEvent.click(within(dialogo).getByRole('button', { name: 'Criar usuário' }))
@@ -219,8 +219,8 @@ describe('novo usuário', () => {
       },
     })
     const dialogo = await abrirNovo()
-    await userEvent.type(within(dialogo).getByLabelText('Nome'), 'Ana')
-    await userEvent.type(within(dialogo).getByLabelText('E-mail'), 'ana@hotel.com')
+    await preencherCampo(within(dialogo).getByLabelText('Nome'), 'Ana')
+    await preencherCampo(within(dialogo).getByLabelText('E-mail'), 'ana@hotel.com')
     await userEvent.selectOptions(within(dialogo).getByLabelText('Perfil'), 'ADMIN')
 
     await userEvent.click(within(dialogo).getByRole('button', { name: 'Criar usuário' }))
@@ -251,8 +251,7 @@ describe('edição', () => {
     expect(within(dialogo).getByLabelText('E-mail')).toBeDisabled()
     expect(within(dialogo).getByRole('checkbox', { name: 'Hotel Exemplo' })).toBeChecked()
 
-    await userEvent.clear(within(dialogo).getByLabelText('Nome'))
-    await userEvent.type(within(dialogo).getByLabelText('Nome'), 'Ana S. Souza')
+    await preencherCampo(within(dialogo).getByLabelText('Nome'), 'Ana S. Souza')
     await userEvent.click(within(dialogo).getByRole('checkbox', { name: 'Pousada Sol (inativo)' }))
     await userEvent.click(within(dialogo).getByRole('button', { name: 'Salvar' }))
 

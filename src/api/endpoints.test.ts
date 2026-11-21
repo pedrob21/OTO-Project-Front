@@ -20,6 +20,7 @@ import {
   excluirParametros,
   listarParametros,
 } from './parametros'
+import { alterarReferencia, criarReferencia, excluirReferencia } from './referencias'
 import { buscarHistoricoDaResposta, enviarResposta, listarRespostasDaCampanha } from './respostas'
 import {
   buscarPrevia,
@@ -194,6 +195,26 @@ describe('parâmetros e RHC', () => {
 
     expect(erro).toBeInstanceOf(ErroRequisicao)
     expect(erro).toMatchObject({ status: 403, message: 'Acesso negado.' })
+  })
+})
+
+describe('referências', () => {
+  it('cria, altera e exclui pelo código de cada recurso', async () => {
+    await criarReferencia('tipos-hospedagem', { nome: 'Chalé', calculaReceita: false })
+    await alterarReferencia('feriados', 'FESTA_JUNINA', {
+      codigo: 'FESTA_JUNINA',
+      nome: 'Festa Junina',
+    })
+    await excluirReferencia('faixas', 'MEDIA')
+
+    expect(
+      fetchFalso.mock.calls.map((_, indice) => [chamada(indice).metodo, chamada(indice).url]),
+    ).toEqual([
+      ['POST', 'http://localhost:8080/api/referencias/tipos-hospedagem'],
+      ['PUT', 'http://localhost:8080/api/referencias/feriados/FESTA_JUNINA'],
+      ['DELETE', 'http://localhost:8080/api/referencias/faixas/MEDIA'],
+    ])
+    expect(chamada(0).corpo).toEqual({ nome: 'Chalé', calculaReceita: false })
   })
 })
 

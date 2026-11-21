@@ -1,8 +1,8 @@
-import { fireEvent, screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { criarApiFalsa, type RotasFalsas } from '@/test/apiFalsa'
-import { abrirTela } from '@/test/telas'
+import { abrirTela, preencherCampo } from '@/test/telas'
 import { RhcPage } from './RhcPage'
 
 const ATUAL = {
@@ -40,12 +40,7 @@ const linha = (data: string) => screen.getByRole('row', { name: new RegExp(data)
 
 async function preencher(dialogo: HTMLElement, valores: Record<string, string>) {
   for (const [rotulo, valor] of Object.entries(valores)) {
-    const campo = within(dialogo).getByLabelText(rotulo)
-    if (campo.getAttribute('type') === 'date') fireEvent.change(campo, { target: { value: valor } })
-    else {
-      await userEvent.clear(campo)
-      await userEvent.type(campo, valor)
-    }
+    await preencherCampo(within(dialogo).getByLabelText(rotulo), valor)
   }
 }
 

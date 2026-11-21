@@ -47,6 +47,24 @@ describe('erroDoCampo', () => {
   })
 })
 
+describe('código e marcação', () => {
+  const codigo: DefCampo = { nome: 'codigo', rotulo: 'Código', tipo: 'codigo', maximo: 20 }
+  const marcacao: DefCampo = { nome: 'receita', rotulo: 'Receita', tipo: 'marcacao' }
+
+  it('código só com letras sem acento, números e _, em maiúsculas', () => {
+    expect(erroDoCampo(codigo, 'area_de_lazer')).toBeUndefined()
+    expect(erroDoCampo(codigo, 'ÁREA')).toBe('Use letras sem acento, números e _.')
+    expect(erroDoCampo(codigo, 'A'.repeat(21))).toBe('Use até 20 caracteres.')
+    expect(valorDoCampo(codigo, ' chale ')).toBe('CHALE')
+  })
+
+  it('marcação vira booleano', () => {
+    expect(valorDoCampo(marcacao, 'true')).toBe(true)
+    expect(valorDoCampo(marcacao, '')).toBe(false)
+    expect(formDosCampos([marcacao], { receita: true })).toEqual({ receita: 'true' })
+  })
+})
+
 describe('valorDoCampo', () => {
   it('vazio vira undefined, números viram número e o CNPJ perde a pontuação', () => {
     expect(valorDoCampo(nome, ' ')).toBeUndefined()

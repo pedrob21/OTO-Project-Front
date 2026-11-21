@@ -1,8 +1,8 @@
-import { fireEvent, screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { criarApiFalsa, type RotasFalsas } from '@/test/apiFalsa'
-import { abrirTela } from '@/test/telas'
+import { abrirTela, preencherCampo } from '@/test/telas'
 import { EstabelecimentosPage } from './EstabelecimentosPage'
 
 const HOTEL = {
@@ -60,12 +60,12 @@ async function abrirNovo() {
 
 async function preencherObrigatorios(dialogo: HTMLElement) {
   const campo = (rotulo: string) => within(dialogo).getByLabelText(rotulo)
-  await userEvent.type(campo('Nome fantasia'), 'Resort Águas')
+  await preencherCampo(campo('Nome fantasia'), 'Resort Águas')
   await userEvent.selectOptions(campo('Tipo de hospedagem'), 'HOTEL')
-  await userEvent.type(campo('UH'), '40')
-  await userEvent.type(campo('UH PCD'), '2')
-  await userEvent.type(campo('Leitos'), '120')
-  await userEvent.type(campo('Máximo de pessoas por UH'), '4')
+  await preencherCampo(campo('UH'), '40')
+  await preencherCampo(campo('UH PCD'), '2')
+  await preencherCampo(campo('Leitos'), '120')
+  await preencherCampo(campo('Máximo de pessoas por UH'), '4')
 }
 
 describe('lista de estabelecimentos', () => {
@@ -123,11 +123,11 @@ describe('novo estabelecimento', () => {
     const dialogo = await abrirNovo()
     expect(within(dialogo).getByLabelText('Nome fantasia')).toHaveFocus()
     await preencherObrigatorios(dialogo)
-    await userEvent.type(within(dialogo).getByLabelText('CNPJ'), '12.345.678/0001-90')
-    await userEvent.type(within(dialogo).getByLabelText('Latitude'), '-20,7376')
-    fireEvent.change(within(dialogo).getByLabelText('Check-in'), { target: { value: '14:00' } })
+    await preencherCampo(within(dialogo).getByLabelText('CNPJ'), '12.345.678/0001-90')
+    await preencherCampo(within(dialogo).getByLabelText('Latitude'), '-20,7376')
+    await preencherCampo(within(dialogo).getByLabelText('Check-in'), '14:00')
     await userEvent.selectOptions(within(dialogo).getByLabelText('Situação'), 'IRREGULAR')
-    await userEvent.type(within(dialogo).getByLabelText('Contato para as pesquisas'), 'Maria')
+    await preencherCampo(within(dialogo).getByLabelText('Contato para as pesquisas'), 'Maria')
 
     await userEvent.click(
       within(dialogo).getByRole('button', { name: 'Cadastrar estabelecimento' }),
@@ -172,9 +172,8 @@ describe('novo estabelecimento', () => {
     expect(within(dialogo).getByLabelText('UH')).toHaveAttribute('aria-invalid', 'true')
 
     await preencherObrigatorios(dialogo)
-    await userEvent.clear(within(dialogo).getByLabelText('UH PCD'))
-    await userEvent.type(within(dialogo).getByLabelText('UH PCD'), '41')
-    await userEvent.type(within(dialogo).getByLabelText('Latitude'), '-20,1234567')
+    await preencherCampo(within(dialogo).getByLabelText('UH PCD'), '41')
+    await preencherCampo(within(dialogo).getByLabelText('Latitude'), '-20,1234567')
     await userEvent.click(
       within(dialogo).getByRole('button', { name: 'Cadastrar estabelecimento' }),
     )
@@ -195,7 +194,7 @@ describe('novo estabelecimento', () => {
     })
     const dialogo = await abrirNovo()
     await preencherObrigatorios(dialogo)
-    await userEvent.type(within(dialogo).getByLabelText('CNPJ'), '12345678000190')
+    await preencherCampo(within(dialogo).getByLabelText('CNPJ'), '12345678000190')
 
     await userEvent.click(
       within(dialogo).getByRole('button', { name: 'Cadastrar estabelecimento' }),

@@ -91,6 +91,13 @@ export const rotas: RouteObject[] = [
                   Component: (await import('@/features/cadastros/rhc/RhcPage')).RhcPage,
                 }),
               },
+              {
+                path: '/cadastros/referencias',
+                lazy: async () => ({
+                  Component: (await import('@/features/cadastros/referencias/ReferenciasPage'))
+                    .ReferenciasPage,
+                }),
+              },
             ],
           },
           {
