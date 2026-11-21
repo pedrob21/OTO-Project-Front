@@ -19,7 +19,7 @@ export function SituacaoRodada({ situacao }: { situacao: Situacao }) {
         </Badge>
       )}
       {(variante === 'rascunho' || variante === 'encerrada') && (
-        <span className={styles.neutra}>{rotulo}</span>
+        <Badge variante="inativa">{rotulo}</Badge>
       )}
       {detalhe && <span className={styles.detalhe}>{detalhe}</span>}
     </span>
