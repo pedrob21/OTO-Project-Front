@@ -1,0 +1,48 @@
+.progresso {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  row-gap: 6px;
+}
+
+.rotulo {
+  color: var(--cor-texto);
+  font: var(--tipo-subtitulo);
+}
+
+.valor {
+  color: var(--cor-texto-forte);
+  font: 700 13.5px/20px var(--fonte-texto);
+}
+
+.barra {
+  --barra-altura: 8px;
+
+  position: relative;
+  grid-column: 1 / -1;
+}
+
+/* Marca do mínimo para publicar sobre a barra */
+.marca {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--cor-texto-forte);
+}
+
+.nota {
+  grid-column: 1 / -1;
+  color: var(--cor-texto-suave);
+  font: var(--tipo-pequeno);
+}
+
+.abaixo {
+  color: var(--cor-negativo);
+  font-weight: 700;
+}
+
+.atingido {
+  color: var(--cor-positivo);
+  font-weight: 700;
+}

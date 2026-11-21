@@ -23,6 +23,13 @@ export const rotas: RouteObject[] = [
                 }),
               },
               {
+                path: '/pesquisas/:id',
+                lazy: async () => ({
+                  Component: (await import('@/features/pesquisas/AcompanhamentoPage'))
+                    .AcompanhamentoPage,
+                }),
+              },
+              {
                 path: '/pesquisas/nova',
                 lazy: async () => ({
                   Component: (await import('@/features/pesquisas/NovaPesquisaPage'))

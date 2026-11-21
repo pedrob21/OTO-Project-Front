@@ -192,10 +192,19 @@ type Perfil = keyof typeof USUARIOS
 /** FE-05: cada rota das pesquisas, nos três perfis e sem sessão. */
 const ROTAS_DAS_PESQUISAS: { caminho: string; titulo: string | RegExp; perfis: Perfil[] }[] = [
   { caminho: '/pesquisas', titulo: 'Pesquisas', perfis: ['ADMIN'] },
+  { caminho: '/pesquisas/2', titulo: 'Consolidada de setembro', perfis: ['ADMIN'] },
 ]
 
 /** O que a API devolve para as telas que precisam de dados para mostrar o título. */
-const CORPOS: Record<string, unknown> = {}
+const CORPOS: Record<string, unknown> = {
+  '/api/rodadas/2': {
+    id: 2,
+    codigo: '002/26',
+    titulo: 'Consolidada de setembro',
+    status: 'ABERTA',
+  },
+  '/api/rodadas/2/acompanhamento': { rodadaId: 2, campanhas: [] },
+}
 
 function apiDoPerfil(perfil: Perfil) {
   fetchFalso.mockImplementation(async (url) => {

@@ -1,4 +1,5 @@
 import { ultimaPublicacao } from '@/features/painel/pesquisas'
+import { formatarData } from '@/lib/formatos'
 import type { Esquemas, StatusRodada } from '@/types/dominio'
 
 export type Situacao = {
@@ -40,4 +41,24 @@ export function situacaoDaRodada(rodada: Esquemas['RodadaResponse']): Situacao {
     }
   }
   return SITUACOES[rodada.status ?? 'RASCUNHO']
+}
+
+/**
+ * Mesma regra da API: o prazo não pode ser anterior à abertura. Na abertura, ela é hoje.
+ * `minimo` é "AAAA-MM-DD", e as datas assim se comparam como texto.
+ */
+export function erroDoPrazo(prazo: string, minimo: string | undefined): string | undefined {
+  if (!prazo) return 'Informe o prazo de resposta.'
+  if (minimo && prazo < minimo) {
+    return `O prazo não pode ser anterior à abertura (${formatarData(minimo)}).`
+  }
+  return undefined
+}
+
+/** Percentual de estabelecimentos que responderam; sem estabelecimentos, null. */
+export function taxaPorEstabelecimentos(
+  campanha: Pick<Esquemas['AcompanhamentoCampanha'], 'qtdMh' | 'qtdRespondentes'>,
+): number | null {
+  const { qtdMh = 0, qtdRespondentes = 0 } = campanha
+  return qtdMh > 0 ? (qtdRespondentes / qtdMh) * 100 : null
 }

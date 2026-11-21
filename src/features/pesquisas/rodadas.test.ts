@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { lerStatus, situacaoDaRodada } from './rodadas'
+import { erroDoPrazo, lerStatus, situacaoDaRodada, taxaPorEstabelecimentos } from './rodadas'
 
 describe('situacaoDaRodada', () => {
   it.each([
@@ -38,5 +38,29 @@ describe('lerStatus', () => {
     expect(lerStatus('ABERTA')).toBe('ABERTA')
     expect(lerStatus('aberta')).toBeUndefined()
     expect(lerStatus(null)).toBeUndefined()
+  })
+})
+
+describe('erroDoPrazo', () => {
+  it('exige o prazo', () => {
+    expect(erroDoPrazo('', '2026-11-16')).toBe('Informe o prazo de resposta.')
+  })
+
+  it('não aceita prazo antes da abertura, como a API', () => {
+    expect(erroDoPrazo('2026-11-15', '2026-11-16')).toBe(
+      'O prazo não pode ser anterior à abertura (16/11/2026).',
+    )
+    expect(erroDoPrazo('2026-11-16', '2026-11-16')).toBeUndefined()
+    expect(erroDoPrazo('2026-11-01', undefined)).toBeUndefined()
+  })
+})
+
+describe('taxaPorEstabelecimentos', () => {
+  it('respondentes sobre o total', () => {
+    expect(taxaPorEstabelecimentos({ qtdMh: 4, qtdRespondentes: 1 })).toBe(25)
+  })
+
+  it('sem estabelecimentos não vira zero', () => {
+    expect(taxaPorEstabelecimentos({ qtdMh: 0, qtdRespondentes: 0 })).toBeNull()
   })
 })

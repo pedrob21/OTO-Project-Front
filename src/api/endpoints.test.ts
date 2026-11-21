@@ -7,9 +7,13 @@ import { buscarRhcVigente } from './rhc'
 import {
   abrirRodada,
   buscarAcompanhamento,
+  buscarRodada,
   criarRodada,
+  encerrarRodada,
   incluirCampanha,
   listarRodadas,
+  prorrogarRodada,
+  reabrirRodada,
 } from './rodadas'
 
 const fetchFalso = vi.fn<typeof fetch>()
@@ -138,6 +142,34 @@ describe('rodadas', () => {
     await listarRodadas('ABERTA')
 
     expect(chamada().url).toBe('http://localhost:8080/api/rodadas?status=ABERTA')
+  })
+
+  it('detalhe de uma rodada', async () => {
+    await buscarRodada(7)
+
+    expect(chamada().url).toBe('http://localhost:8080/api/rodadas/7')
+  })
+
+  it('prorroga, encerra e reabre com POST', async () => {
+    await prorrogarRodada(7, { prazoResposta: '2026-12-05' })
+    await encerrarRodada(7)
+    await reabrirRodada(7, { prazoResposta: '2026-12-20' })
+
+    expect(chamada(0)).toMatchObject({
+      url: 'http://localhost:8080/api/rodadas/7/prorrogar',
+      metodo: 'POST',
+      corpo: { prazoResposta: '2026-12-05' },
+    })
+    expect(chamada(1)).toMatchObject({
+      url: 'http://localhost:8080/api/rodadas/7/encerrar',
+      metodo: 'POST',
+      corpo: undefined,
+    })
+    expect(chamada(2)).toMatchObject({
+      url: 'http://localhost:8080/api/rodadas/7/reabrir',
+      metodo: 'POST',
+      corpo: { prazoResposta: '2026-12-20' },
+    })
   })
 
   it('acompanhamento de uma rodada', async () => {

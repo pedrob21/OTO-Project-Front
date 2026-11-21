@@ -10,6 +10,11 @@ export function listarRodadas(status?: StatusRodada, signal?: AbortSignal) {
 }
 
 /** Só ADMIN. */
+export function buscarRodada(rodadaId: number, signal?: AbortSignal) {
+  return requisicao<Esquemas['RodadaResponse']>(`/api/rodadas/${rodadaId}`, { signal })
+}
+
+/** Só ADMIN. */
 export function buscarAcompanhamento(rodadaId: number, signal?: AbortSignal) {
   return requisicao<Esquemas['AcompanhamentoResponse']>(`/api/rodadas/${rodadaId}/acompanhamento`, {
     signal,
@@ -32,6 +37,29 @@ export function incluirCampanha(rodadaId: number, dados: Esquemas['DadosCampanha
 /** Só ADMIN. Sem `dataAbertura`, a pesquisa abre hoje. */
 export function abrirRodada(rodadaId: number, dados: Esquemas['AberturaRequest']) {
   return requisicao<Esquemas['RodadaResponse']>(`/api/rodadas/${rodadaId}/abrir`, {
+    metodo: 'POST',
+    corpo: dados,
+  })
+}
+
+/** Só ADMIN, e só com a pesquisa aberta. */
+export function prorrogarRodada(rodadaId: number, dados: Esquemas['PrazoRequest']) {
+  return requisicao<Esquemas['RodadaResponse']>(`/api/rodadas/${rodadaId}/prorrogar`, {
+    metodo: 'POST',
+    corpo: dados,
+  })
+}
+
+/** Só ADMIN, e só com a pesquisa aberta. */
+export function encerrarRodada(rodadaId: number) {
+  return requisicao<Esquemas['RodadaResponse']>(`/api/rodadas/${rodadaId}/encerrar`, {
+    metodo: 'POST',
+  })
+}
+
+/** Só ADMIN, com a pesquisa encerrada e nenhuma campanha publicada. */
+export function reabrirRodada(rodadaId: number, dados: Esquemas['PrazoRequest']) {
+  return requisicao<Esquemas['RodadaResponse']>(`/api/rodadas/${rodadaId}/reabrir`, {
     metodo: 'POST',
     corpo: dados,
   })
