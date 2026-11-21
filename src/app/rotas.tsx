@@ -105,6 +105,13 @@ export const rotas: RouteObject[] = [
                 }),
               },
               {
+                path: '/cadastros/inventario',
+                lazy: async () => ({
+                  Component: (await import('@/features/cadastros/inventario/InventarioPage'))
+                    .InventarioPage,
+                }),
+              },
+              {
                 path: '/cadastros/historico',
                 lazy: async () => ({
                   Component: (await import('@/features/cadastros/historico/HistoricoPage'))

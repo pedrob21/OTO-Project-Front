@@ -8,19 +8,11 @@ import { Carregando } from '@/components/ui/Carregando'
 import { ErroApi } from '@/components/ui/ErroApi'
 import { EstadoVazio } from '@/components/ui/EstadoVazio'
 import { formatarDataHora } from '@/lib/formatos'
-import type { Esquemas } from '@/types/dominio'
 import { useMutacaoCadastro } from '../cadastros/useMutacaoCadastro'
+import { CATEGORIAS } from './categorias'
 import styles from './EditorDeInventario.module.css'
 
-type Grupo = Esquemas['CatalogoGrupo']
-type Categoria = NonNullable<Grupo['categoria']>
 type Marcados = Record<number, string>
-
-const CATEGORIAS: { codigo: Categoria; titulo: string }[] = [
-  { codigo: 'SERVICOS_EQUIPAMENTOS', titulo: 'Serviços e equipamentos' },
-  { codigo: 'ACESSIBILIDADE', titulo: 'Acessibilidade' },
-  { codigo: 'SUSTENTABILIDADE', titulo: 'Sustentabilidade' },
-]
 
 type EditorDeInventarioProps = {
   estabelecimentoId: number

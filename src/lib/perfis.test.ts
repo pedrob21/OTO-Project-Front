@@ -24,6 +24,7 @@ describe('itensDoPerfil', () => {
       '/cadastros/parametros',
       '/cadastros/rhc',
       '/cadastros/referencias',
+      '/cadastros/inventario',
       '/cadastros/historico',
     ])
     expect(rotulos('PARCEIRO')).not.toContain('Cadastros')
