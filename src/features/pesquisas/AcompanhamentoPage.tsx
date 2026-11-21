@@ -75,9 +75,12 @@ function Contato({ estabelecimento }: { estabelecimento: Esquemas['SituacaoEstab
 function Campanha({
   campanha,
   tipos,
+  rotaDaResposta,
 }: {
   campanha: Esquemas['AcompanhamentoCampanha']
   tipos: Esquemas['TipoRef'][]
+  /** sem ela, a API não aceita resposta (rascunho ou campanha publicada) */
+  rotaDaResposta?: (estabelecimentoId: number | undefined) => string
 }) {
   const { qtdMh, qtdRespondentes = 0, estabelecimentos = [] } = campanha
   const porEstabelecimentos = taxaPorEstabelecimentos(campanha)
@@ -117,6 +120,11 @@ function Campanha({
               </th>
               <th scope="col">Situação</th>
               <th scope="col">Contato</th>
+              {rotaDaResposta && (
+                <th scope="col">
+                  <span className={comum.oculto}>Ação</span>
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -131,6 +139,17 @@ function Campanha({
                 <td>
                   <Contato estabelecimento={estabelecimento} />
                 </td>
+                {rotaDaResposta && (
+                  <td>
+                    <Link
+                      to={rotaDaResposta(estabelecimento.estabelecimentoId)}
+                      className={comum.link}
+                      aria-label={`${estabelecimento.respondeu ? 'Editar resposta' : 'Lançar resposta'} de ${estabelecimento.nomeFantasia}`}
+                    >
+                      {estabelecimento.respondeu ? 'Editar resposta' : 'Lançar resposta'}
+                    </Link>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
@@ -221,6 +240,15 @@ export function AcompanhamentoPage({ hoje: hojeFixo }: AcompanhamentoPageProps) 
             key={campanha.campanhaId}
             campanha={campanha}
             tipos={referencias.data?.tiposHospedagem ?? []}
+            rotaDaResposta={
+              status === 'RASCUNHO' ||
+              rodada.data?.campanhas?.some(
+                (item) => item.id === campanha.campanhaId && item.publicada,
+              )
+                ? undefined
+                : (estabelecimentoId) =>
+                    `/pesquisas/${id}/campanhas/${campanha.campanhaId}/respostas/${estabelecimentoId}`
+            }
           />
         ))}
       </div>

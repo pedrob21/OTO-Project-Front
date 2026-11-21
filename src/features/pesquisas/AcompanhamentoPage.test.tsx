@@ -189,6 +189,28 @@ describe('AcompanhamentoPage, dados', () => {
   })
 })
 
+describe('AcompanhamentoPage, lançar resposta', () => {
+  it('leva ao lançamento de um pendente e à edição de quem respondeu', async () => {
+    abrir()
+
+    await screen.findByRole('table')
+    expect(
+      linha('Hotel Thermas').getByRole('link', { name: 'Lançar resposta de Hotel Thermas' }),
+    ).toHaveAttribute('href', '/pesquisas/5/campanhas/50/respostas/7')
+    expect(
+      linha('Pousada do Sol').getByRole('link', { name: 'Editar resposta de Pousada do Sol' }),
+    ).toBeInTheDocument()
+  })
+
+  it('campanha publicada não oferece lançamento', async () => {
+    comRodada({ status: 'ENCERRADA', campanhas: [{ id: 50, publicada: true }] })
+    abrir()
+
+    await screen.findByRole('table')
+    expect(screen.queryByRole('link', { name: /Lançar resposta/ })).not.toBeInTheDocument()
+  })
+})
+
 describe('AcompanhamentoPage, ações por situação', () => {
   it('aberta: prorrogar e encerrar', async () => {
     abrir()

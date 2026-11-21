@@ -193,6 +193,12 @@ type Perfil = keyof typeof USUARIOS
 const ROTAS_DAS_PESQUISAS: { caminho: string; titulo: string | RegExp; perfis: Perfil[] }[] = [
   { caminho: '/pesquisas', titulo: 'Pesquisas', perfis: ['ADMIN'] },
   { caminho: '/pesquisas/2', titulo: 'Consolidada de setembro', perfis: ['ADMIN'] },
+  {
+    caminho: '/pesquisas/2/campanhas/21/respostas/7',
+    titulo: 'Lançar resposta',
+    perfis: ['ADMIN'],
+  },
+  { caminho: '/pesquisas/responder', titulo: 'Responder pesquisa', perfis: ['PARCEIRO'] },
 ]
 
 /** O que a API devolve para as telas que precisam de dados para mostrar o título. */

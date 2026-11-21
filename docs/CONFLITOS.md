@@ -9,11 +9,11 @@ fazer em cada uma no merge.
 
 | Arquivo | O que esta branch muda | Como resolver |
 |---|---|---|
-| `src/app/rotas.tsx` | Rotas `/pesquisas` e `/pesquisas/:id` dentro do grupo `RequirePerfil perfis={['ADMIN']}` | Manter as rotas das três branches. Cada uma inclui entradas novas; não há rota repetida |
+| `src/app/rotas.tsx` | Rotas `/pesquisas`, `/pesquisas/:id` e `/pesquisas/:id/campanhas/:campanhaId/respostas/:estabelecimentoId` no grupo do ADMIN, e um grupo novo `RequirePerfil perfis={['PARCEIRO']}` com `/pesquisas/responder` | Manter as rotas das três branches. Cada uma inclui entradas novas; não há rota repetida. Se outra branch também criar um grupo só do PARCEIRO, juntar os dois |
 | `src/app/rotas.test.tsx` | Bloco no fim do arquivo, `ROTAS_DAS_PESQUISAS`, que confere cada rota nos três perfis e sem sessão | Manter os blocos das três. Se outra branch criar uma tabela parecida, juntar numa só |
-| `src/lib/perfis.ts` e `perfis.test.ts` | Item "Pesquisas" aponta para `/pesquisas` | Manter a linha desta branch no item "Pesquisas" e a da `feat/cadastros` no item "Cadastros" |
-| `src/app/layout/layout.test.tsx` | O link "Pesquisas" do ADMIN agora vai para `/pesquisas` | Ficar com a versão desta branch nesse teste |
-| `src/api/rodadas.ts` e `src/api/endpoints.test.ts` | `buscarRodada`, `prorrogarRodada`, `encerrarRodada` e `reabrirRodada`, com os testes | Só acréscimos: manter as funções e os testes de todas as branches |
+| `src/lib/perfis.ts` e `perfis.test.ts` | Campo novo `paraPorPerfil` em `ItemMenu` (destino próprio de um perfil) e item "Pesquisas" com `para: '/pesquisas'` e `paraPorPerfil: { PARCEIRO: '/pesquisas/responder' }`, sem `perfisDaPagina`. `itensDoPerfil` passou a resolver `paraPorPerfil` | Manter o item "Pesquisas" e o `paraPorPerfil` desta branch, e o item "Cadastros" (com o submenu) da `feat/cadastros`. Se a `feat/cadastros` mudou o `map` de `itensDoPerfil`, juntar as duas mudanças: o submenu dela e a troca de destino por perfil daqui |
+| `src/app/layout/layout.test.tsx` (testes do `NavMenu`) | "Pesquisas" vai para `/pesquisas` no ADMIN e para `/pesquisas/responder` no PARCEIRO, que deixou de ver o item desativado | Ficar com a versão desta branch nesses dois testes e manter os da `feat/cadastros` sobre "Cadastros". O `NavMenu.tsx` não mudou aqui |
+| `src/api/rodadas.ts`, `src/api/respostas.ts` e `src/api/endpoints.test.ts` | `buscarRodada`, `prorrogarRodada`, `encerrarRodada`, `reabrirRodada`, `enviarResposta`, `listarRespostasDaCampanha` e `buscarHistoricoDaResposta`, com os testes | Só acréscimos: manter as funções e os testes de todas as branches |
 | `README.md` | "Funcionalidades" e "Próximas tasks" | Juntar as listas à mão |
 
 ## Peças duplicadas
@@ -22,6 +22,8 @@ fazer em cada uma no merge.
 |---|---|---|
 | `src/features/pesquisas/comum.module.css` (`.tabela`, `.botaoLink`, `.confirmacao`) | `Tabela` e `Dialogo` em `src/components/ui` (`feat/cadastros`) | Trocar as tabelas e a confirmação daqui pelos componentes de `ui` quando cobrirem o caso, e apagar as classes que sobrarem |
 | Confirmação de encerramento em `src/features/pesquisas/components/AcoesDaRodada.tsx` (bloco na própria página, sem `window.confirm`) | `Dialogo` em `src/components/ui` (`feat/cadastros`) | Pode continuar como está, ou passar a usar o `Dialogo`. Se trocar, manter o foco no diálogo ao abrir e de volta no botão "Encerrar pesquisa" ao fechar |
+| `lerNumeroDecimal` e `decimalParaTexto` em `src/features/pesquisas/decimal.ts` (+ `decimal.test.ts`). Lê "80,5" e "80.5" como 80.5, recusa mais de duas casas e devolve `{ tipo: 'vazio' \| 'numero' \| 'invalido' }` | `lerDecimal` em `src/lib` (`feat/senha-csv-metodologia`) e, talvez, um leitor de decimal na `feat/cadastros` | Ficar com o `lerDecimal` de `src/lib`. Trocar as chamadas em `src/features/pesquisas/resposta.ts` (adaptar o retorno: o daqui separa campo vazio de inválido, e a diária é opcional), levar os casos de `decimal.test.ts` que faltarem para o teste dele e apagar `decimal.ts`. Manter `decimalParaTexto` se o `src/lib` não tiver equivalente |
+| `formatarDiaria` em `src/features/pesquisas/resposta.ts` ("R$ 410,50", com centavos) | Nenhuma | Se `formatos.ts` ganhar moeda com centavos, usar ela |
 | `src/features/pesquisas/components/SituacaoRodada.tsx` (selo neutro de rascunho e encerrada) | Nenhuma | Se o `Badge` ganhar uma variante neutra, usar ela e apagar o CSS local |
 
 ## Dependência do backend

@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buscarFeriados, buscarResumo, buscarSerieMensal } from './dashboard'
 import { ErroRequisicao } from './erros'
 import { buscarParametrosVigentes } from './parametros'
+import { buscarHistoricoDaResposta, enviarResposta, listarRespostasDaCampanha } from './respostas'
 import { buscarResultado, listarPublicadas } from './resultados'
 import { buscarRhcVigente } from './rhc'
 import {
@@ -134,6 +135,26 @@ describe('resultados', () => {
     await buscarResultado(42)
 
     expect(chamada().url).toBe('http://localhost:8080/api/campanhas/42/resultado')
+  })
+})
+
+describe('respostas', () => {
+  it('envia a resposta com PUT', async () => {
+    await enviarResposta(20, 12, { taxaOcupacao: 72.5, diariaMedia: 410 })
+
+    expect(chamada()).toMatchObject({
+      url: 'http://localhost:8080/api/campanhas/20/respostas/12',
+      metodo: 'PUT',
+      corpo: { taxaOcupacao: 72.5, diariaMedia: 410 },
+    })
+  })
+
+  it('respostas da campanha e histórico de uma resposta', async () => {
+    await listarRespostasDaCampanha(20)
+    await buscarHistoricoDaResposta(301)
+
+    expect(chamada(0).url).toBe('http://localhost:8080/api/campanhas/20/respostas')
+    expect(chamada(1).url).toBe('http://localhost:8080/api/respostas/301/historico')
   })
 })
 

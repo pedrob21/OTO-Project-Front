@@ -23,7 +23,14 @@ export function listarMinhasRespostas(signal?: AbortSignal) {
   return requisicao<Esquemas['MinhaRespostaResponse'][]>('/api/respostas/minhas', { signal })
 }
 
-/** ADMIN e PARCEIRO. Da versão mais nova para a mais antiga. */
+/** Só ADMIN. Dado individual de cada estabelecimento. */
+export function listarRespostasDaCampanha(campanhaId: number, signal?: AbortSignal) {
+  return requisicao<Esquemas['RespostaResponse'][]>(`/api/campanhas/${campanhaId}/respostas`, {
+    signal,
+  })
+}
+
+/** ADMIN e o PARCEIRO dono do estabelecimento. Da versão mais nova para a mais antiga. */
 export function buscarHistoricoDaResposta(respostaId: number, signal?: AbortSignal) {
   return requisicao<Esquemas['HistoricoRespostaResponse'][]>(
     `/api/respostas/${respostaId}/historico`,

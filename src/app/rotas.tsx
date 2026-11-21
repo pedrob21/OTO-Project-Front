@@ -30,6 +30,13 @@ export const rotas: RouteObject[] = [
                 }),
               },
               {
+                path: '/pesquisas/:id/campanhas/:campanhaId/respostas/:estabelecimentoId',
+                lazy: async () => ({
+                  Component: (await import('@/features/pesquisas/LancarRespostaPage'))
+                    .LancarRespostaPage,
+                }),
+              },
+              {
                 path: '/pesquisas/nova',
                 lazy: async () => ({
                   Component: (await import('@/features/pesquisas/NovaPesquisaPage'))
