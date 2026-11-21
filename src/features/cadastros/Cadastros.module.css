@@ -142,3 +142,9 @@ fieldset.grupo {
   flex-wrap: wrap;
   gap: var(--espaco-1);
 }
+
+.resumo {
+  margin-bottom: var(--espaco-4);
+  color: var(--cor-texto);
+  font: var(--tipo-subtitulo);
+}

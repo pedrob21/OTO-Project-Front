@@ -57,7 +57,7 @@ async function abrirNova() {
   abrir()
   await screen.findByRole('table')
   await userEvent.click(screen.getByRole('button', { name: 'Nova vigência' }))
-  return screen.getByRole('dialog', { name: 'Nova vigência: parâmetros' })
+  return screen.getByRole('dialog', { name: 'Nova vigência: Parâmetros' })
 }
 
 describe('lista de parâmetros', () => {
@@ -90,7 +90,7 @@ describe('lista de parâmetros', () => {
     abrir()
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Não foi possível carregar vigências dos parâmetros.',
+      'Não foi possível carregar as vigências.',
     )
     await userEvent.click(screen.getByRole('button', { name: 'Tentar novamente' }))
 

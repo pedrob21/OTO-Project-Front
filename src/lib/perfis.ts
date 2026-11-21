@@ -19,6 +19,7 @@ export const SUBMENU_CADASTROS: ItemSubmenu[] = [
   { rotulo: 'Usuários', para: '/cadastros/usuarios' },
   { rotulo: 'Estabelecimentos', para: '/cadastros/estabelecimentos' },
   { rotulo: 'Parâmetros de cálculo', para: '/cadastros/parametros' },
+  { rotulo: 'Hospedagem caseira (RHC)', para: '/cadastros/rhc' },
 ]
 
 export const ITENS_MENU: ItemMenu[] = [

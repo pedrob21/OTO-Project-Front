@@ -85,6 +85,12 @@ export const rotas: RouteObject[] = [
                     .ParametrosPage,
                 }),
               },
+              {
+                path: '/cadastros/rhc',
+                lazy: async () => ({
+                  Component: (await import('@/features/cadastros/rhc/RhcPage')).RhcPage,
+                }),
+              },
             ],
           },
           {

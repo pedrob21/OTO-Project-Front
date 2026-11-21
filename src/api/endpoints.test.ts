@@ -28,7 +28,7 @@ import {
   listarPublicadas,
   publicarCampanha,
 } from './resultados'
-import { buscarRhcVigente } from './rhc'
+import { buscarRhcVigente, corrigirRhc, excluirRhc, listarRhc, registrarRhc } from './rhc'
 import {
   abrirRodada,
   buscarAcompanhamento,
@@ -159,6 +159,30 @@ describe('parâmetros e RHC', () => {
     await buscarRhcVigente('2026-01-01')
 
     expect(chamada().url).toBe('http://localhost:8080/api/rhc/vigente?data=2026-01-01')
+  })
+
+  it('RHC: lista, registra, corrige e exclui', async () => {
+    const rhc = {
+      vigenteDesde: '2026-01-01',
+      qtdRegistros: 310,
+      qtdUh: 420,
+      qtdLeitos: 1300,
+      maxLeitosPorUh: 5,
+    }
+    await listarRhc()
+    await registrarRhc(rhc)
+    await corrigirRhc(4, rhc)
+    await excluirRhc(4)
+
+    expect(
+      fetchFalso.mock.calls.map((_, indice) => [chamada(indice).metodo, chamada(indice).url]),
+    ).toEqual([
+      ['GET', 'http://localhost:8080/api/rhc'],
+      ['POST', 'http://localhost:8080/api/rhc'],
+      ['PUT', 'http://localhost:8080/api/rhc/4'],
+      ['DELETE', 'http://localhost:8080/api/rhc/4'],
+    ])
+    expect(chamada(2).corpo).toEqual(rhc)
   })
 
   it('PARCEIRO recebe 403 no RHC', async () => {

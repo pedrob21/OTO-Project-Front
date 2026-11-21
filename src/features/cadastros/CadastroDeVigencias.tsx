@@ -124,7 +124,7 @@ export function CadastroDeVigencias<T extends Vigencia, TPedido>({
           <Carregando />
         ) : lista.isError ? (
           <ErroApi
-            mensagem={`Não foi possível carregar ${titulo.toLowerCase()}.`}
+            mensagem="Não foi possível carregar as vigências."
             detalhe={lista.error.message}
             aoTentarNovamente={() => void lista.refetch()}
           />
@@ -161,7 +161,7 @@ export function CadastroDeVigencias<T extends Vigencia, TPedido>({
         <Dialogo
           titulo={
             edicao.tipo === 'nova'
-              ? `Nova vigência: ${nome.texto.toLowerCase()}`
+              ? `Nova vigência: ${nome.texto}`
               : `Corrigir a vigência de ${formatarData(edicao.item.vigenteDesde)}`
           }
           descricao={
