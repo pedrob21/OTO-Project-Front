@@ -4,18 +4,23 @@ import type { OpcaoSelect } from '@/components/ui/Select'
 
 export type NomeFiltro = 'campanha' | 'comparar' | 'tipo'
 
+/** Valor ausente ou que não existe mais nas opções cai na primeira opção. */
+export function valorDoFiltro(
+  busca: URLSearchParams,
+  nome: NomeFiltro,
+  opcoes: OpcaoSelect[],
+): string {
+  const naUrl = busca.get(nome)
+  const existe = opcoes.some((opcao) => opcao.valor === naUrl)
+  return (existe ? naUrl : opcoes[0]?.valor) ?? ''
+}
+
 /**
  * Filtros guardados na URL, para o link do painel poder ser compartilhado.
  * Valor ausente ou que não existe mais nas opções cai na primeira opção.
  */
 export function usePainelFiltros(opcoes: Record<NomeFiltro, OpcaoSelect[]>) {
   const [busca, setBusca] = useSearchParams()
-
-  function valorDe(nome: NomeFiltro): string {
-    const naUrl = busca.get(nome)
-    const existe = opcoes[nome].some((opcao) => opcao.valor === naUrl)
-    return (existe ? naUrl : opcoes[nome][0]?.valor) ?? ''
-  }
 
   // replace: trocar filtro não deve encher o botão Voltar do navegador
   const definir = useCallback(
@@ -33,9 +38,9 @@ export function usePainelFiltros(opcoes: Record<NomeFiltro, OpcaoSelect[]>) {
   )
 
   return {
-    campanha: valorDe('campanha'),
-    comparar: valorDe('comparar'),
-    tipo: valorDe('tipo'),
+    campanha: valorDoFiltro(busca, 'campanha', opcoes.campanha),
+    comparar: valorDoFiltro(busca, 'comparar', opcoes.comparar),
+    tipo: valorDoFiltro(busca, 'tipo', opcoes.tipo),
     definir,
   }
 }
