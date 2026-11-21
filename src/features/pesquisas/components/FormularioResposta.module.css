@@ -1,0 +1,48 @@
+.formulario {
+  display: grid;
+  gap: var(--espaco-4);
+  margin-top: 20px;
+}
+
+.ultima {
+  display: grid;
+  gap: 4px;
+  padding: var(--espaco-4);
+  background: var(--cor-superficie-suave);
+  border: 1px solid var(--cor-borda-suave);
+  border-radius: var(--raio-interno);
+  color: var(--cor-texto);
+  font: var(--tipo-corpo);
+}
+
+.historico {
+  margin-top: var(--espaco-2);
+}
+
+.historico summary {
+  color: var(--cor-primaria-escura);
+  font: var(--tipo-corpo-forte);
+  cursor: pointer;
+}
+
+.bloqueio {
+  color: var(--cor-aberta-texto);
+  font: var(--tipo-corpo-forte);
+}
+
+fieldset.campos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 320px));
+  align-items: start;
+  gap: var(--espaco-4) 20px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+@media (max-width: 720px) {
+  fieldset.campos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

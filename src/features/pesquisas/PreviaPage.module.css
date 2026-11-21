@@ -1,0 +1,22 @@
+.publicacao {
+  display: grid;
+  gap: var(--espaco-4);
+  max-width: 720px;
+  margin-top: 20px;
+}
+
+.respondentes {
+  color: var(--cor-texto);
+  font: var(--tipo-subtitulo);
+}
+
+.avisos {
+  padding: var(--espaco-3);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-chip);
+  color: var(--cor-texto);
+}
+
+.tituloAvisos {
+  font: var(--tipo-corpo-forte);
+}

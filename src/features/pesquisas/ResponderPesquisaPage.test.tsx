@@ -257,6 +257,47 @@ describe('ResponderPesquisaPage', () => {
     )
   })
 
+  it('FE-06: com a pesquisa fechada, o que foi digitado continua nos campos', async () => {
+    rotas['PUT /api/campanhas/21/respostas/7'] = {
+      status: 422,
+      corpo: { detail: 'A pesquisa 002/26 não está aberta para respostas.' },
+    }
+    abrir()
+    const pousada = await screen.findByRole('listitem', { name: 'Pousada do Sol' })
+
+    await userEvent.type(within(pousada).getByLabelText('Taxa de ocupação (%)'), '68,5')
+    await userEvent.type(within(pousada).getByLabelText(/Diária média/), '380,90')
+    await userEvent.click(within(pousada).getByRole('button', { name: 'Enviar resposta' }))
+
+    await within(pousada).findByRole('alert')
+    expect(within(pousada).getByLabelText('Taxa de ocupação (%)')).toHaveValue('68,5')
+    expect(within(pousada).getByLabelText(/Diária média/)).toHaveValue('380,90')
+  })
+
+  it('erro de campo da API aparece no campo', async () => {
+    rotas['PUT /api/campanhas/21/respostas/7'] = {
+      status: 400,
+      corpo: { detail: 'Dados inválidos.', campos: { taxaOcupacao: 'deve ser no máximo 100' } },
+    }
+    abrir()
+    const pousada = await screen.findByRole('listitem', { name: 'Pousada do Sol' })
+
+    await userEvent.type(within(pousada).getByLabelText('Taxa de ocupação (%)'), '50')
+    await userEvent.click(within(pousada).getByRole('button', { name: 'Enviar resposta' }))
+
+    expect(await within(pousada).findByText(/deve ser no máximo 100/)).toBeInTheDocument()
+  })
+
+  it('erro ao carregar as pesquisas abertas', async () => {
+    rotas['GET /api/respostas/pendencias'] = {
+      status: 500,
+      corpo: { detail: 'Falha no servidor.' },
+    }
+    abrir()
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument()
+  })
+
   it('lista só as respostas de pesquisas encerradas, com a taxa da cidade', async () => {
     abrir()
 

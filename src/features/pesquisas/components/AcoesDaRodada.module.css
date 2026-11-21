@@ -1,0 +1,14 @@
+.acoes {
+  display: grid;
+  gap: var(--espaco-4);
+  margin-top: 20px;
+}
+
+.campoPrazo {
+  width: 220px;
+}
+
+.motivo {
+  color: var(--cor-texto-suave);
+  font: var(--tipo-corpo);
+}

@@ -59,11 +59,19 @@ export function rodadaAbertaAtual(
     .toSorted((a, b) => (a.prazoResposta ?? '9999').localeCompare(b.prazoResposta ?? '9999'))[0]
 }
 
+/** A publicação mais recente entre as campanhas da rodada; sem campanha publicada, undefined. */
+export function ultimaPublicacao(rodada: Esquemas['RodadaResponse']): string | undefined {
+  return (rodada.campanhas ?? [])
+    .flatMap(({ publicadaEm }) => publicadaEm ?? [])
+    .sort()
+    .at(-1)
+}
+
 function ultimasPublicadas(rodadas: Esquemas['RodadaResponse'][], limite: number) {
   return rodadas
-    .flatMap(({ id, codigo, titulo, campanhas = [] }) => {
-      const datas = campanhas.flatMap(({ publicadaEm }) => publicadaEm ?? [])
-      const publicadaEm = datas.sort().at(-1)
+    .flatMap((rodada) => {
+      const { id, codigo, titulo } = rodada
+      const publicadaEm = ultimaPublicacao(rodada)
       return publicadaEm ? [{ id, codigo, titulo, publicadaEm }] : []
     })
     .sort((a, b) => b.publicadaEm.localeCompare(a.publicadaEm))

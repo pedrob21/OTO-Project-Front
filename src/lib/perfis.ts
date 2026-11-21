@@ -16,7 +16,7 @@ export const ITENS_MENU: ItemMenu[] = [
   {
     rotulo: 'Pesquisas',
     perfis: ['ADMIN', 'PARCEIRO'],
-    paginaPorPerfil: { ADMIN: '/pesquisas/nova', PARCEIRO: '/pesquisas/responder' },
+    paginaPorPerfil: { ADMIN: '/pesquisas', PARCEIRO: '/pesquisas/responder' },
     temSubmenu: true,
   },
   { rotulo: 'Indicadores', temSubmenu: true },

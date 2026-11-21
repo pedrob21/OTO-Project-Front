@@ -1,0 +1,8 @@
+.filtro {
+  width: 200px;
+}
+
+.campanhas {
+  display: grid;
+  gap: var(--espaco-2);
+}

@@ -1,0 +1,32 @@
+.indicadores {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--espaco-3);
+  margin-top: 20px;
+}
+
+.indicador {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: var(--espaco-4);
+  background: var(--cor-superficie-suave);
+  border: 1px solid var(--cor-borda-suave);
+  border-radius: var(--raio-interno);
+}
+
+.rotulo {
+  color: var(--cor-texto-rotulo);
+  font: var(--tipo-rotulo-kpi);
+}
+
+.valor {
+  color: var(--cor-texto-forte);
+  font: var(--tipo-numero-kpi);
+  font-variant-numeric: tabular-nums;
+}
+
+.detalhe {
+  color: var(--cor-texto-suave);
+  font: var(--tipo-pequeno);
+}

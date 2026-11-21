@@ -14,8 +14,41 @@ export const rotas: RouteObject[] = [
         children: [
           { path: '/', element: <PainelPage /> },
           {
+            path: '/resultados/:campanhaId',
+            lazy: async () => ({
+              Component: (await import('@/features/resultados/ResultadoCampanhaPage'))
+                .ResultadoCampanhaPage,
+            }),
+          },
+          {
             element: <RequirePerfil perfis={['ADMIN']} />,
             children: [
+              {
+                path: '/pesquisas',
+                lazy: async () => ({
+                  Component: (await import('@/features/pesquisas/RodadasPage')).RodadasPage,
+                }),
+              },
+              {
+                path: '/pesquisas/:id',
+                lazy: async () => ({
+                  Component: (await import('@/features/pesquisas/AcompanhamentoPage'))
+                    .AcompanhamentoPage,
+                }),
+              },
+              {
+                path: '/pesquisas/:id/campanhas/:campanhaId/respostas/:estabelecimentoId',
+                lazy: async () => ({
+                  Component: (await import('@/features/pesquisas/LancarRespostaPage'))
+                    .LancarRespostaPage,
+                }),
+              },
+              {
+                path: '/pesquisas/:id/campanhas/:campanhaId/previa',
+                lazy: async () => ({
+                  Component: (await import('@/features/pesquisas/PreviaPage')).PreviaPage,
+                }),
+              },
               {
                 path: '/pesquisas/nova',
                 lazy: async () => ({

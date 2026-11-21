@@ -49,10 +49,7 @@ describe('menu principal', () => {
   it('Pesquisas é link para o ADMIN', () => {
     abrir()
 
-    expect(screen.getByRole('link', { name: 'Pesquisas' })).toHaveAttribute(
-      'href',
-      '/pesquisas/nova',
-    )
+    expect(screen.getByRole('link', { name: 'Pesquisas' })).toHaveAttribute('href', '/pesquisas')
   })
 
   it('Pesquisas leva o PARCEIRO à tela de responder', () => {

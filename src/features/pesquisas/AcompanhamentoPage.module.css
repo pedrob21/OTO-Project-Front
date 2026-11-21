@@ -1,0 +1,39 @@
+.situacao {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-3);
+  margin-top: 18px;
+}
+
+.prazo {
+  color: var(--cor-texto-suave);
+  font: var(--tipo-subtitulo);
+}
+
+.progressos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espaco-4) var(--espaco-6);
+  margin-top: 20px;
+}
+
+@media (max-width: 900px) {
+  .progressos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.respondeu {
+  color: var(--cor-positivo);
+  font: var(--tipo-corpo-forte);
+}
+
+.pendente {
+  color: var(--cor-aberta-texto);
+  font: var(--tipo-corpo-forte);
+}
+
+.linhaContato {
+  display: block;
+}

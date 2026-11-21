@@ -2,14 +2,25 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buscarFeriados, buscarResumo, buscarSerieMensal } from './dashboard'
 import { ErroRequisicao } from './erros'
 import { buscarParametrosVigentes } from './parametros'
-import { buscarResultado, listarPublicadas } from './resultados'
+import { buscarHistoricoDaResposta, enviarResposta, listarRespostasDaCampanha } from './respostas'
+import {
+  buscarPrevia,
+  buscarResultado,
+  cancelarPublicacao,
+  listarPublicadas,
+  publicarCampanha,
+} from './resultados'
 import { buscarRhcVigente } from './rhc'
 import {
   abrirRodada,
   buscarAcompanhamento,
+  buscarRodada,
   criarRodada,
+  encerrarRodada,
   incluirCampanha,
   listarRodadas,
+  prorrogarRodada,
+  reabrirRodada,
 } from './rodadas'
 
 const fetchFalso = vi.fn<typeof fetch>()
@@ -131,6 +142,46 @@ describe('resultados', () => {
 
     expect(chamada().url).toBe('http://localhost:8080/api/campanhas/42/resultado')
   })
+
+  it('prévia, publicação e cancelamento', async () => {
+    await buscarPrevia(42)
+    await publicarCampanha(42)
+    fetchFalso.mockResolvedValueOnce(new Response(null, { status: 204 }))
+    await expect(cancelarPublicacao(42)).resolves.toBeUndefined()
+
+    expect(chamada(0)).toMatchObject({
+      url: 'http://localhost:8080/api/campanhas/42/previa',
+      metodo: 'GET',
+    })
+    expect(chamada(1)).toMatchObject({
+      url: 'http://localhost:8080/api/campanhas/42/publicacao',
+      metodo: 'POST',
+    })
+    expect(chamada(2)).toMatchObject({
+      url: 'http://localhost:8080/api/campanhas/42/publicacao',
+      metodo: 'DELETE',
+    })
+  })
+})
+
+describe('respostas', () => {
+  it('envia a resposta com PUT', async () => {
+    await enviarResposta(20, 12, { taxaOcupacao: 72.5, diariaMedia: 410 })
+
+    expect(chamada()).toMatchObject({
+      url: 'http://localhost:8080/api/campanhas/20/respostas/12',
+      metodo: 'PUT',
+      corpo: { taxaOcupacao: 72.5, diariaMedia: 410 },
+    })
+  })
+
+  it('respostas da campanha e histórico de uma resposta', async () => {
+    await listarRespostasDaCampanha(20)
+    await buscarHistoricoDaResposta(301)
+
+    expect(chamada(0).url).toBe('http://localhost:8080/api/campanhas/20/respostas')
+    expect(chamada(1).url).toBe('http://localhost:8080/api/respostas/301/historico')
+  })
 })
 
 describe('rodadas', () => {
@@ -138,6 +189,34 @@ describe('rodadas', () => {
     await listarRodadas('ABERTA')
 
     expect(chamada().url).toBe('http://localhost:8080/api/rodadas?status=ABERTA')
+  })
+
+  it('detalhe de uma rodada', async () => {
+    await buscarRodada(7)
+
+    expect(chamada().url).toBe('http://localhost:8080/api/rodadas/7')
+  })
+
+  it('prorroga, encerra e reabre com POST', async () => {
+    await prorrogarRodada(7, { prazoResposta: '2026-12-05' })
+    await encerrarRodada(7)
+    await reabrirRodada(7, { prazoResposta: '2026-12-20' })
+
+    expect(chamada(0)).toMatchObject({
+      url: 'http://localhost:8080/api/rodadas/7/prorrogar',
+      metodo: 'POST',
+      corpo: { prazoResposta: '2026-12-05' },
+    })
+    expect(chamada(1)).toMatchObject({
+      url: 'http://localhost:8080/api/rodadas/7/encerrar',
+      metodo: 'POST',
+      corpo: undefined,
+    })
+    expect(chamada(2)).toMatchObject({
+      url: 'http://localhost:8080/api/rodadas/7/reabrir',
+      metodo: 'POST',
+      corpo: { prazoResposta: '2026-12-20' },
+    })
   })
 
   it('acompanhamento de uma rodada', async () => {
