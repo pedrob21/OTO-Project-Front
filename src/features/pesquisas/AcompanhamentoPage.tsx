@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/Card'
 import { Carregando } from '@/components/ui/Carregando'
 import { ErroApi } from '@/components/ui/ErroApi'
 import { EstadoVazio } from '@/components/ui/EstadoVazio'
+import { Tabela } from '@/components/ui/Tabela'
 import { hojeLocal, textoDoPrazo } from '@/lib/datas'
 import { formatarData, formatarInteiro, formatarPercentual } from '@/lib/formatos'
 import type { Esquemas, StatusRodada } from '@/types/dominio'
@@ -120,51 +121,47 @@ function Campanha({
       {estabelecimentos.length === 0 ? (
         <EstadoVazio titulo="Nenhum meio de hospedagem participa desta campanha" />
       ) : (
-        <table className={comum.tabela}>
-          <caption className={comum.oculto}>Estabelecimentos de {campanha.nome}</caption>
-          <thead>
-            <tr>
-              <th scope="col">Estabelecimento</th>
-              <th scope="col">Tipo</th>
-              <th scope="col" className={comum.numero}>
-                Leitos
-              </th>
-              <th scope="col">Situação</th>
-              <th scope="col">Contato</th>
-              {rotaDaResposta && (
-                <th scope="col">
-                  <span className={comum.oculto}>Ação</span>
-                </th>
-              )}
-            </tr>
-          </thead>
-          <tbody>
-            {estabelecimentos.map((estabelecimento) => (
-              <tr key={estabelecimento.estabelecimentoId}>
-                <th scope="row">{estabelecimento.nomeFantasia}</th>
-                <td>{nomeDoTipo(estabelecimento.tipoHospedagemCodigo)}</td>
-                <td className={comum.numero}>{formatarInteiro(estabelecimento.qtdLeitos)}</td>
-                <td>
-                  <Situacao estabelecimento={estabelecimento} />
-                </td>
-                <td>
-                  <Contato estabelecimento={estabelecimento} />
-                </td>
-                {rotaDaResposta && (
-                  <td>
-                    <Link
-                      to={rotaDaResposta(estabelecimento.estabelecimentoId)}
-                      className={comum.link}
-                      aria-label={`${estabelecimento.respondeu ? 'Editar resposta' : 'Lançar resposta'} de ${estabelecimento.nomeFantasia}`}
-                    >
-                      {estabelecimento.respondeu ? 'Editar resposta' : 'Lançar resposta'}
-                    </Link>
-                  </td>
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <Tabela
+          legenda={`Estabelecimentos de ${campanha.nome}`}
+          linhas={estabelecimentos}
+          chave={(estabelecimento) => estabelecimento.estabelecimentoId ?? 0}
+          vazio={{ titulo: 'Nenhum meio de hospedagem participa desta campanha' }}
+          colunas={[
+            {
+              titulo: 'Estabelecimento',
+              celula: (estabelecimento) => estabelecimento.nomeFantasia,
+            },
+            {
+              titulo: 'Tipo',
+              celula: (estabelecimento) => nomeDoTipo(estabelecimento.tipoHospedagemCodigo),
+            },
+            {
+              titulo: 'Leitos',
+              numerica: true,
+              celula: (estabelecimento) => formatarInteiro(estabelecimento.qtdLeitos),
+            },
+            {
+              titulo: 'Situação',
+              celula: (estabelecimento) => <Situacao estabelecimento={estabelecimento} />,
+            },
+            {
+              titulo: 'Contato',
+              celula: (estabelecimento) => <Contato estabelecimento={estabelecimento} />,
+            },
+          ]}
+          acoes={
+            rotaDaResposta &&
+            ((estabelecimento) => (
+              <Link
+                to={rotaDaResposta(estabelecimento.estabelecimentoId)}
+                className={comum.link}
+                aria-label={`${estabelecimento.respondeu ? 'Editar resposta' : 'Lançar resposta'} de ${estabelecimento.nomeFantasia}`}
+              >
+                {estabelecimento.respondeu ? 'Editar resposta' : 'Lançar resposta'}
+              </Link>
+            ))
+          }
+        />
       )}
     </Card>
   )
