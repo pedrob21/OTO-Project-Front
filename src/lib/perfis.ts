@@ -6,8 +6,8 @@ export type ItemMenu = {
   para?: string
   /** sem lista, aparece para todos os perfis */
   perfis?: Perfil[]
-  /** perfis que já têm a página de `para`; para os outros, o item aparece desativado */
-  perfisDaPagina?: Perfil[]
+  /** destino conforme o perfil; perfil sem página vê o item desativado */
+  paginaPorPerfil?: Partial<Record<Perfil, string>>
   temSubmenu?: boolean
 }
 
@@ -15,9 +15,8 @@ export const ITENS_MENU: ItemMenu[] = [
   { rotulo: 'Painel', para: '/' },
   {
     rotulo: 'Pesquisas',
-    para: '/pesquisas/nova',
     perfis: ['ADMIN', 'PARCEIRO'],
-    perfisDaPagina: ['ADMIN'],
+    paginaPorPerfil: { ADMIN: '/pesquisas/nova', PARCEIRO: '/pesquisas/responder' },
     temSubmenu: true,
   },
   { rotulo: 'Indicadores', temSubmenu: true },
@@ -28,10 +27,8 @@ export const ITENS_MENU: ItemMenu[] = [
 export function itensDoPerfil(perfil: Perfil | undefined): ItemMenu[] {
   return ITENS_MENU.filter(
     (item) => !item.perfis || (perfil !== undefined && item.perfis.includes(perfil)),
-  ).map(({ perfisDaPagina, ...item }) =>
-    perfisDaPagina && !(perfil !== undefined && perfisDaPagina.includes(perfil))
-      ? { ...item, para: undefined }
-      : item,
+  ).map(({ paginaPorPerfil, ...item }) =>
+    paginaPorPerfil ? { ...item, para: perfil && paginaPorPerfil[perfil] } : item,
   )
 }
 

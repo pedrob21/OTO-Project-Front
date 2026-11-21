@@ -152,6 +152,14 @@ describe('PesquisasDoPainel', () => {
     expect(screen.getByText('Rodada 002/26')).toBeInTheDocument()
   })
 
+  it('PARCEIRO vai do cartão para a tela de responder', async () => {
+    const router = abrir('PARCEIRO')
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Responder pesquisa' }))
+
+    expect(router.state.location.pathname).toBe('/pesquisas/responder')
+  })
+
   it('PARCEIRO vê só as próprias pesquisas, sem chamar as rotas do ADMIN', async () => {
     abrir('PARCEIRO')
 

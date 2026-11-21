@@ -25,6 +25,18 @@ export const rotas: RouteObject[] = [
               },
             ],
           },
+          {
+            element: <RequirePerfil perfis={['PARCEIRO']} />,
+            children: [
+              {
+                path: '/pesquisas/responder',
+                lazy: async () => ({
+                  Component: (await import('@/features/pesquisas/ResponderPesquisaPage'))
+                    .ResponderPesquisaPage,
+                }),
+              },
+            ],
+          },
         ],
       },
     ],

@@ -15,12 +15,12 @@ describe('itensDoPerfil', () => {
     expect(rotulos('VISUALIZADOR')).toEqual(['Painel', 'Indicadores', 'Relatórios', 'Cadastros'])
   })
 
-  it('Pesquisas só leva a uma página para o ADMIN', () => {
+  it('Pesquisas leva cada perfil à sua página', () => {
     const pesquisas = (perfil: Parameters<typeof itensDoPerfil>[0]) =>
       itensDoPerfil(perfil).find((item) => item.rotulo === 'Pesquisas')
 
     expect(pesquisas('ADMIN')?.para).toBe('/pesquisas/nova')
-    expect(pesquisas('PARCEIRO')?.para).toBeUndefined()
+    expect(pesquisas('PARCEIRO')?.para).toBe('/pesquisas/responder')
   })
 
   it('perfil desconhecido só vê o que é de todos', () => {

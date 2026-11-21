@@ -97,6 +97,7 @@ function PesquisasDoAdmin() {
 /** O PARCEIRO não acessa as rodadas: vê as pesquisas abertas dos seus estabelecimentos. */
 function PesquisasDoParceiro() {
   const [hoje] = useState(hojeLocal)
+  const navigate = useNavigate()
   const pendencias = useQuery({
     queryKey: ['pendencias'],
     queryFn: ({ signal }) => listarPendencias(signal),
@@ -111,7 +112,17 @@ function PesquisasDoParceiro() {
       />
     )
   }
-  return <PendenciasParceiroCard pendencias={pendencias.data} hoje={hoje} />
+  return (
+    <PendenciasParceiroCard
+      pendencias={pendencias.data}
+      hoje={hoje}
+      acao={
+        <Button variante="secundaria" onClick={() => navigate('/pesquisas/responder')}>
+          Responder pesquisa
+        </Button>
+      }
+    />
+  )
 }
 
 type PesquisasDoPainelProps = {

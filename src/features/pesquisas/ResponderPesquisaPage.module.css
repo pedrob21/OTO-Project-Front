@@ -1,0 +1,236 @@
+/* Cabeçalho igual ao do painel e da nova pesquisa */
+.titulos {
+  margin-bottom: 32.5px;
+  padding-top: 18.5px;
+}
+
+.sobrelinha {
+  padding-left: 2px;
+  color: var(--cor-texto-sobrelinha);
+  font: var(--tipo-sobrelinha);
+  text-transform: uppercase;
+}
+
+.titulo {
+  max-width: 560px;
+  margin-top: 16px;
+  color: var(--cor-texto-titulo);
+  font: var(--tipo-titulo-pagina);
+}
+
+.introducao {
+  max-width: 62ch;
+  margin-top: 18px;
+  color: var(--cor-texto);
+  font: var(--tipo-subtitulo);
+}
+
+.campanhas {
+  display: grid;
+  gap: 17.5px;
+  max-width: 920px;
+}
+
+.resumo {
+  color: var(--cor-texto-forte);
+  font: var(--tipo-rotulo);
+}
+
+.avisoPrazo {
+  margin-top: 16px;
+  padding: 10px var(--espaco-3);
+  border-radius: var(--raio-chip);
+  background: var(--cor-aberta-fundo);
+  color: var(--cor-aberta-texto);
+  font: var(--tipo-corpo-forte);
+}
+
+.estabelecimentos {
+  display: grid;
+  gap: var(--espaco-4);
+  margin-top: 20px;
+}
+
+/* Um estabelecimento: o mesmo painel interno da rodada aberta no painel */
+.estabelecimento {
+  padding: 18.5px 20px 20px;
+  background: var(--cor-superficie-suave);
+  border: 1px solid var(--cor-borda-suave);
+  border-radius: var(--raio-interno);
+}
+
+.topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-4);
+}
+
+.nome {
+  color: var(--cor-texto-forte);
+  font: var(--tipo-titulo-rodada);
+}
+
+.meta {
+  margin-top: 6px;
+  color: var(--cor-texto-suave);
+  font: var(--tipo-corpo);
+}
+
+.formulario {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--espaco-4) 20px;
+  margin-top: 16px;
+}
+
+.campoTaxa {
+  display: grid;
+  gap: 8px;
+  width: 220px;
+}
+
+/* A taxa digitada vira uma barra de ocupação, com a faixa do painel abaixo */
+.ocupacao {
+  overflow: hidden;
+  height: 8px;
+  border-radius: 0 var(--raio-pilula) var(--raio-pilula) 0;
+  background: var(--cor-trilha-forte);
+}
+
+.ocupacaoPreenchida {
+  display: block;
+  height: 100%;
+  background: var(--cor-primaria);
+  transition: width 0.2s ease;
+}
+
+.faixa {
+  min-height: 18px;
+  color: var(--cor-primaria-escura);
+  font: var(--tipo-corpo-forte);
+}
+
+.campoDiaria {
+  flex: 1 1 240px;
+  max-width: 320px;
+}
+
+.enviar {
+  margin-top: 22px;
+}
+
+.erroEnvio {
+  margin-top: 12px;
+  color: var(--cor-negativo);
+  font: var(--tipo-corpo-forte);
+}
+
+.confirmacao {
+  margin-top: 8px;
+  color: var(--cor-positivo);
+  font: var(--tipo-corpo-forte);
+}
+
+.confirmacao:empty {
+  margin-top: 0;
+}
+
+.historico {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--cor-borda-suave);
+}
+
+.alternarHistorico {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--cor-primaria-escura);
+  font: var(--tipo-corpo-forte);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.versoes {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+  color: var(--cor-texto);
+  font: var(--tipo-corpo);
+}
+
+.versoes li {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr) auto;
+  gap: var(--espaco-3);
+}
+
+.numeroVersao {
+  color: var(--cor-texto-forte);
+  font: var(--tipo-corpo-forte);
+}
+
+.autorVersao,
+.notaVersao {
+  color: var(--cor-texto-suave);
+}
+
+.notaVersao {
+  margin-top: 10px;
+  font: var(--tipo-corpo);
+}
+
+.encerradas {
+  max-width: 920px;
+  margin-top: 17.5px;
+}
+
+.tabela {
+  width: 100%;
+  margin-top: 16px;
+  border-collapse: collapse;
+  font: var(--tipo-corpo);
+}
+
+.tabela th {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--cor-borda);
+  color: var(--cor-texto-rotulo);
+  font: var(--tipo-rotulo-kpi);
+  text-align: left;
+}
+
+.tabela td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--cor-borda-suave);
+  color: var(--cor-texto);
+}
+
+.tabela tr:last-child td {
+  border-bottom: 0;
+}
+
+.tabela .numero {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.semValor {
+  color: var(--cor-texto-suave);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ocupacaoPreenchida {
+    transition: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .versoes li {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}

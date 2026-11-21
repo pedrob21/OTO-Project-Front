@@ -1,7 +1,8 @@
-import { useId, type InputHTMLAttributes } from 'react'
+import { useId, type ComponentProps } from 'react'
 import styles from './CampoTexto.module.css'
 
-type CampoTextoProps = InputHTMLAttributes<HTMLInputElement> & {
+/** Aceita `ref`, que vai para o input (React 19). */
+type CampoTextoProps = ComponentProps<'input'> & {
   rotulo: string
   erro?: string
   /** explicação curta sob o campo */
