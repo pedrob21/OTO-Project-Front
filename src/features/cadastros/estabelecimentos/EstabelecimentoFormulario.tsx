@@ -19,7 +19,9 @@ import {
 
 type EstabelecimentoFormularioProps = {
   estabelecimento?: Esquemas['EstabelecimentoResponse']
-  tipos: Esquemas['TipoRef'][]
+  tipos?: Esquemas['TipoRef'][]
+  /** PARCEIRO: sem o bloco da Secretaria */
+  somenteDados?: boolean
   hoje: string
   enviando: boolean
   falha: FalhaDaApi | null
@@ -29,7 +31,8 @@ type EstabelecimentoFormularioProps = {
 
 export function EstabelecimentoFormulario({
   estabelecimento,
-  tipos,
+  tipos = [],
+  somenteDados = false,
   hoje,
   enviando,
   falha,
@@ -39,7 +42,7 @@ export function EstabelecimentoFormulario({
   const [form, setForm] = useState(() => formDoEstabelecimento(estabelecimento, hoje))
   const [tentouEnviar, setTentouEnviar] = useState(false)
   const novo = estabelecimento === undefined
-  const erros = errosVisiveis(errosDoEstabelecimento(form, novo), tentouEnviar, falha)
+  const erros = errosVisiveis(errosDoEstabelecimento(form, novo, somenteDados), tentouEnviar, falha)
 
   const mudar = (nome: string, valor: string | boolean) =>
     setForm((atual) => ({ ...atual, [nome]: valor }))
@@ -67,7 +70,7 @@ export function EstabelecimentoFormulario({
 
   function enviar() {
     setTentouEnviar(true)
-    if (Object.keys(errosDoEstabelecimento(form, novo)).length === 0) aoEnviar(form)
+    if (Object.keys(errosDoEstabelecimento(form, novo, somenteDados)).length === 0) aoEnviar(form)
   }
 
   const { cadastrais, endereco, contato, cadastur, funcionamento } = GRUPOS_DADOS
@@ -120,48 +123,50 @@ export function EstabelecimentoFormulario({
         </div>
       </fieldset>
 
-      <fieldset className={styles.grupo}>
-        <legend className={styles.legenda}>Dados da Secretaria</legend>
-        <p className={styles.ajuda}>
-          Só a equipe do OTO vê e altera. Estabelecimento irregular fica fora das pesquisas e dos
-          cálculos.
-        </p>
-        <div className={styles.grade}>
-          <div>
+      {!somenteDados && (
+        <fieldset className={styles.grupo}>
+          <legend className={styles.legenda}>Dados da Secretaria</legend>
+          <p className={styles.ajuda}>
+            Só a equipe do OTO vê e altera. Estabelecimento irregular fica fora das pesquisas e dos
+            cálculos.
+          </p>
+          <div className={styles.grade}>
+            <div>
+              <Select
+                rotulo="Tipo de hospedagem"
+                variante="campo"
+                valor={String(form['secretaria.tipoHospedagemCodigo'])}
+                opcoes={[
+                  { valor: '', rotulo: 'Escolha o tipo' },
+                  ...tipos.map(({ codigo = '', nome = '' }) => ({ valor: codigo, rotulo: nome })),
+                ]}
+                aoMudar={(valor) => mudar('secretaria.tipoHospedagemCodigo', valor)}
+                required
+                aria-invalid={erros['secretaria.tipoHospedagemCodigo'] ? true : undefined}
+                aria-describedby={
+                  erros['secretaria.tipoHospedagemCodigo'] ? 'erro-tipo-hospedagem' : undefined
+                }
+              />
+              {erros['secretaria.tipoHospedagemCodigo'] && (
+                <p id="erro-tipo-hospedagem" className={styles.erroCampo}>
+                  {erros['secretaria.tipoHospedagemCodigo']}
+                </p>
+              )}
+            </div>
             <Select
-              rotulo="Tipo de hospedagem"
+              rotulo="Situação"
               variante="campo"
-              valor={String(form['secretaria.tipoHospedagemCodigo'])}
-              opcoes={[
-                { valor: '', rotulo: 'Escolha o tipo' },
-                ...tipos.map(({ codigo = '', nome = '' }) => ({ valor: codigo, rotulo: nome })),
-              ]}
-              aoMudar={(valor) => mudar('secretaria.tipoHospedagemCodigo', valor)}
-              required
-              aria-invalid={erros['secretaria.tipoHospedagemCodigo'] ? true : undefined}
-              aria-describedby={
-                erros['secretaria.tipoHospedagemCodigo'] ? 'erro-tipo-hospedagem' : undefined
-              }
+              valor={String(form['secretaria.situacao'])}
+              opcoes={SITUACOES}
+              aoMudar={(valor) => mudar('secretaria.situacao', valor)}
             />
-            {erros['secretaria.tipoHospedagemCodigo'] && (
-              <p id="erro-tipo-hospedagem" className={styles.erroCampo}>
-                {erros['secretaria.tipoHospedagemCodigo']}
-              </p>
-            )}
+            {CAMPOS_SECRETARIA.map(campo)}
+            <div className={styles.largo}>
+              {marcacao('secretaria.aceitaPesquisas', 'Aceita participar das pesquisas')}
+            </div>
           </div>
-          <Select
-            rotulo="Situação"
-            variante="campo"
-            valor={String(form['secretaria.situacao'])}
-            opcoes={SITUACOES}
-            aoMudar={(valor) => mudar('secretaria.situacao', valor)}
-          />
-          {CAMPOS_SECRETARIA.map(campo)}
-          <div className={styles.largo}>
-            {marcacao('secretaria.aceitaPesquisas', 'Aceita participar das pesquisas')}
-          </div>
-        </div>
-      </fieldset>
+        </fieldset>
+      )}
 
       {novo && (
         <fieldset className={styles.grupo}>
