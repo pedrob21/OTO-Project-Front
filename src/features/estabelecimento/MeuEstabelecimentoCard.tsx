@@ -19,6 +19,7 @@ import {
   REGRAS_ESTABELECIMENTO,
   type FormEstabelecimento,
 } from '@/features/cadastros/estabelecimentos/estabelecimentos'
+import { EditorDeInventario } from '@/features/inventario/EditorDeInventario'
 import { useMutacaoCadastro } from '@/features/cadastros/useMutacaoCadastro'
 import { CapacidadeDoEstabelecimento } from './CapacidadeDoEstabelecimento'
 import { CHAVE_ESTABELECIMENTOS } from './chaves'
@@ -185,6 +186,10 @@ export function MeuEstabelecimentoCard({ resumo, nomeDoTipo, hoje }: MeuEstabele
         <div className={styles.grupos}>
           <DadosEmLeitura estabelecimento={detalhe.data} nomeDoTipo={nomeDoTipo} />
           <CapacidadeDoEstabelecimento id={id} nome={resumo.nomeFantasia} hoje={hoje} />
+          <section className={styles.grupo} aria-label="Inventário">
+            <h3 className={styles.titulo}>Inventário</h3>
+            <EditorDeInventario estabelecimentoId={id} ocultarExclusivosDaSecretaria embutido />
+          </section>
         </div>
       )}
 

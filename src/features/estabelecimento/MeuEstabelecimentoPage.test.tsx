@@ -50,11 +50,35 @@ const ANTIGA = {
 }
 const ATUAL = { ...ANTIGA, id: 2, vigenteDesde: '2026-03-01', qtdUh: 30, leitosUteis: 60 }
 
+const CATALOGO = [
+  {
+    id: 1,
+    categoria: 'SERVICOS_EQUIPAMENTOS',
+    nome: 'Lazer',
+    exclusivoSecretaria: false,
+    itens: [
+      { id: 10, nome: 'Piscina', permiteComplemento: false },
+      { id: 11, nome: 'Academia', permiteComplemento: false },
+    ],
+  },
+  {
+    id: 3,
+    categoria: 'SUSTENTABILIDADE',
+    nome: 'Selos da Secretaria',
+    exclusivoSecretaria: true,
+    itens: [{ id: 30, nome: 'Selo verde', permiteComplemento: false }],
+  },
+]
+
 function preparar(rotas: RotasFalsas = {}) {
   return criarApiFalsa({
     'GET /api/estabelecimentos': { corpo: [RESUMO] },
     'GET /api/estabelecimentos/7': { corpo: CADASTRO },
     'GET /api/estabelecimentos/7/capacidades': { corpo: [ATUAL, ANTIGA] },
+    'GET /api/inventario/catalogo': { corpo: CATALOGO },
+    'GET /api/estabelecimentos/7/inventario': {
+      corpo: { estabelecimentoId: 7, itens: [{ itemId: 10 }, { itemId: 30 }] },
+    },
     'GET /api/referencias': {
       corpo: { tiposHospedagem: [{ codigo: 'POUSADA', nome: 'Pousada' }] },
     },
@@ -200,5 +224,31 @@ describe('meu estabelecimento', () => {
     expect(await screen.findByText('Capacidade a partir de 20/11/2026 informada.')).toBeVisible()
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
     expect(await screen.findByRole('row', { name: /20\/11\/2026/ })).toBeInTheDocument()
+  })
+
+  it('mostra o inventário sem o grupo exclusivo da Secretaria e salva com PUT', async () => {
+    const api = preparar({
+      'PUT /api/estabelecimentos/7/inventario': { corpo: { estabelecimentoId: 7, itens: [] } },
+    })
+    abrir()
+
+    const inventario = await screen.findByRole('region', { name: 'Inventário' })
+    expect(await within(inventario).findByRole('group', { name: 'Lazer' })).toBeVisible()
+    expect(
+      within(inventario).queryByRole('group', { name: 'Selos da Secretaria' }),
+    ).not.toBeInTheDocument()
+    expect(
+      within(inventario).queryByRole('checkbox', { name: 'Selo verde' }),
+    ).not.toBeInTheDocument()
+
+    await userEvent.click(within(inventario).getByRole('checkbox', { name: 'Academia' }))
+    await userEvent.click(within(inventario).getByRole('button', { name: /Salvar/ }))
+
+    await waitFor(() => expect(api.envios()).toHaveLength(1))
+    expect(api.envios()[0]).toMatchObject({
+      metodo: 'PUT',
+      caminho: '/api/estabelecimentos/7/inventario',
+      corpo: { itens: [{ itemId: 10 }, { itemId: 11 }] },
+    })
   })
 })
