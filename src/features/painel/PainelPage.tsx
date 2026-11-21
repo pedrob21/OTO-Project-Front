@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import { EstadoVazio } from '@/components/ui/EstadoVazio'
 import { useAuth } from '@/features/auth/AuthContext'
 import { DesempenhoPorTipoCard } from './components/DesempenhoPorTipoCard'
 import { ExpectativaRealizadoCard } from './components/ExpectativaRealizadoCard'
@@ -19,11 +20,13 @@ import {
   rhcVigente,
   serieMensal,
 } from './fixtures'
+import { useCampanhasPublicadas } from './hooks/useCampanhasPublicadas'
 import styles from './PainelPage.module.css'
 import { partesDoPeriodo } from './periodo'
 
 export function PainelPage() {
   const perfil = useAuth().usuario?.perfil
+  const semCampanhas = useCampanhasPublicadas().data?.length === 0
 
   return (
     <>
@@ -32,40 +35,58 @@ export function PainelPage() {
         <h1 className={styles.titulo}>Painel de indicadores do turismo</h1>
       </div>
 
-      <PainelFiltros />
-
-      <div className={styles.destaque}>
-        <TaxaOcupacaoDestaque
-          resultado={resultado}
-          faixas={referencias.faixasOcupacao ?? []}
-          comparativo={comparativo}
+      {semCampanhas ? (
+        <EstadoVazio
+          titulo="Nenhuma campanha publicada ainda"
+          descricao="Os indicadores aparecem aqui quando a primeira campanha for publicada."
         />
-        <p className={styles.metodologia}>
-          <Link to="/metodologia">Como calculamos a taxa de ocupação e o fluxo de turistas</Link>
-        </p>
-      </div>
+      ) : (
+        <>
+          <PainelFiltros />
 
-      <div className={styles.indicadores}>
-        <IndicadoresResumo resultado={resultado} comparativo={comparativo} />
-      </div>
+          <div className={styles.destaque}>
+            <TaxaOcupacaoDestaque
+              resultado={resultado}
+              faixas={referencias.faixasOcupacao ?? []}
+              comparativo={comparativo}
+            />
+            <p className={styles.metodologia}>
+              <Link to="/metodologia">
+                Como calculamos a taxa de ocupação e o fluxo de turistas
+              </Link>
+            </p>
+          </div>
 
-      <div className={styles.linhaMensal}>
-        <OcupacaoMensalCard serie={serieMensal} />
-        <FaixasOcupacaoCard resultado={resultado} />
-      </div>
+          <div className={styles.indicadores}>
+            <IndicadoresResumo resultado={resultado} comparativo={comparativo} />
+          </div>
 
-      <div className={styles.linhaFluxo}>
-        <FluxoTuristasCard resultado={resultado} rhc={rhcVigente} parametros={parametrosVigentes} />
-        <ExpectativaRealizadoCard
-          expectativa={feriadosExpectativa}
-          realizado={feriadosRealizado}
-          ano={partesDoPeriodo(resultado.campanha?.periodoInicio)?.ano}
-        />
-      </div>
+          <div className={styles.linhaMensal}>
+            <OcupacaoMensalCard serie={serieMensal} />
+            <FaixasOcupacaoCard resultado={resultado} />
+          </div>
 
-      <div className={styles.desempenho}>
-        <DesempenhoPorTipoCard resultado={resultado} tipos={referencias.tiposHospedagem ?? []} />
-      </div>
+          <div className={styles.linhaFluxo}>
+            <FluxoTuristasCard
+              resultado={resultado}
+              rhc={rhcVigente}
+              parametros={parametrosVigentes}
+            />
+            <ExpectativaRealizadoCard
+              expectativa={feriadosExpectativa}
+              realizado={feriadosRealizado}
+              ano={partesDoPeriodo(resultado.campanha?.periodoInicio)?.ano}
+            />
+          </div>
+
+          <div className={styles.desempenho}>
+            <DesempenhoPorTipoCard
+              resultado={resultado}
+              tipos={referencias.tiposHospedagem ?? []}
+            />
+          </div>
+        </>
+      )}
 
       {(perfil === 'ADMIN' || perfil === 'PARCEIRO') && (
         <div className={styles.pesquisas}>

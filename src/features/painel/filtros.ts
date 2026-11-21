@@ -3,19 +3,16 @@ import { capitalizar, formatarMes } from '@/lib/formatos'
 import type { Esquemas } from '@/types/dominio'
 import { partesDoPeriodo } from './periodo'
 
-type Campanha = Esquemas['CampanhaPublicadaResponse'] & { codigoRodada?: string }
+type Campanha = Esquemas['CampanhaPublicadaResponse']
 
 export const TODOS_OS_TIPOS = 'todos'
 
-/** "Agosto de 2026 • consolidada (015/26)" */
+/** "Agosto de 2026 • consolidada" */
 export function opcoesCampanha(campanhas: Campanha[]): OpcaoSelect[] {
-  return campanhas.map(({ campanhaId, nome, modalidade, codigoRodada }) => {
-    const partes = [nome, modalidade?.toLowerCase()].filter(Boolean).join(' • ')
-    return {
-      valor: String(campanhaId),
-      rotulo: codigoRodada ? `${partes} (${codigoRodada})` : partes,
-    }
-  })
+  return campanhas.map(({ campanhaId, nome, modalidade }) => ({
+    valor: String(campanhaId),
+    rotulo: [nome, modalidade?.toLowerCase()].filter(Boolean).join(' • '),
+  }))
 }
 
 /** O mesmo mês em anos anteriores: "Agosto de 2025". */

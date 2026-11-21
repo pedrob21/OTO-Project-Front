@@ -36,6 +36,9 @@ function abrir(caminho: string, estado?: unknown) {
 beforeEach(() => {
   respostas = {
     '/api/referencias': { corpo: { feriados: [], tiposHospedagem: [] } },
+    '/api/campanhas/publicadas': {
+      corpo: [{ campanhaId: 15, nome: 'Agosto de 2026', modalidade: 'CONSOLIDADA' }],
+    },
     '/api/rodadas': { corpo: [] },
     '/api/respostas/pendencias': { corpo: [] },
   }
@@ -103,7 +106,21 @@ describe('painel por perfil', () => {
     await screen.findByRole('heading', { name: 'Painel de indicadores do turismo' })
     expect(screen.getByRole('heading', { name: /Taxa de ocupação hoteleira/ })).toBeInTheDocument()
     expect(screen.queryByText(/Pesquisas com os parceiros/)).not.toBeInTheDocument()
-    expect(fetchFalso.mock.calls.map(([url]) => new URL(url).pathname)).toEqual(['/api/me'])
+    const caminhos = fetchFalso.mock.calls.map(([url]) => new URL(url).pathname)
+    expect(caminhos).not.toContain('/api/rodadas')
+    expect(caminhos).not.toContain('/api/respostas/pendencias')
+  })
+
+  it('sem campanha publicada, mostra o estado vazio no lugar do painel', async () => {
+    comSessao()
+    respostas['/api/me'] = { corpo: { id: 1, nome: 'Ana Lima', perfil: 'VISUALIZADOR' } }
+    respostas['/api/campanhas/publicadas'] = { corpo: [] }
+
+    abrir('/')
+
+    expect(await screen.findByText('Nenhuma campanha publicada ainda')).toBeInTheDocument()
+    expect(screen.queryByLabelText('Campanha')).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /Taxa de ocupação hoteleira/ })).toBeNull()
   })
 
   it('o PARCEIRO vê o cartão com as pesquisas dele', async () => {
