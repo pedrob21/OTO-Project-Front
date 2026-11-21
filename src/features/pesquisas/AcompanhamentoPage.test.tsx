@@ -296,18 +296,18 @@ describe('AcompanhamentoPage, ações', () => {
     expect(api.escritas()).toEqual([])
   })
 
-  it('encerrar pede confirmação; voltar não encerra', async () => {
+  it('encerrar pede confirmação; cancelar não encerra', async () => {
     abrir()
     const encerrar = await screen.findByRole('button', { name: 'Encerrar pesquisa' })
 
     await userEvent.click(encerrar)
 
-    const confirmacao = screen.getByRole('group', { name: 'Encerrar a pesquisa 005/26?' })
-    expect(confirmacao).toHaveFocus()
-    expect(encerrar).toHaveAttribute('aria-expanded', 'true')
-    await userEvent.click(within(confirmacao).getByRole('button', { name: 'Voltar' }))
+    const confirmacao = screen.getByRole('dialog', { name: 'Encerrar a pesquisa 005/26?' })
+    const cancelar = within(confirmacao).getByRole('button', { name: 'Cancelar' })
+    expect(cancelar).toHaveFocus()
+    await userEvent.click(cancelar)
 
-    expect(screen.queryByRole('group')).not.toBeInTheDocument()
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     expect(encerrar).toHaveFocus()
     expect(api.escritas()).toEqual([])
   })
@@ -374,6 +374,6 @@ describe('AcompanhamentoPage, ações', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Só é possível encerrar uma pesquisa aberta.',
     )
-    expect(screen.getByRole('group', { name: 'Encerrar a pesquisa 005/26?' })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Encerrar a pesquisa 005/26?' })).toBeInTheDocument()
   })
 })

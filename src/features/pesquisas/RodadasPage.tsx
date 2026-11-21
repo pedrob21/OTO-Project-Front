@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/Card'
 import { Carregando } from '@/components/ui/Carregando'
 import { ErroApi } from '@/components/ui/ErroApi'
 import { EstadoVazio } from '@/components/ui/EstadoVazio'
+import { Tabela } from '@/components/ui/Tabela'
 import { Select } from '@/components/ui/Select'
 import { hojeLocal, textoDosDias } from '@/lib/datas'
 import { formatarData } from '@/lib/formatos'
@@ -127,39 +128,32 @@ export function RodadasPage({ hoje: hojeFixo }: RodadasPageProps) {
           />
         )}
         {rodadas.data && rodadas.data.length > 0 && (
-          <table className={comum.tabela}>
-            <caption className={comum.oculto}>Pesquisas</caption>
-            <thead>
-              <tr>
-                <th scope="col">Código</th>
-                <th scope="col">Título</th>
-                <th scope="col">Campanhas</th>
-                <th scope="col">Prazo</th>
-                <th scope="col">Situação</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rodadas.data.map((rodada) => (
-                <tr key={rodada.id}>
-                  <th scope="row">{rodada.codigo}</th>
-                  <td>
-                    <Link to={`/pesquisas/${rodada.id}`} className={comum.link}>
-                      {rodada.titulo}
-                    </Link>
-                  </td>
-                  <td>
-                    <Campanhas campanhas={rodada.campanhas} />
-                  </td>
-                  <td>
-                    <Prazo rodada={rodada} hoje={hoje} />
-                  </td>
-                  <td>
-                    <SituacaoRodada situacao={situacaoDaRodada(rodada)} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <Tabela
+            legenda="Pesquisas"
+            linhas={rodadas.data}
+            chave={(rodada) => rodada.id ?? 0}
+            vazio={{ titulo: 'Nenhuma pesquisa criada ainda' }}
+            colunas={[
+              { titulo: 'Código', celula: (rodada) => rodada.codigo },
+              {
+                titulo: 'Título',
+                celula: (rodada) => (
+                  <Link to={`/pesquisas/${rodada.id}`} className={comum.link}>
+                    {rodada.titulo}
+                  </Link>
+                ),
+              },
+              {
+                titulo: 'Campanhas',
+                celula: (rodada) => <Campanhas campanhas={rodada.campanhas} />,
+              },
+              { titulo: 'Prazo', celula: (rodada) => <Prazo rodada={rodada} hoje={hoje} /> },
+              {
+                titulo: 'Situação',
+                celula: (rodada) => <SituacaoRodada situacao={situacaoDaRodada(rodada)} />,
+              },
+            ]}
+          />
         )}
       </Card>
     </>

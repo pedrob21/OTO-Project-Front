@@ -5,6 +5,7 @@ import { buscarReferencias } from '@/api/referencias'
 import { buscarPrevia, cancelarPublicacao, publicarCampanha } from '@/api/resultados'
 import { buscarRodada } from '@/api/rodadas'
 import { Button } from '@/components/ui/Button'
+import { Confirmacao } from '@/components/ui/Confirmacao'
 import { Card } from '@/components/ui/Card'
 import { Carregando } from '@/components/ui/Carregando'
 import { ErroApi } from '@/components/ui/ErroApi'
@@ -13,14 +14,12 @@ import { DesempenhoPorTipoCard } from '@/features/painel/components/DesempenhoPo
 import { formatarData, formatarInteiro, formatarPercentual } from '@/lib/formatos'
 import type { Esquemas } from '@/types/dominio'
 import comum from './comum.module.css'
-import { Confirmacao } from './components/Confirmacao'
 import { IndicadoresDaCampanha } from './components/IndicadoresDaCampanha'
 import { ProgressoComMinimo } from './components/ProgressoComMinimo'
 import styles from './PreviaPage.module.css'
 
 const ID_IMPEDIMENTOS = 'impedimentos-publicacao'
 const ID_CANCELAR = 'cancelar-publicacao'
-const ID_CONFIRMAR_CANCELAMENTO = 'confirmar-cancelamento'
 
 type Acao = 'publicar' | 'cancelar'
 
@@ -116,9 +115,11 @@ function Publicacao({
                 id={ID_CANCELAR}
                 variante="secundaria"
                 disabled={acao.isPending}
-                aria-expanded={confirmando}
-                aria-controls={confirmando ? ID_CONFIRMAR_CANCELAMENTO : undefined}
-                onClick={() => setConfirmando(true)}
+                aria-haspopup="dialog"
+                onClick={() => {
+                  acao.reset()
+                  setConfirmando(true)
+                }}
               >
                 Cancelar publicação
               </Button>
@@ -136,19 +137,18 @@ function Publicacao({
 
         {publicada && confirmando && (
           <Confirmacao
-            id={ID_CONFIRMAR_CANCELAMENTO}
             titulo={`Cancelar a publicação de ${campanha?.nome}?`}
-            rotuloConfirmar={acao.isPending ? 'Cancelando…' : 'Confirmar cancelamento'}
-            ocupado={acao.isPending}
+            mensagem="O resultado sai do painel e dos relatórios. Depois, a pesquisa pode ser reaberta para correções e a campanha publicada de novo."
+            rotuloConfirmar="Confirmar cancelamento"
+            rotuloEnviando="Cancelando…"
+            enviando={acao.isPending}
+            falha={acao.error?.message}
             aoConfirmar={() => acao.mutate('cancelar')}
-            aoVoltar={voltar}
-          >
-            O resultado sai do painel e dos relatórios. Depois, a pesquisa pode ser reaberta para
-            correções e a campanha publicada de novo.
-          </Confirmacao>
+            aoCancelar={voltar}
+          />
         )}
 
-        {acao.isError && (
+        {acao.isError && !confirmando && (
           <div role="alert" className={comum.alerta}>
             {acao.error.message}
           </div>

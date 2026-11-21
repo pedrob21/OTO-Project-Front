@@ -4,20 +4,6 @@
   gap: 4px;
 }
 
-/* Rascunho e encerrada: o Badge só tem as cores de aberta e publicada */
-.neutra {
-  display: inline-flex;
-  align-items: center;
-  min-height: 26px;
-  padding: 0 11px 0 10px;
-  border: 1px solid var(--cor-borda-botao);
-  border-radius: var(--raio-pilula);
-  background: var(--cor-superficie);
-  color: var(--cor-texto-rotulo);
-  font: var(--tipo-sobrelinha);
-  white-space: nowrap;
-}
-
 .detalhe {
   color: var(--cor-texto-suave);
   font: var(--tipo-pequeno);

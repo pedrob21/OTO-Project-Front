@@ -1,4 +1,4 @@
-/* Peças comuns das telas de pesquisas: cabeçalho igual ao do painel, tabelas e avisos */
+/* Peças comuns das telas de pesquisas: cabeçalho igual ao do painel e avisos */
 .titulos {
   margin-bottom: 32.5px;
   padding-top: 18.5px;
@@ -85,38 +85,6 @@
   text-underline-offset: 2px;
 }
 
-.tabela {
-  width: 100%;
-  margin-top: var(--espaco-4);
-  border-collapse: collapse;
-  font: var(--tipo-corpo);
-  font-variant-numeric: tabular-nums;
-}
-
-.tabela th,
-.tabela td {
-  padding: 12px var(--espaco-3) 12px 0;
-  text-align: left;
-  vertical-align: top;
-  border-bottom: 1px solid var(--cor-fundo);
-}
-
-.tabela thead th {
-  color: var(--cor-texto);
-  font: var(--tipo-rotulo-campo);
-  text-transform: uppercase;
-  border-bottom: 1px solid var(--cor-borda);
-}
-
-.tabela tbody th {
-  color: var(--cor-texto-forte);
-  font: var(--tipo-corpo-forte);
-}
-
-.numero {
-  text-align: right !important;
-}
-
 .secundario {
   display: block;
   color: var(--cor-texto-suave);
@@ -169,22 +137,4 @@
   flex-wrap: wrap;
   align-items: flex-end;
   gap: 10px;
-}
-
-.confirmacao {
-  display: grid;
-  gap: var(--espaco-3);
-  padding: var(--espaco-4);
-  background: var(--cor-superficie-suave);
-  border: 1px solid var(--cor-negativo);
-  border-radius: var(--raio-interno);
-}
-
-.confirmacao:focus {
-  outline: none;
-}
-
-.tituloConfirmacao {
-  color: var(--cor-texto-forte);
-  font: var(--tipo-titulo-rodada);
 }

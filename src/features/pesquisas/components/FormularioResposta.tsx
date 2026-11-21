@@ -4,10 +4,11 @@ import { buscarHistoricoDaResposta, enviarResposta } from '@/api/respostas'
 import { ErroRequisicao } from '@/api/erros'
 import { Button } from '@/components/ui/Button'
 import { CampoTexto } from '@/components/ui/CampoTexto'
-import { formatarData, formatarPercentual } from '@/lib/formatos'
+import { Tabela } from '@/components/ui/Tabela'
+import { formatarData, formatarMoeda, formatarPercentual } from '@/lib/formatos'
 import comum from '../comum.module.css'
 import { paraCampo } from '../respostas'
-import { type CamposResposta, formatarDiaria, validarResposta } from '../resposta'
+import { type CamposResposta, validarResposta } from '../resposta'
 import styles from './FormularioResposta.module.css'
 
 export type RespostaAtual = {
@@ -46,31 +47,26 @@ function Historico({ respostaId }: { respostaId: number }) {
       {historico.isPending && aberto && <p role="status">Carregando as versões</p>}
       {historico.isError && <p role="alert">Não foi possível carregar as versões.</p>}
       {historico.data && (
-        <table className={comum.tabela}>
-          <caption className={comum.oculto}>Versões enviadas</caption>
-          <thead>
-            <tr>
-              <th scope="col">Versão</th>
-              <th scope="col" className={comum.numero}>
-                Taxa de ocupação
-              </th>
-              <th scope="col" className={comum.numero}>
-                Diária média
-              </th>
-              <th scope="col">Enviada em</th>
-            </tr>
-          </thead>
-          <tbody>
-            {historico.data.map((versao) => (
-              <tr key={versao.versao}>
-                <th scope="row">{versao.versao}</th>
-                <td className={comum.numero}>{formatarPercentual(versao.taxaOcupacao, 2)}</td>
-                <td className={comum.numero}>{formatarDiaria(versao.diariaMedia)}</td>
-                <td>{formatarData(versao.enviadoEm)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <Tabela
+          legenda="Versões enviadas"
+          linhas={historico.data}
+          chave={(versao) => versao.versao ?? 0}
+          vazio={{ titulo: 'Nenhuma versão enviada' }}
+          colunas={[
+            { titulo: 'Versão', celula: (versao) => versao.versao },
+            {
+              titulo: 'Taxa de ocupação',
+              numerica: true,
+              celula: (versao) => formatarPercentual(versao.taxaOcupacao, 2),
+            },
+            {
+              titulo: 'Diária média',
+              numerica: true,
+              celula: (versao) => formatarMoeda(versao.diariaMedia, 2),
+            },
+            { titulo: 'Enviada em', celula: (versao) => formatarData(versao.enviadoEm) },
+          ]}
+        />
       )}
     </details>
   )
@@ -135,7 +131,7 @@ export function FormularioResposta({
           </p>
           <p>
             Taxa de ocupação {formatarPercentual(ultima.taxaOcupacao, 2)} · diária média{' '}
-            {formatarDiaria(ultima.diariaMedia)}
+            {formatarMoeda(ultima.diariaMedia, 2)}
           </p>
           <p className={comum.secundario}>
             Um novo envio substitui este. As versões anteriores ficam guardadas.

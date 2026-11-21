@@ -182,7 +182,7 @@ describe('PreviaPage, publicação (FE-07)', () => {
     ])
   })
 
-  it('cancelar a publicação pede confirmação; voltar não cancela', async () => {
+  it('cancelar a publicação pede confirmação; desistir não cancela', async () => {
     publicada()
     abrir()
     const cancelar = await screen.findByRole('button', { name: 'Cancelar publicação' })
@@ -193,11 +193,12 @@ describe('PreviaPage, publicação (FE-07)', () => {
     )
 
     await userEvent.click(cancelar)
-    const confirmacao = screen.getByRole('group', {
+    const confirmacao = screen.getByRole('dialog', {
       name: 'Cancelar a publicação de Consolidada de outubro de 2026?',
     })
-    expect(confirmacao).toHaveFocus()
-    await userEvent.click(within(confirmacao).getByRole('button', { name: 'Voltar' }))
+    const desistir = within(confirmacao).getByRole('button', { name: 'Cancelar' })
+    expect(desistir).toHaveFocus()
+    await userEvent.click(desistir)
 
     expect(cancelar).toHaveFocus()
     expect(api.escritas()).toEqual([])

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatarDiaria, validarResposta } from './resposta'
+import { validarResposta } from './resposta'
 
 describe('validarResposta', () => {
   it('aceita vírgula ou ponto e manda números para a API', () => {
@@ -43,12 +43,5 @@ describe('validarResposta', () => {
     expect(
       validarResposta({ taxaOcupacao: '50', diariaMedia: '100000000' }).erros.diariaMedia,
     ).toBe('A diária média passa do limite aceito.')
-  })
-})
-
-describe('formatarDiaria', () => {
-  it('mostra os centavos', () => {
-    expect(formatarDiaria(410.5)).toBe('R$\u00a0410,50')
-    expect(formatarDiaria(undefined)).toBe('—')
   })
 })
