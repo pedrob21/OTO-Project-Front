@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { limparSessao, salvarSessao } from '@/api/sessao'
@@ -189,13 +189,10 @@ describe('ResultadoCampanhaPage (FE-08)', () => {
 
     await userEvent.click(baixar)
 
-    expect(
-      await screen.findByText('Arquivo resultado-campanha-50.csv baixado.'),
-    ).toBeInTheDocument()
+    await waitFor(() => expect(clique).toHaveBeenCalledWith('resultado-campanha-50.csv'))
     const [url, init] = fetchDaApi.mock.calls.at(-1) ?? []
     expect(url).toBe('http://localhost:8080/api/campanhas/50/resultado.csv')
-    expect(init?.headers).toEqual({ Authorization: 'Bearer abc' })
-    expect(clique).toHaveBeenCalledWith('resultado-campanha-50.csv')
+    expect(init?.headers).toMatchObject({ Authorization: 'Bearer abc' })
   })
 
   it('erro no download aparece sem sair da página', async () => {

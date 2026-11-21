@@ -22,6 +22,15 @@ describe('lerDecimal', () => {
   it.each(['', 'abc', '1.000,50', '12,', ',5', '1e3', '10 %'])('recusa "%s"', (texto) => {
     expect(lerDecimal(texto)).toBeNull()
   })
+  it('recusa espaços no meio, sinal de mais e separadores mal posicionados', () => {
+    for (const texto of ['   ', '80 reais', '8 0', ',', '+80,5', '1,234.50', '1.23,5', '80,5,5']) {
+      expect(lerDecimal(texto)).toBeNull()
+    }
+  })
+
+  it('recusa "1.234", ambíguo entre milhar e decimal, por ter três casas', () => {
+    expect(lerDecimal('1.234')).toBeNull()
+  })
 })
 
 describe('textoDoNumero', () => {

@@ -1,11 +1,15 @@
 import type { RouteObject } from 'react-router'
+import { DefinirSenhaPage } from '@/features/auth/DefinirSenhaPage'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RequirePerfil } from '@/features/auth/RequirePerfil'
+import { MinhaSenhaPage } from '@/features/auth/MinhaSenhaPage'
+import { MetodologiaPage } from '@/features/metodologia/MetodologiaPage'
 import { PainelPage } from '@/features/painel/PainelPage'
 import { AppLayout } from './layout/AppLayout'
 
 export const rotas: RouteObject[] = [
   { path: '/login', element: <LoginPage /> },
+  { path: '/definir-senha', element: <DefinirSenhaPage /> },
   {
     element: <RequirePerfil />,
     children: [
@@ -13,6 +17,8 @@ export const rotas: RouteObject[] = [
         element: <AppLayout />,
         children: [
           { path: '/', element: <PainelPage /> },
+          { path: '/metodologia', element: <MetodologiaPage /> },
+          { path: '/minha-senha', element: <MinhaSenhaPage /> },
           {
             path: '/resultados/:campanhaId',
             lazy: async () => ({
