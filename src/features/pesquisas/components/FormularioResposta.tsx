@@ -4,10 +4,10 @@ import { buscarHistoricoDaResposta, enviarResposta } from '@/api/respostas'
 import { ErroRequisicao } from '@/api/erros'
 import { Button } from '@/components/ui/Button'
 import { CampoTexto } from '@/components/ui/CampoTexto'
-import { formatarData, formatarPercentual } from '@/lib/formatos'
+import { formatarData, formatarMoeda, formatarPercentual } from '@/lib/formatos'
 import comum from '../comum.module.css'
 import { paraCampo } from '../respostas'
-import { type CamposResposta, formatarDiaria, validarResposta } from '../resposta'
+import { type CamposResposta, validarResposta } from '../resposta'
 import styles from './FormularioResposta.module.css'
 
 export type RespostaAtual = {
@@ -65,7 +65,7 @@ function Historico({ respostaId }: { respostaId: number }) {
               <tr key={versao.versao}>
                 <th scope="row">{versao.versao}</th>
                 <td className={comum.numero}>{formatarPercentual(versao.taxaOcupacao, 2)}</td>
-                <td className={comum.numero}>{formatarDiaria(versao.diariaMedia)}</td>
+                <td className={comum.numero}>{formatarMoeda(versao.diariaMedia, 2)}</td>
                 <td>{formatarData(versao.enviadoEm)}</td>
               </tr>
             ))}
@@ -135,7 +135,7 @@ export function FormularioResposta({
           </p>
           <p>
             Taxa de ocupação {formatarPercentual(ultima.taxaOcupacao, 2)} · diária média{' '}
-            {formatarDiaria(ultima.diariaMedia)}
+            {formatarMoeda(ultima.diariaMedia, 2)}
           </p>
           <p className={comum.secundario}>
             Um novo envio substitui este. As versões anteriores ficam guardadas.

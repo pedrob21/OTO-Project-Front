@@ -23,10 +23,3 @@ export function validarResposta(campos: CamposResposta): {
   if (Object.keys(erros).length > 0) return { erros }
   return { erros, dados: paraRespostaRequest(campos.taxaOcupacao, campos.diariaMedia) }
 }
-
-/** 410.5 → "R$ 410,50". A diária digitada tem centavos; o formatador do painel arredonda. */
-export function formatarDiaria(valor: number | null | undefined): string {
-  return valor === null || valor === undefined
-    ? '—'
-    : `R$\u00a0${new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(valor)}`
-}
