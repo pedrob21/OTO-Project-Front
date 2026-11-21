@@ -27,6 +27,22 @@ import {
   excluirParametros,
   listarParametros,
 } from './parametros'
+import {
+  alterarGrupo,
+  alterarItem,
+  buscarCatalogo,
+  buscarCatalogoCompleto,
+  buscarInventario,
+  criarGrupo,
+  criarItem,
+  excluirGrupo,
+  excluirItem,
+  inativarGrupo,
+  inativarItem,
+  reativarGrupo,
+  reativarItem,
+  salvarInventario,
+} from './inventario'
 import * as download from '@/lib/download'
 import { alterarReferencia, criarReferencia, excluirReferencia } from './referencias'
 import { buscarHistoricoDaResposta, enviarResposta, listarRespostasDaCampanha } from './respostas'
@@ -474,6 +490,70 @@ describe('estabelecimentos', () => {
       ['POST', 'http://localhost:8080/api/estabelecimentos/12/reativar'],
     ])
     expect(chamada(1).corpo).toMatchObject({ capacidade: { qtdUh: 40 }, secretaria })
+  })
+})
+
+describe('inventário', () => {
+  it('catálogo: lê, cria, altera, inativa, reativa e exclui grupos', async () => {
+    const dados = { categoria: 'ACESSIBILIDADE' as const, nome: 'Rampas', ordem: 2 }
+    await buscarCatalogo()
+    await buscarCatalogoCompleto()
+    await criarGrupo(dados)
+    await alterarGrupo(4, dados)
+    await inativarGrupo(4)
+    await reativarGrupo(4)
+    await excluirGrupo(4)
+
+    expect(
+      fetchFalso.mock.calls.map((_, indice) => [chamada(indice).metodo, chamada(indice).url]),
+    ).toEqual([
+      ['GET', 'http://localhost:8080/api/inventario/catalogo'],
+      ['GET', 'http://localhost:8080/api/inventario/catalogo/completo'],
+      ['POST', 'http://localhost:8080/api/inventario/grupos'],
+      ['PUT', 'http://localhost:8080/api/inventario/grupos/4'],
+      ['POST', 'http://localhost:8080/api/inventario/grupos/4/inativar'],
+      ['POST', 'http://localhost:8080/api/inventario/grupos/4/reativar'],
+      ['DELETE', 'http://localhost:8080/api/inventario/grupos/4'],
+    ])
+    expect(chamada(2).corpo).toEqual(dados)
+    expect(chamada(3).corpo).toEqual(dados)
+  })
+
+  it('catálogo: cria no grupo, altera, inativa, reativa e exclui itens', async () => {
+    const dados = { nome: 'Piscina', permiteComplemento: true }
+    await criarItem(4, dados)
+    await alterarItem(9, dados)
+    await inativarItem(9)
+    await reativarItem(9)
+    await excluirItem(9)
+
+    expect(
+      fetchFalso.mock.calls.map((_, indice) => [chamada(indice).metodo, chamada(indice).url]),
+    ).toEqual([
+      ['POST', 'http://localhost:8080/api/inventario/grupos/4/itens'],
+      ['PUT', 'http://localhost:8080/api/inventario/itens/9'],
+      ['POST', 'http://localhost:8080/api/inventario/itens/9/inativar'],
+      ['POST', 'http://localhost:8080/api/inventario/itens/9/reativar'],
+      ['DELETE', 'http://localhost:8080/api/inventario/itens/9'],
+    ])
+    expect(chamada(0).corpo).toEqual(dados)
+    expect(chamada(1).corpo).toEqual(dados)
+  })
+
+  it('lê e salva o inventário do estabelecimento', async () => {
+    const dados = { itens: [{ itemId: 9, complemento: '2 piscinas' }, { itemId: 11 }] }
+    await buscarInventario(12)
+    await salvarInventario(12, dados)
+
+    expect(chamada(0)).toMatchObject({
+      metodo: 'GET',
+      url: 'http://localhost:8080/api/estabelecimentos/12/inventario',
+    })
+    expect(chamada(1)).toMatchObject({
+      metodo: 'PUT',
+      url: 'http://localhost:8080/api/estabelecimentos/12/inventario',
+      corpo: dados,
+    })
   })
 })
 
