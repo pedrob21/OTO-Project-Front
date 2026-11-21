@@ -13,11 +13,11 @@ import { OcupacaoMensalCard } from './components/OcupacaoMensalCard'
 import { PesquisasDoPainel } from './components/PesquisasDoPainel'
 import { PainelFiltros } from './components/PainelFiltros'
 import { TaxaOcupacaoDestaque } from './components/TaxaOcupacaoDestaque'
-import { parametrosVigentes, rhcVigente } from './fixtures'
 import { useComparativoDoPainel } from './hooks/useComparativoDoPainel'
 import { useCampanhaSelecionada } from './hooks/useCampanhaSelecionada'
 import { useCampanhasPublicadas } from './hooks/useCampanhasPublicadas'
 import { useFeriadosDoPainel } from './hooks/useFeriadosDoPainel'
+import { podeVerRhc, useParametrosDoPainel, useRhcDoPainel } from './hooks/useVigenciasDoPainel'
 import { useResultadoDoPainel } from './hooks/useResultadoDoPainel'
 import { useSerieDoPainel } from './hooks/useSerieDoPainel'
 import styles from './PainelPage.module.css'
@@ -38,6 +38,8 @@ export function PainelPage() {
   const anoDaCampanha = partesDoPeriodo(selecionada?.periodoInicio)?.ano
   const expectativa = useFeriadosDoPainel('EXPECTATIVA', anoDaCampanha)
   const realizado = useFeriadosDoPainel('CONSOLIDADA', anoDaCampanha)
+  const parametros = useParametrosDoPainel(selecionada?.periodoInicio)
+  const rhc = useRhcDoPainel(selecionada?.periodoInicio, perfil)
   const dados = resultado.data
   const comparativo = useComparativoDoPainel(selecionada, dados)
   const tipos = referencias.data?.tiposHospedagem ?? []
@@ -112,13 +114,13 @@ export function PainelPage() {
             <BlocoDoPainel
               titulo="Fluxo estimado de turistas"
               mensagemDeErro="Não foi possível carregar o fluxo de turistas."
-              consultas={base}
+              consultas={podeVerRhc(perfil) ? [...base, parametros, rhc] : [...base, parametros]}
             >
               {dados && (
                 <FluxoTuristasCard
                   resultado={dados}
-                  rhc={rhcVigente}
-                  parametros={parametrosVigentes}
+                  rhc={rhc.data ?? undefined}
+                  parametros={parametros.data ?? undefined}
                 />
               )}
             </BlocoDoPainel>

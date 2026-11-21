@@ -82,6 +82,12 @@ describe('FluxoTuristasCard', () => {
     expect(screen.queryByText(/Day use estimado/)).not.toBeInTheDocument()
   })
 
+  it('parâmetros sem fonte mostram a nota sem citar a fonte', () => {
+    abrir({ parametros: { percentualDayUse: 15.15 } })
+
+    expect(screen.getByText('Day use estimado em 15,15% do total.')).toBeInTheDocument()
+  })
+
   it('sem fluxo, orienta em vez de mostrar a barra', () => {
     abrir({ resultado: { campanha: resultado.campanha } })
 

@@ -58,9 +58,9 @@ beforeEach(() => {
 
 afterEach(() => vi.unstubAllGlobals())
 
-function abrir(caminho = '/') {
+function abrir(caminho = '/', usuario: Usuario = VISUALIZADOR) {
   const api = criarApiFalsa(rotas)
-  abrirTela(<PainelPage />, { caminho, usuario: VISUALIZADOR })
+  abrirTela(<PainelPage />, { caminho, usuario })
   return api
 }
 
@@ -217,6 +217,64 @@ describe('série mensal e feriados da API', () => {
     expect(await screen.findByText('Não foi possível carregar os feriados.')).toBeInTheDocument()
     await tituloDoDestaque('agosto')
     expect(await screen.findByText('2025')).toBeInTheDocument()
+  })
+})
+
+describe('RHC e parâmetros vigentes no fluxo de turistas', () => {
+  const PARCEIRO: Usuario = { ...VISUALIZADOR, id: 4, perfil: 'PARCEIRO' }
+
+  beforeEach(() => {
+    rotas['GET /api/rhc/vigente'] = { corpo: { qtdRegistros: 478, qtdLeitos: 5116 } }
+    rotas['GET /api/parametros-calculo/vigente'] = {
+      corpo: { percentualDayUse: 15.15, fonte: 'Pesquisa de Demanda Turística 2024' },
+    }
+  })
+
+  it('usa os vigentes na data de início do período da campanha', async () => {
+    const api = abrir()
+
+    expect(await screen.findByText('478 registros e 5.116 leitos')).toBeInTheDocument()
+    expect(
+      screen.getByText(/Day use estimado em 15,15% do total, conforme a Pesquisa de Demanda/),
+    ).toBeInTheDocument()
+    for (const caminho of ['/api/rhc/vigente', '/api/parametros-calculo/vigente']) {
+      const busca = api.chamadas.find((chamada) => chamada.caminho === caminho)?.busca
+      expect(new URLSearchParams(busca).get('data')).toBe('2026-08-01')
+    }
+  })
+
+  it('o PARCEIRO não pede o RHC e vê o fluxo sem o detalhe', async () => {
+    const api = abrir('/', PARCEIRO)
+
+    expect(await screen.findByText(/Day use estimado em 15,15%/)).toBeInTheDocument()
+    expect(screen.queryByText(/registros e/)).not.toBeInTheDocument()
+    expect(api.chamadas.map((chamada) => chamada.caminho)).not.toContain('/api/rhc/vigente')
+  })
+
+  it('sem vigência cadastrada, o cartão segue sem o detalhe', async () => {
+    rotas['GET /api/rhc/vigente'] = { status: 404, corpo: { detail: 'sem vigência' } }
+    rotas['GET /api/parametros-calculo/vigente'] = {
+      status: 404,
+      corpo: { detail: 'sem vigência' },
+    }
+    abrir()
+
+    await tituloDoDestaque('agosto')
+    expect(await screen.findByText('Hospedagem caseira (RHC)')).toBeInTheDocument()
+    expect(screen.queryByText(/registros e/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Day use estimado/)).not.toBeInTheDocument()
+    expect(screen.queryByText('Não foi possível carregar o fluxo de turistas.')).toBeNull()
+  })
+
+  it('erro no RHC aparece só no bloco do fluxo', async () => {
+    rotas['GET /api/rhc/vigente'] = { status: 500, corpo: { detail: 'rhc fora' } }
+    abrir()
+
+    expect(
+      await screen.findByText('Não foi possível carregar o fluxo de turistas.'),
+    ).toBeInTheDocument()
+    await tituloDoDestaque('agosto')
+    expect(screen.getByRole('heading', { name: 'Faixas de ocupação' })).toBeInTheDocument()
   })
 })
 
