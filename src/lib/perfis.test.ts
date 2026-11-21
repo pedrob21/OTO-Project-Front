@@ -32,6 +32,15 @@ describe('itensDoPerfil', () => {
     expect(rotulos(undefined)).not.toContain('Cadastros')
   })
 
+  it('Meu estabelecimento só aparece para o PARCEIRO, com a página própria', () => {
+    const item = itensDoPerfil('PARCEIRO').find((i) => i.rotulo === 'Meu estabelecimento')
+
+    expect(item?.para).toBe('/meu-estabelecimento')
+    expect(rotulos('ADMIN')).not.toContain('Meu estabelecimento')
+    expect(rotulos('VISUALIZADOR')).not.toContain('Meu estabelecimento')
+    expect(rotulos(undefined)).not.toContain('Meu estabelecimento')
+  })
+
   it('Pesquisas leva cada perfil à sua página', () => {
     const pesquisas = (perfil: Parameters<typeof itensDoPerfil>[0]) =>
       itensDoPerfil(perfil).find((item) => item.rotulo === 'Pesquisas')

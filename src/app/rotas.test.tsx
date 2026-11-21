@@ -204,6 +204,7 @@ const ROTAS_DAS_PESQUISAS: { caminho: string; titulo: string | RegExp; perfis: P
     titulo: 'Prévia e publicação',
     perfis: ['ADMIN'],
   },
+  { caminho: '/meu-estabelecimento', titulo: 'Meu estabelecimento', perfis: ['PARCEIRO'] },
   {
     caminho: '/resultados/21',
     titulo: 'Consolidada de setembro de 2026',

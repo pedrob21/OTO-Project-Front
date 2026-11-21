@@ -13,9 +13,9 @@ import { Card } from '@/components/ui/Card'
 import { Carregando } from '@/components/ui/Carregando'
 import { Dialogo } from '@/components/ui/Dialogo'
 import { ErroApi } from '@/components/ui/ErroApi'
-import { Tabela, type ColunaTabela } from '@/components/ui/Tabela'
+import { Tabela } from '@/components/ui/Tabela'
 import { hojeLocal } from '@/lib/datas'
-import { formatarData, formatarDecimal, formatarInteiro } from '@/lib/formatos'
+import { formatarData } from '@/lib/formatos'
 import type { Esquemas } from '@/types/dominio'
 import { CabecalhoCadastro } from '../CabecalhoCadastro'
 import styles from '../Cadastros.module.css'
@@ -23,8 +23,8 @@ import { formDosCampos, pedidoDosCampos, type FormDeCampos } from '../campos'
 import { Confirmacao } from '@/components/ui/Confirmacao'
 import { FormularioDeCampos } from '../FormularioDeCampos'
 import { useMutacaoCadastro } from '../useMutacaoCadastro'
-import { SituacaoDaVigencia } from '../SituacaoDaVigencia'
-import { ordenarPorVigencia, situacaoDaVigencia } from '../vigencias'
+import { ordenarPorVigencia } from '../vigencias'
+import { colunasDaCapacidade } from './colunasDaCapacidade'
 import { CAMPOS_CAPACIDADE, errosDaCapacidade, REGRAS_CAPACIDADE } from './capacidades'
 
 type Capacidade = Esquemas['CapacidadeResponse']
@@ -91,28 +91,7 @@ export function CapacidadesPage({ hoje: hojeFixo }: CapacidadesPageProps) {
     setEdicao(nova)
   }
 
-  const colunas: ColunaTabela<Capacidade>[] = [
-    { titulo: 'Vigente desde', celula: (linha) => formatarData(linha.vigenteDesde) },
-    { titulo: 'UH', celula: (linha) => formatarInteiro(linha.qtdUh), numerica: true },
-    { titulo: 'UH PCD', celula: (linha) => formatarInteiro(linha.qtdUhPcd), numerica: true },
-    { titulo: 'Leitos', celula: (linha) => formatarInteiro(linha.qtdLeitos), numerica: true },
-    {
-      titulo: 'Pessoas por UH',
-      celula: (linha) => formatarInteiro(linha.maxLeitosPorUh),
-      numerica: true,
-    },
-    {
-      titulo: 'Leitos úteis',
-      celula: (linha) => formatarDecimal(linha.leitosUteis, 1),
-      numerica: true,
-    },
-    {
-      titulo: 'Situação',
-      celula: (linha) => (
-        <SituacaoDaVigencia situacao={situacaoDaVigencia(linha, capacidades.data ?? [], hoje)} />
-      ),
-    },
-  ]
+  const colunas = colunasDaCapacidade(capacidades.data ?? [], hoje)
 
   return (
     <>

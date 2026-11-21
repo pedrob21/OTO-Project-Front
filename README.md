@@ -34,6 +34,10 @@ A API fica no repositório [OTO-Project](https://github.com/pedrob21/OTO-Project
   - lançamento da resposta pelo ADMIN: lança ou corrige a resposta de um estabelecimento a partir do acompanhamento, com a versão enviada e o histórico. Um erro da API não apaga o que foi digitado
   - prévia e publicação da campanha, com os impedimentos ligados ao botão "Publicar" e o cancelamento da publicação, em `/pesquisas/:id/campanhas/:campanhaId/previa`
 - Resultado publicado de cada campanha, para todos os perfis, com a ocultação por sigilo e o botão "Baixar CSV", em `/resultados/:campanhaId`
+- Meu estabelecimento, só para o PARCEIRO, no item "Meu estabelecimento" do menu, em `/meu-estabelecimento`. Um cartão por estabelecimento dele:
+  - dados cadastrais e da Secretaria em leitura; "Editar dados" abre o formulário só com os dados cadastrais, porque o bloco da Secretaria é só do ADMIN
+  - capacidade vigente e histórico em leitura, com "Informar nova capacidade" para uma nova vigência; corrigir e excluir continuam só do ADMIN
+  - inventário no mesmo editor de Cadastros, sem os grupos exclusivos da Secretaria
 - Cadastros, só para o ADMIN, no submenu "Cadastros" (os outros perfis não veem o item):
   - usuários, com o link de convite ou de nova senha para enviar ao usuário
   - estabelecimentos, com os dados da Secretaria, e o histórico de capacidade (UH e leitos) de cada um
@@ -145,28 +149,29 @@ Antes dos testes, o Playwright gera o build e sobe o `npm run preview` na porta 
 ## Estrutura do projeto
 
 ```text
-├── dev/                 # Páginas de comparação visual, fora do build de produção
-├── docs/referencia/     # Tela exportada do Figma
+├── dev/                     # Páginas de comparação visual, fora do build de produção
+├── docs/referencia/         # Tela exportada do Figma
 ├── public/
 └── src/
-    ├── api/             # Cliente HTTP, sessão, chamadas por recurso (como `inventario.ts`) e tipos gerados
-    ├── app/             # Rotas, provedores e layout (cabeçalho, menu e rodapé)
-    ├── assets/          # Logos
+    ├── api/                 # Cliente HTTP, sessão, chamadas por recurso (como `inventario.ts`) e tipos gerados
+    ├── app/                 # Rotas, provedores e layout (cabeçalho, menu e rodapé)
+    ├── assets/              # Logos
     ├── components/
-    │   ├── charts/      # Gráficos reutilizáveis
-    │   └── ui/          # Botão, cartão, select, selo, tabela, diálogo, estados de vazio e de erro
+    │   ├── charts/          # Gráficos reutilizáveis
+    │   └── ui/              # Botão, cartão, select, selo, tabela, diálogo, estados de vazio e de erro
     ├── features/
-    │   ├── auth/        # Contexto de sessão, login, definição e troca de senha e proteção de rotas
-    │   ├── cadastros/   # Telas de cadastro do ADMIN, com formulário em diálogo (inclui o catálogo do inventário em `inventario/`)
-    │   ├── inventario/  # Editor de inventário de um estabelecimento (`EditorDeInventario`), reaproveitável por outros perfis
-    │   ├── metodologia/ # Página estática do cálculo dos indicadores
-    │   ├── painel/      # Página, cartões, regras de cálculo e dados fixos
-    │   ├── pesquisas/   # Criação, lista, acompanhamento, resposta, prévia e publicação
-    │   └── resultados/  # Resultado publicado de uma campanha e download do CSV
-    ├── lib/             # Formatadores pt-BR, leitura de decimais, download e regras de perfil
-    ├── styles/          # Tokens do design e estilos globais
-    ├── test/            # Configuração dos testes
-    └── types/           # Tipos de domínio derivados da API
+    │   ├── auth/            # Contexto de sessão, login, definição e troca de senha e proteção de rotas
+    │   ├── cadastros/       # Telas de cadastro do ADMIN, com formulário em diálogo (inclui o catálogo do inventário em `inventario/`)
+    │   ├── estabelecimento/ # Meu estabelecimento do PARCEIRO: dados, capacidade e inventário
+    │   ├── inventario/      # Editor de inventário de um estabelecimento (`EditorDeInventario`), reaproveitável por outros perfis
+    │   ├── metodologia/     # Página estática do cálculo dos indicadores
+    │   ├── painel/          # Página, cartões, regras de cálculo e dados fixos
+    │   ├── pesquisas/       # Criação, lista, acompanhamento, resposta, prévia e publicação
+    │   └── resultados/      # Resultado publicado de uma campanha e download do CSV
+    ├── lib/                 # Formatadores pt-BR, leitura de decimais, download e regras de perfil
+    ├── styles/              # Tokens do design e estilos globais
+    ├── test/                # Configuração dos testes
+    └── types/               # Tipos de domínio derivados da API
 ```
 
 Com o servidor local no ar, os tokens e os componentes podem ser conferidos ao lado da referência em `/dev/tokens.html` e `/dev/componentes.html`.
