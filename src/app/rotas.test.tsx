@@ -199,6 +199,11 @@ const ROTAS_DAS_PESQUISAS: { caminho: string; titulo: string | RegExp; perfis: P
     perfis: ['ADMIN'],
   },
   { caminho: '/pesquisas/responder', titulo: 'Responder pesquisa', perfis: ['PARCEIRO'] },
+  {
+    caminho: '/pesquisas/2/campanhas/21/previa',
+    titulo: 'Prévia e publicação',
+    perfis: ['ADMIN'],
+  },
 ]
 
 /** O que a API devolve para as telas que precisam de dados para mostrar o título. */

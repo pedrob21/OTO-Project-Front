@@ -202,6 +202,16 @@ describe('AcompanhamentoPage, lançar resposta', () => {
     ).toBeInTheDocument()
   })
 
+  it('cada campanha leva à prévia e publicação', async () => {
+    abrir()
+
+    expect(
+      await screen.findByRole('link', {
+        name: 'Prévia e publicação de Consolidada de outubro de 2026',
+      }),
+    ).toHaveAttribute('href', '/pesquisas/5/campanhas/50/previa')
+  })
+
   it('campanha publicada não oferece lançamento', async () => {
     comRodada({ status: 'ENCERRADA', campanhas: [{ id: 50, publicada: true }] })
     abrir()

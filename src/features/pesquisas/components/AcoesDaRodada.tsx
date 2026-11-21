@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { type FormEvent, useEffect, useRef, useState } from 'react'
+import { type FormEvent, useState } from 'react'
 import { abrirRodada, encerrarRodada, prorrogarRodada, reabrirRodada } from '@/api/rodadas'
 import { Button } from '@/components/ui/Button'
 import { CampoTexto } from '@/components/ui/CampoTexto'
@@ -7,6 +7,7 @@ import type { Esquemas } from '@/types/dominio'
 import comum from '../comum.module.css'
 import { erroDoPrazo } from '../rodadas'
 import styles from './AcoesDaRodada.module.css'
+import { Confirmacao } from './Confirmacao'
 
 type Pedido =
   | { tipo: 'abrir'; prazo: string }
@@ -51,7 +52,6 @@ export function AcoesDaRodada({ rodada, hoje }: AcoesDaRodadaProps) {
   const [tentou, setTentou] = useState(false)
   const [confirmando, setConfirmando] = useState(false)
   const [mensagem, setMensagem] = useState('')
-  const confirmacaoRef = useRef<HTMLDivElement>(null)
 
   const acao = useMutation({
     mutationFn: (pedido: Pedido) => executar(rodada.id ?? 0, pedido),
@@ -64,10 +64,6 @@ export function AcoesDaRodada({ rodada, hoje }: AcoesDaRodadaProps) {
       await queryClient.invalidateQueries({ queryKey: ['rodadas'] })
     },
   })
-
-  useEffect(() => {
-    if (confirmando) confirmacaoRef.current?.focus()
-  }, [confirmando])
 
   const status = rodada.status ?? 'RASCUNHO'
   const temPublicada = (rodada.campanhas ?? []).some((campanha) => campanha.publicada)
@@ -136,31 +132,17 @@ export function AcoesDaRodada({ rodada, hoje }: AcoesDaRodadaProps) {
       )}
 
       {confirmando && (
-        <div
+        <Confirmacao
           id={ID_CONFIRMACAO}
-          ref={confirmacaoRef}
-          tabIndex={-1}
-          role="group"
-          aria-labelledby="titulo-encerrar"
-          aria-describedby="texto-encerrar"
-          className={comum.confirmacao}
+          titulo={`Encerrar a pesquisa ${rodada.codigo}?`}
+          rotuloConfirmar={acao.isPending ? 'Encerrando…' : 'Confirmar encerramento'}
+          ocupado={acao.isPending}
+          aoConfirmar={() => acao.mutate({ tipo: 'encerrar' })}
+          aoVoltar={cancelarEncerramento}
         >
-          <h3 id="titulo-encerrar" className={comum.tituloConfirmacao}>
-            Encerrar a pesquisa {rodada.codigo}?
-          </h3>
-          <p id="texto-encerrar">
-            Os parceiros não poderão mais responder. A equipe do OTO ainda pode lançar respostas até
-            publicar, e a pesquisa pode ser reaberta enquanto nenhuma campanha for publicada.
-          </p>
-          <div className={comum.acoes}>
-            <Button disabled={acao.isPending} onClick={() => acao.mutate({ tipo: 'encerrar' })}>
-              {acao.isPending ? 'Encerrando…' : 'Confirmar encerramento'}
-            </Button>
-            <Button variante="secundaria" onClick={cancelarEncerramento}>
-              Voltar
-            </Button>
-          </div>
-        </div>
+          Os parceiros não poderão mais responder. A equipe do OTO ainda pode lançar respostas até
+          publicar, e a pesquisa pode ser reaberta enquanto nenhuma campanha for publicada.
+        </Confirmacao>
       )}
 
       {acao.isError && (

@@ -3,7 +3,13 @@ import { buscarFeriados, buscarResumo, buscarSerieMensal } from './dashboard'
 import { ErroRequisicao } from './erros'
 import { buscarParametrosVigentes } from './parametros'
 import { buscarHistoricoDaResposta, enviarResposta, listarRespostasDaCampanha } from './respostas'
-import { buscarResultado, listarPublicadas } from './resultados'
+import {
+  buscarPrevia,
+  buscarResultado,
+  cancelarPublicacao,
+  listarPublicadas,
+  publicarCampanha,
+} from './resultados'
 import { buscarRhcVigente } from './rhc'
 import {
   abrirRodada,
@@ -135,6 +141,26 @@ describe('resultados', () => {
     await buscarResultado(42)
 
     expect(chamada().url).toBe('http://localhost:8080/api/campanhas/42/resultado')
+  })
+
+  it('prévia, publicação e cancelamento', async () => {
+    await buscarPrevia(42)
+    await publicarCampanha(42)
+    fetchFalso.mockResolvedValueOnce(new Response(null, { status: 204 }))
+    await expect(cancelarPublicacao(42)).resolves.toBeUndefined()
+
+    expect(chamada(0)).toMatchObject({
+      url: 'http://localhost:8080/api/campanhas/42/previa',
+      metodo: 'GET',
+    })
+    expect(chamada(1)).toMatchObject({
+      url: 'http://localhost:8080/api/campanhas/42/publicacao',
+      metodo: 'POST',
+    })
+    expect(chamada(2)).toMatchObject({
+      url: 'http://localhost:8080/api/campanhas/42/publicacao',
+      metodo: 'DELETE',
+    })
   })
 })
 

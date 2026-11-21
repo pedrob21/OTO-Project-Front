@@ -75,10 +75,12 @@ function Contato({ estabelecimento }: { estabelecimento: Esquemas['SituacaoEstab
 function Campanha({
   campanha,
   tipos,
+  rotaDaPrevia,
   rotaDaResposta,
 }: {
   campanha: Esquemas['AcompanhamentoCampanha']
   tipos: Esquemas['TipoRef'][]
+  rotaDaPrevia: string
   /** sem ela, a API não aceita resposta (rascunho ou campanha publicada) */
   rotaDaResposta?: (estabelecimentoId: number | undefined) => string
 }) {
@@ -91,6 +93,15 @@ function Campanha({
     <Card
       titulo={campanha.nome}
       subtitulo={`${quantos(qtdRespondentes, 'respondeu', 'responderam')} · ${quantos((qtdMh ?? 0) - qtdRespondentes, 'pendente', 'pendentes')}`}
+      acao={
+        <Link
+          to={rotaDaPrevia}
+          className={comum.botaoLinkSecundario}
+          aria-label={`Prévia e publicação de ${campanha.nome}`}
+        >
+          Prévia e publicação
+        </Link>
+      }
     >
       <div className={styles.progressos}>
         <ProgressoComMinimo
@@ -240,6 +251,7 @@ export function AcompanhamentoPage({ hoje: hojeFixo }: AcompanhamentoPageProps) 
             key={campanha.campanhaId}
             campanha={campanha}
             tipos={referencias.data?.tiposHospedagem ?? []}
+            rotaDaPrevia={`/pesquisas/${id}/campanhas/${campanha.campanhaId}/previa`}
             rotaDaResposta={
               status === 'RASCUNHO' ||
               rodada.data?.campanhas?.some(
