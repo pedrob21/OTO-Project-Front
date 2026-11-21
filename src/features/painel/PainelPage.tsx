@@ -14,13 +14,13 @@ import { PesquisasDoPainel } from './components/PesquisasDoPainel'
 import { PainelFiltros } from './components/PainelFiltros'
 import { TaxaOcupacaoDestaque } from './components/TaxaOcupacaoDestaque'
 import {
-  comparativo,
   feriadosExpectativa,
   feriadosRealizado,
   parametrosVigentes,
   rhcVigente,
   serieMensal,
 } from './fixtures'
+import { useComparativoDoPainel } from './hooks/useComparativoDoPainel'
 import { useCampanhaSelecionada } from './hooks/useCampanhaSelecionada'
 import { useCampanhasPublicadas } from './hooks/useCampanhasPublicadas'
 import { useResultadoDoPainel } from './hooks/useResultadoDoPainel'
@@ -39,6 +39,7 @@ export function PainelPage() {
     staleTime: Infinity,
   })
   const dados = resultado.data
+  const comparativo = useComparativoDoPainel(selecionada, dados)
   const tipos = referencias.data?.tiposHospedagem ?? []
   const base = [publicadas, resultado]
 

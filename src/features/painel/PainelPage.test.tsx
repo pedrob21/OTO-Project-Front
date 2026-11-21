@@ -20,13 +20,24 @@ const PUBLICADAS = [
     campanhaId: 15,
     nome: 'Agosto de 2026',
     modalidade: 'CONSOLIDADA',
+    tipoPeriodo: 'MENSAL',
     periodoInicio: '2026-08-01',
   },
-  { campanhaId: 13, nome: 'Julho de 2026', modalidade: 'CONSOLIDADA', periodoInicio: '2026-07-01' },
+  {
+    campanhaId: 13,
+    nome: 'Julho de 2026',
+    modalidade: 'CONSOLIDADA',
+    tipoPeriodo: 'MENSAL',
+    periodoInicio: '2026-07-01',
+  },
 ]
 
 const tituloDoDestaque = (mes: string) =>
-  screen.findByRole('heading', { name: `Taxa de ocupação hoteleira em ${mes} de 2026` })
+  screen.findByRole(
+    'heading',
+    { name: `Taxa de ocupação hoteleira em ${mes} de 2026` },
+    { timeout: 4000 },
+  )
 
 const RESULTADO_DE_JULHO = {
   ...resultado,
@@ -52,6 +63,53 @@ function abrir(caminho = '/') {
   abrirTela(<PainelPage />, { caminho, usuario: VISUALIZADOR })
   return api
 }
+
+describe('comparação com o ano anterior', () => {
+  const AGOSTO_2025 = {
+    campanhaId: 7,
+    nome: 'Agosto de 2025',
+    modalidade: 'CONSOLIDADA',
+    tipoPeriodo: 'MENSAL',
+    periodoInicio: '2025-08-01',
+  }
+  const serie = (indicador: string, valor: number) => ({
+    corpo: { indicador, anos: [{ ano: 2025, meses: [{ mes: 8, valor }] }] },
+  })
+
+  it('usa o resultado publicado do mesmo mês do ano anterior', async () => {
+    rotas['GET /api/campanhas/publicadas'] = { corpo: [...PUBLICADAS, AGOSTO_2025] }
+    rotas['GET /api/campanhas/7/resultado'] = {
+      corpo: { ...resultado, taxaOcupacao: 58.7, fluxoTotal: 400_000, diariaMedia: 700 },
+    }
+    const api = abrir()
+
+    expect(await screen.findByText(/\+4,1\s*p\.p\./)).toBeInTheDocument()
+    expect(screen.getAllByText('vs ago./2025').length).toBeGreaterThan(0)
+    expect(api.chamadas.map((chamada) => chamada.caminho)).not.toContain(
+      '/api/dashboard/serie-mensal',
+    )
+  })
+
+  it('sem publicada, usa a série histórica', async () => {
+    rotas['GET /api/dashboard/serie-mensal'] = [
+      serie('TAXA_OCUPACAO', 60.8),
+      serie('FLUXO_TURISTAS', 400_000),
+      serie('DIARIA_MEDIA', 700),
+    ]
+    const api = abrir()
+
+    expect(await screen.findByText(/\+2,0\s*p\.p\./)).toBeInTheDocument()
+    const buscas = api.chamadas.filter((chamada) => chamada.caminho.endsWith('/serie-mensal'))
+    expect(new URLSearchParams(buscas[0]?.busca).get('anoInicio')).toBe('2025')
+  })
+
+  it('sem nenhum dos dois, esconde a variação', async () => {
+    abrir()
+
+    await tituloDoDestaque('agosto')
+    await vi.waitFor(() => expect(screen.queryByText(/^vs /)).not.toBeInTheDocument())
+  })
+})
 
 describe('PainelPage com dados da API', () => {
   it('mostra o resultado da campanha mais recente', async () => {
@@ -105,8 +163,9 @@ describe('PainelPage com dados da API', () => {
     }
     abrir()
 
-    expect(await screen.findByText('Resort')).toBeInTheDocument()
-    expect(screen.getByText('Pousada')).toBeInTheDocument()
+    await tituloDoDestaque('agosto')
+    expect(screen.getAllByText('Resort').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Pousada').length).toBeGreaterThan(0)
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
