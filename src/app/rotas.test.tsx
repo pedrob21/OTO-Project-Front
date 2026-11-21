@@ -180,3 +180,92 @@ describe('login', () => {
     expect(screen.queryByText(/Sua sessão expirou/)).not.toBeInTheDocument()
   })
 })
+
+describe('acesso por perfil', () => {
+  const PERFIS = ['ADMIN', 'PARCEIRO', 'VISUALIZADOR'] as const
+
+  const AUTENTICADAS = [
+    { caminho: '/', titulo: 'Painel de indicadores do turismo', perfis: PERFIS },
+    { caminho: '/minha-senha', titulo: 'Trocar senha', perfis: PERFIS },
+    {
+      caminho: '/metodologia',
+      titulo: 'Como calculamos a taxa de ocupação e o fluxo de turistas',
+      perfis: PERFIS,
+    },
+    { caminho: '/pesquisas/nova', titulo: 'Nova pesquisa', perfis: ['ADMIN'] },
+  ]
+
+  function responder(perfil: string) {
+    fetchFalso.mockImplementation(async (url) => {
+      const { pathname } = new URL(String(url))
+      if (pathname === '/api/me') return json(200, { ...ADMIN, perfil })
+      return json(200, pathname === '/api/parametros-calculo/vigente' ? {} : [])
+    })
+  }
+
+  describe.each(AUTENTICADAS)('$caminho', ({ caminho, titulo, perfis }) => {
+    it.each(PERFIS)('%s', async (perfil) => {
+      comSessao()
+      responder(perfil)
+
+      abrir(caminho)
+
+      if (perfis.some((permitido) => permitido === perfil)) {
+        expect(await screen.findByRole('heading', { level: 1, name: titulo })).toBeInTheDocument()
+      } else {
+        expect(await screen.findByText('Sem permissão para esta página')).toBeInTheDocument()
+      }
+    })
+
+    it('sem sessão, vai para o login', async () => {
+      const router = abrir(caminho)
+
+      expect(await screen.findByRole('heading', { name: 'Entrar no painel' })).toBeInTheDocument()
+      expect(router.state.location.pathname).toBe('/login')
+    })
+  })
+
+  it('o painel leva à página de metodologia pelo link', async () => {
+    comSessao()
+    responder('VISUALIZADOR')
+    const router = abrir('/')
+
+    await userEvent.click(
+      await screen.findByRole('link', {
+        name: 'Como calculamos a taxa de ocupação e o fluxo de turistas',
+      }),
+    )
+
+    await waitFor(() => expect(router.state.location.pathname).toBe('/metodologia'))
+  })
+
+  it('o menu do usuário leva à troca de senha', async () => {
+    comSessao()
+    responder('PARCEIRO')
+    const router = abrir('/')
+
+    await userEvent.click(await screen.findByRole('button', { name: /Admin OTO/ }))
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Trocar senha' }))
+
+    await waitFor(() => expect(router.state.location.pathname).toBe('/minha-senha'))
+  })
+
+  describe('/definir-senha', () => {
+    it('abre sem sessão e sem chamar a API', async () => {
+      const router = abrir('/definir-senha?token=abc')
+
+      expect(await screen.findByRole('heading', { name: 'Definir senha' })).toBeInTheDocument()
+      expect(router.state.location.pathname).toBe('/definir-senha')
+      expect(fetchFalso).not.toHaveBeenCalled()
+    })
+
+    it.each(PERFIS)('%s com sessão também abre', async (perfil) => {
+      comSessao()
+      responder(perfil)
+
+      abrir('/definir-senha?token=abc')
+
+      expect(await screen.findByRole('heading', { name: 'Definir senha' })).toBeInTheDocument()
+    })
+  })
+})
