@@ -12,6 +12,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed --workers=1",
     "format": "prettier --write src dev e2e",
     "format:check": "prettier --check src dev e2e",
     "api:tipos": "npx -y -p openapi-typescript@7 -p typescript@5 openapi-typescript http://localhost:8080/v3/api-docs -o src/api/schema.d.ts"

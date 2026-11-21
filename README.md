@@ -121,10 +121,24 @@ Se o navegador acusar erro de CORS, confira `CORS_ORIGENS` no `.env` do backend.
 | `npm test` | Roda os testes uma vez |
 | `npm run test:watch` | Roda os testes em modo de observação |
 | `npm run test:e2e` | Roda os testes e2e (Playwright) com a API simulada |
+| `npm run test:e2e:headed` | Roda os testes e2e com o navegador visível, um teste por vez |
 | `npm run api:tipos` | Gera `src/api/schema.d.ts` de novo. Precisa da API no ar |
 
 > [!NOTE]
 > Use `npm run typecheck` para verificar os tipos. O `tsc --noEmit` na raiz não verifica nada, porque o `tsconfig.json` principal só aponta para os outros.
+
+### Testes e2e
+
+Por padrão o Playwright roda sem abrir o navegador (headless). Outras formas de rodar, passando opções depois do `--`:
+
+```bash
+npm run test:e2e:headed                          # navegador visível, um teste por vez
+npm run test:e2e -- --ui                         # interface do Playwright, com timeline e passo a passo
+npm run test:e2e -- --debug                      # inspector, pausando em cada ação
+npm run test:e2e -- e2e/login.spec.ts --headed   # só um arquivo
+```
+
+Antes dos testes, o Playwright gera o build e sobe o `npm run preview` na porta 4173. Fora do CI, se já houver um servidor nessa porta, ele é reaproveitado e os testes rodam contra o build antigo; derrube esse servidor depois de mudar o código.
 
 ## Estrutura do projeto
 
