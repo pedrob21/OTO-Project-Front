@@ -20,6 +20,7 @@ import {
   type FormEstabelecimento,
 } from '@/features/cadastros/estabelecimentos/estabelecimentos'
 import { useMutacaoCadastro } from '@/features/cadastros/useMutacaoCadastro'
+import { CapacidadeDoEstabelecimento } from './CapacidadeDoEstabelecimento'
 import { CHAVE_ESTABELECIMENTOS } from './chaves'
 import cadastros from '@/features/cadastros/Cadastros.module.css'
 import styles from './MeuEstabelecimentoCard.module.css'
@@ -181,7 +182,10 @@ export function MeuEstabelecimentoCard({ resumo, nomeDoTipo, hoje }: MeuEstabele
           aoTentarNovamente={() => void detalhe.refetch()}
         />
       ) : (
-        <DadosEmLeitura estabelecimento={detalhe.data} nomeDoTipo={nomeDoTipo} />
+        <div className={styles.grupos}>
+          <DadosEmLeitura estabelecimento={detalhe.data} nomeDoTipo={nomeDoTipo} />
+          <CapacidadeDoEstabelecimento id={id} nome={resumo.nomeFantasia} hoje={hoje} />
+        </div>
       )}
 
       {editando && detalhe.data && (

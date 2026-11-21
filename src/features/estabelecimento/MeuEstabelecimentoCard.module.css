@@ -46,3 +46,11 @@
   align-items: center;
   gap: var(--espaco-3);
 }
+
+.cabecalhoDoGrupo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-3);
+}

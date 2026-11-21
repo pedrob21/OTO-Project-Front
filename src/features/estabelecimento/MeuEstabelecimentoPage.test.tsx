@@ -39,10 +39,22 @@ const CADASTRO = {
   },
 }
 
+const ANTIGA = {
+  id: 1,
+  vigenteDesde: '2025-01-01',
+  qtdUh: 20,
+  qtdUhPcd: 1,
+  qtdLeitos: 50,
+  maxLeitosPorUh: 3,
+  leitosUteis: 40,
+}
+const ATUAL = { ...ANTIGA, id: 2, vigenteDesde: '2026-03-01', qtdUh: 30, leitosUteis: 60 }
+
 function preparar(rotas: RotasFalsas = {}) {
   return criarApiFalsa({
     'GET /api/estabelecimentos': { corpo: [RESUMO] },
     'GET /api/estabelecimentos/7': { corpo: CADASTRO },
+    'GET /api/estabelecimentos/7/capacidades': { corpo: [ATUAL, ANTIGA] },
     'GET /api/referencias': {
       corpo: { tiposHospedagem: [{ codigo: 'POUSADA', nome: 'Pousada' }] },
     },
@@ -134,5 +146,59 @@ describe('meu estabelecimento', () => {
       await screen.findByText('Não foi possível carregar os seus estabelecimentos.'),
     ).toBeVisible()
     expect(screen.getByRole('button', { name: 'Tentar novamente' })).toBeVisible()
+  })
+
+  it('mostra a capacidade vigente e o histórico só para leitura', async () => {
+    preparar()
+    abrir()
+
+    const tabela = await screen.findByRole('table', { name: 'Capacidade de Pousada do Sol' })
+    const datas = within(tabela)
+      .getAllByRole('row')
+      .slice(1)
+      .map((linha) => linha.textContent)
+    expect(datas).toHaveLength(2)
+    expect(datas[0]).toContain('01/03/2026')
+    expect(datas[1]).toContain('01/01/2025')
+    expect(screen.queryByRole('button', { name: /Corrigir/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Excluir/ })).not.toBeInTheDocument()
+  })
+
+  it('informa nova capacidade com POST e atualiza o histórico', async () => {
+    const NOVA = { ...ATUAL, id: 3, vigenteDesde: '2026-11-20', qtdUh: 35 }
+    const api = preparar({
+      'GET /api/estabelecimentos/7/capacidades': [
+        { corpo: [ATUAL, ANTIGA] },
+        { corpo: [NOVA, ATUAL, ANTIGA] },
+      ],
+      'POST /api/estabelecimentos/7/capacidades': { status: 201, corpo: NOVA },
+    })
+    abrir()
+    await screen.findByRole('table', { name: 'Capacidade de Pousada do Sol' })
+
+    await userEvent.click(screen.getByRole('button', { name: /Informar nova capacidade/ }))
+    const dialogo = screen.getByRole('dialog', { name: 'Informar nova capacidade' })
+    expect(within(dialogo).getByLabelText('Vigente desde')).toHaveValue('2026-11-20')
+    await preencherCampo(within(dialogo).getByLabelText('UH'), '35')
+    await preencherCampo(within(dialogo).getByLabelText('UH PCD'), '2')
+    await preencherCampo(within(dialogo).getByLabelText('Leitos'), '90')
+    await preencherCampo(within(dialogo).getByLabelText('Máximo de pessoas por UH'), '4')
+    await userEvent.click(within(dialogo).getByRole('button', { name: 'Incluir vigência' }))
+
+    await waitFor(() => expect(api.envios()).toHaveLength(1))
+    expect(api.envios()[0]).toMatchObject({
+      metodo: 'POST',
+      caminho: '/api/estabelecimentos/7/capacidades',
+      corpo: {
+        vigenteDesde: '2026-11-20',
+        qtdUh: 35,
+        qtdUhPcd: 2,
+        qtdLeitos: 90,
+        maxLeitosPorUh: 4,
+      },
+    })
+    expect(await screen.findByText('Capacidade a partir de 20/11/2026 informada.')).toBeVisible()
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    expect(await screen.findByRole('row', { name: /20\/11\/2026/ })).toBeInTheDocument()
   })
 })
