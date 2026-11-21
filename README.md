@@ -197,7 +197,8 @@ Pendências do fluxo das pesquisas:
 - Quando a branch `feature/testes-cucumber` do backend entrar na `main` dele, rodar `npm run api:tipos` e usar `aceitaResposta` e `respostasAte` da pendência para desativar o formulário do parceiro e mostrar "Respostas até dd/mm/aaaa". O cálculo da tolerância fica na API
 - Ligar os botões "Acompanhamento completo", "Ver pendências" e "Lançar resposta" do cartão do painel às novas telas
 - Diárias médias digitadas pela equipe (`/api/campanhas/{id}/diarias`) na prévia
-- O fluxo das pesquisas ainda tem peças duplicadas de Cadastros (tabela, confirmação e formatação da diária). A lista e o que fazer com cada uma estão em [`docs/CONFLITOS.md`](docs/CONFLITOS.md)
+- Quando a branch `fix/prazos-e-resultado` do backend entrar, `GET /api/campanhas/{id}/resultado` e o `resultado.csv` passam a responder 422 para campanha não publicada e 404 só para campanha inexistente. A `ResultadoCampanhaPage` hoje trata 404 como "ainda não publicada": trocar para 422 e mostrar "campanha não encontrada" no 404
+- Há dois leitores de número digitado: `lerNumero` (`features/pesquisas/respostas.ts`, aceita ponto de milhar e deixa a contagem de casas para a validação) e `lerDecimal` (`lib/numeros.ts`, limita as casas e aceita sinal). Juntar num só quando a tela do parceiro for revista
 
 ## Decisões em aberto
 
