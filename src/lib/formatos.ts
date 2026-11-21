@@ -110,6 +110,22 @@ export function formatarMesAno(mes: number, ano: number): string {
   return nome ? `${nome}./${ano}` : VAZIO
 }
 
+/** 72.5 → "72,5"; 410 → "410"; até duas casas, sem zeros sobrando. */
+export function formatarDecimal(valor: Valor): string {
+  return semValor(valor)
+    ? VAZIO
+    : new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 }).format(valor)
+}
+
+/** Instante da API ("2026-11-12T17:30:00Z") no horário de quem usa: "12/11/2026 às 14:30". */
+export function formatarDataHora(instante: string | null | undefined): string {
+  const data = instante ? new Date(instante) : null
+  if (!data || Number.isNaN(data.getTime())) return VAZIO
+  const dia = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short' }).format(data)
+  const hora = new Intl.DateTimeFormat('pt-BR', { timeStyle: 'short' }).format(data)
+  return `${dia} às ${hora}`
+}
+
 /** "2026-09-18" → "18/09/2026". Lê o texto, sem Date, para o fuso não mudar o dia. */
 export function formatarData(data: string | null | undefined): string {
   const partes = data?.match(/^(\d{4})-(\d{2})-(\d{2})/)

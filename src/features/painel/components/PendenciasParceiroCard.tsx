@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { IconeCheck, IconeRelogio } from '@/components/icons'
 import { Badge } from '@/components/ui/Badge'
 import { Card } from '@/components/ui/Card'
@@ -10,15 +11,18 @@ type PendenciasParceiroCardProps = {
   pendencias: Esquemas['PendenciaResponse'][]
   /** "2026-10-05" */
   hoje: string
+  /** ação no topo do cartão, como levar à tela de responder */
+  acao?: ReactNode
 }
 
-export function PendenciasParceiroCard({ pendencias, hoje }: PendenciasParceiroCardProps) {
+export function PendenciasParceiroCard({ pendencias, hoje, acao }: PendenciasParceiroCardProps) {
   const ordenadas = pendencias.toSorted((a, b) => Number(a.respondida) - Number(b.respondida))
 
   return (
     <Card
       titulo="Pesquisas com os parceiros"
       subtitulo="Pesquisas abertas para os seus estabelecimentos"
+      acao={ordenadas.length > 0 ? acao : undefined}
     >
       {ordenadas.length === 0 ? (
         <EstadoVazio

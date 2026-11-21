@@ -55,10 +55,13 @@ describe('menu principal', () => {
     )
   })
 
-  it('Pesquisas fica desativado para o PARCEIRO, que ainda não tem a página', () => {
+  it('Pesquisas leva o PARCEIRO à tela de responder', () => {
     abrir({ usuario: { nome: 'Paula', perfil: 'PARCEIRO' } })
 
-    expect(screen.getByRole('button', { name: 'Pesquisas' })).toBeDisabled()
+    expect(screen.getByRole('link', { name: 'Pesquisas' })).toHaveAttribute(
+      'href',
+      '/pesquisas/responder',
+    )
   })
 
   it('páginas que ainda não existem aparecem desativadas', () => {
