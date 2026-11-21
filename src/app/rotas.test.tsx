@@ -180,3 +180,53 @@ describe('login', () => {
     expect(screen.queryByText(/Sua sessão expirou/)).not.toBeInTheDocument()
   })
 })
+
+const USUARIOS = {
+  ADMIN,
+  PARCEIRO: { id: 2, nome: 'Pousada Sol', perfil: 'PARCEIRO' },
+  VISUALIZADOR: { id: 3, nome: 'Vera', perfil: 'VISUALIZADOR' },
+} as const
+
+type Perfil = keyof typeof USUARIOS
+
+/** FE-05: cada rota das pesquisas, nos três perfis e sem sessão. */
+const ROTAS_DAS_PESQUISAS: { caminho: string; titulo: string | RegExp; perfis: Perfil[] }[] = [
+  { caminho: '/pesquisas', titulo: 'Pesquisas', perfis: ['ADMIN'] },
+]
+
+/** O que a API devolve para as telas que precisam de dados para mostrar o título. */
+const CORPOS: Record<string, unknown> = {}
+
+function apiDoPerfil(perfil: Perfil) {
+  fetchFalso.mockImplementation(async (url) => {
+    const caminho = new URL(String(url)).pathname
+    if (caminho === '/api/me') return json(200, USUARIOS[perfil])
+    return json(200, CORPOS[caminho] ?? [])
+  })
+}
+
+describe.each(ROTAS_DAS_PESQUISAS)('rota $caminho', ({ caminho, titulo, perfis }) => {
+  it.each(['ADMIN', 'PARCEIRO', 'VISUALIZADOR'] as const)('perfil %s', async (perfil) => {
+    comSessao()
+    apiDoPerfil(perfil)
+
+    abrir(caminho)
+
+    if (perfis.includes(perfil)) {
+      expect(
+        await screen.findByRole('heading', { level: 1, name: titulo }, { timeout: 3000 }),
+      ).toBeInTheDocument()
+    } else {
+      expect(await screen.findByText('Sem permissão para esta página')).toBeInTheDocument()
+      const caminhos = fetchFalso.mock.calls.map(([url]) => new URL(String(url)).pathname)
+      expect(caminhos).toEqual(['/api/me'])
+    }
+  })
+
+  it('sem sessão, vai para o login', async () => {
+    const router = abrir(caminho)
+
+    expect(await screen.findByRole('heading', { name: 'Entrar no painel' })).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/login')
+  })
+})

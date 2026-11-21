@@ -19,7 +19,7 @@ describe('itensDoPerfil', () => {
     const pesquisas = (perfil: Parameters<typeof itensDoPerfil>[0]) =>
       itensDoPerfil(perfil).find((item) => item.rotulo === 'Pesquisas')
 
-    expect(pesquisas('ADMIN')?.para).toBe('/pesquisas/nova')
+    expect(pesquisas('ADMIN')?.para).toBe('/pesquisas')
     expect(pesquisas('PARCEIRO')?.para).toBe('/pesquisas/responder')
   })
 
