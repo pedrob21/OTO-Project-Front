@@ -2,7 +2,7 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import { GraficoLinhasMensal } from '@/components/charts/GraficoLinhasMensal'
-import { serieMensal } from '../fixtures'
+import { serieMensal } from '../dadosDeTeste'
 import { seriesDeOcupacao, textoDosAnos } from '../ocupacaoMensal'
 import { OcupacaoMensalCard } from './OcupacaoMensalCard'
 

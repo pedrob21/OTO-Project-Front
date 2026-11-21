@@ -1,0 +1,14 @@
+.nota {
+  margin-top: 8px;
+  color: var(--cor-texto-suave);
+  font: var(--tipo-pequeno);
+}
+
+.comNota {
+  display: flex;
+  flex-direction: column;
+}
+
+.comNota > section {
+  flex: 1;
+}

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import { parametrosVigentes, resultado, rhcVigente } from '../fixtures'
+import { parametrosVigentes, resultado, rhcVigente } from '../dadosDeTeste'
 import { FluxoTuristasCard } from './FluxoTuristasCard'
 
 function abrir(sobrescrever = {}) {
@@ -80,6 +80,12 @@ describe('FluxoTuristasCard', () => {
     abrir({ parametros: undefined })
 
     expect(screen.queryByText(/Day use estimado/)).not.toBeInTheDocument()
+  })
+
+  it('parâmetros sem fonte mostram a nota sem citar a fonte', () => {
+    abrir({ parametros: { percentualDayUse: 15.15 } })
+
+    expect(screen.getByText('Day use estimado em 15,15% do total.')).toBeInTheDocument()
   })
 
   it('sem fluxo, orienta em vez de mostrar a barra', () => {

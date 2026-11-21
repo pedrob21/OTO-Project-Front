@@ -8,13 +8,20 @@ import {
   formatarPercentual,
 } from '@/lib/formatos'
 import type { Esquemas } from '@/types/dominio'
-import { linhasDeDesempenho, notaDosForaDaReceita, totalDoDesempenho } from '../desempenho'
+import {
+  linhasDeDesempenho,
+  linhasDoTipo,
+  notaDosForaDaReceita,
+  totalDoDesempenho,
+} from '../desempenho'
 import { textoDoPeriodo } from '../periodo'
 import styles from './DesempenhoPorTipoCard.module.css'
 
 type DesempenhoPorTipoCardProps = {
   resultado: Esquemas['ResultadoResponse']
   tipos: Esquemas['TipoRef'][]
+  /** código do tipo escolhido no filtro; sem ele, a tabela traz todos os tipos e o total */
+  tipo?: string
 }
 
 function estabelecimentos(quantidade: number | undefined): string {
@@ -48,11 +55,12 @@ function Taxa({ valor, total = false }: { valor: number | null | undefined; tota
   )
 }
 
-export function DesempenhoPorTipoCard({ resultado, tipos }: DesempenhoPorTipoCardProps) {
+export function DesempenhoPorTipoCard({ resultado, tipos, tipo }: DesempenhoPorTipoCardProps) {
   const porTipo = resultado.porTipo ?? []
-  const linhas = linhasDeDesempenho(porTipo, tipos)
+  const filtrado = tipo !== undefined
+  const linhas = filtrado ? linhasDoTipo(porTipo, tipo) : linhasDeDesempenho(porTipo, tipos)
   const total = totalDoDesempenho(linhas, resultado)
-  const nota = notaDosForaDaReceita(porTipo, tipos)
+  const nota = filtrado ? null : notaDosForaDaReceita(porTipo, tipos)
   const periodo = capitalizar(textoDoPeriodo(resultado.campanha))
   const temOculto = linhas.some((linha) => linha.omitido)
 
@@ -64,8 +72,16 @@ export function DesempenhoPorTipoCard({ resultado, tipos }: DesempenhoPorTipoCar
     >
       {linhas.length === 0 ? (
         <EstadoVazio
-          titulo="Ainda não há resultados por tipo neste período"
-          descricao="A tabela aparece aqui depois da publicação."
+          titulo={
+            filtrado
+              ? 'Sem valores para este tipo neste período'
+              : 'Ainda não há resultados por tipo neste período'
+          }
+          descricao={
+            filtrado
+              ? 'Nenhum meio de hospedagem deste tipo entrou nesta campanha.'
+              : 'A tabela aparece aqui depois da publicação.'
+          }
         />
       ) : (
         <>
@@ -125,24 +141,28 @@ export function DesempenhoPorTipoCard({ resultado, tipos }: DesempenhoPorTipoCar
               ))}
             </tbody>
 
-            <tfoot>
-              <tr>
-                <Tipo nome="Total" qtdMh={total.qtdMh} />
-                <td className={styles.numero}>{formatarInteiro(total.qtdUh)}</td>
-                <Taxa valor={total.taxaOcupacao} total />
-                <td className={styles.celulaDiaria}>{formatarMoeda(total.diariaMedia)}</td>
-                <td className={styles.numero}>{formatarMoeda(total.revpar)}</td>
-                <td className={styles.celulaReceita}>
-                  {formatarMoedaCompacta(total.receitaEstimada)}
-                </td>
-              </tr>
-            </tfoot>
+            {!filtrado && (
+              <tfoot>
+                <tr>
+                  <Tipo nome="Total" qtdMh={total.qtdMh} />
+                  <td className={styles.numero}>{formatarInteiro(total.qtdUh)}</td>
+                  <Taxa valor={total.taxaOcupacao} total />
+                  <td className={styles.celulaDiaria}>{formatarMoeda(total.diariaMedia)}</td>
+                  <td className={styles.numero}>{formatarMoeda(total.revpar)}</td>
+                  <td className={styles.celulaReceita}>
+                    {formatarMoedaCompacta(total.receitaEstimada)}
+                  </td>
+                </tr>
+              </tfoot>
+            )}
           </table>
 
           <p className={styles.nota}>
             RevPAR é a diária média multiplicada pela taxa de ocupação.
             {nota && ` ${nota}`}
-            {temOculto && ' A taxa do total não aparece porque há tipo oculto por sigilo.'}
+            {temOculto &&
+              !filtrado &&
+              ' A taxa do total não aparece porque há tipo oculto por sigilo.'}
           </p>
         </>
       )}
