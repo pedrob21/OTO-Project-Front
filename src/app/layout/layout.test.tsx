@@ -67,6 +67,21 @@ describe('menu principal', () => {
     )
   })
 
+  it('Meu estabelecimento é link só para o PARCEIRO', () => {
+    abrir({ usuario: { nome: 'Paula', perfil: 'PARCEIRO' } })
+
+    expect(screen.getByRole('link', { name: 'Meu estabelecimento' })).toHaveAttribute(
+      'href',
+      '/meu-estabelecimento',
+    )
+  })
+
+  it.each(['ADMIN', 'VISUALIZADOR'] as const)('%s não vê Meu estabelecimento', (perfil) => {
+    abrir({ usuario: { nome: 'Vera', perfil } })
+
+    expect(screen.queryByText('Meu estabelecimento')).not.toBeInTheDocument()
+  })
+
   it('páginas que ainda não existem aparecem desativadas', () => {
     abrir()
 

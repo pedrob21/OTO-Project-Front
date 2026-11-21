@@ -33,6 +33,7 @@ export const ITENS_MENU: ItemMenu[] = [
     paginaPorPerfil: { ADMIN: '/pesquisas', PARCEIRO: '/pesquisas/responder' },
     temSubmenu: true,
   },
+  { rotulo: 'Meu estabelecimento', para: '/meu-estabelecimento', perfis: ['PARCEIRO'] },
   { rotulo: 'Indicadores', temSubmenu: true },
   { rotulo: 'Relatórios', temSubmenu: true },
   { rotulo: 'Cadastros', perfis: ['ADMIN'], temSubmenu: true, submenu: SUBMENU_CADASTROS },
