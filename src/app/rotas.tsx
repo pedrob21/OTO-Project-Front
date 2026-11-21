@@ -14,6 +14,13 @@ export const rotas: RouteObject[] = [
         children: [
           { path: '/', element: <PainelPage /> },
           {
+            path: '/resultados/:campanhaId',
+            lazy: async () => ({
+              Component: (await import('@/features/resultados/ResultadoCampanhaPage'))
+                .ResultadoCampanhaPage,
+            }),
+          },
+          {
             element: <RequirePerfil perfis={['ADMIN']} />,
             children: [
               {

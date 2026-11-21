@@ -109,6 +109,9 @@ function Publicacao({
         <div className={comum.acoes}>
           {publicada ? (
             <>
+              <Link to={`/resultados/${campanhaId}`} className={comum.botaoLink}>
+                Ver resultado publicado
+              </Link>
               <Button
                 id={ID_CANCELAR}
                 variante="secundaria"

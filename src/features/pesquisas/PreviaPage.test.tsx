@@ -187,6 +187,10 @@ describe('PreviaPage, publicação (FE-07)', () => {
     abrir()
     const cancelar = await screen.findByRole('button', { name: 'Cancelar publicação' })
     expect(screen.queryByRole('button', { name: 'Publicar' })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Ver resultado publicado' })).toHaveAttribute(
+      'href',
+      '/resultados/50',
+    )
 
     await userEvent.click(cancelar)
     const confirmacao = screen.getByRole('group', {

@@ -36,7 +36,17 @@ function Campanhas({ campanhas = [] }: { campanhas: Esquemas['RodadaResponse']['
     <ul className={styles.campanhas}>
       {campanhas.map((campanha) => (
         <li key={campanha.id}>
-          {campanha.nome}
+          {campanha.publicada ? (
+            <Link
+              to={`/resultados/${campanha.id}`}
+              className={comum.link}
+              aria-label={`Resultado de ${campanha.nome}`}
+            >
+              {campanha.nome}
+            </Link>
+          ) : (
+            campanha.nome
+          )}
           <span className={comum.secundario}>
             {formatarData(campanha.periodoInicio)} a {formatarData(campanha.periodoFim)}
           </span>

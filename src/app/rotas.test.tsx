@@ -204,6 +204,11 @@ const ROTAS_DAS_PESQUISAS: { caminho: string; titulo: string | RegExp; perfis: P
     titulo: 'Prévia e publicação',
     perfis: ['ADMIN'],
   },
+  {
+    caminho: '/resultados/21',
+    titulo: 'Consolidada de setembro de 2026',
+    perfis: ['ADMIN', 'PARCEIRO', 'VISUALIZADOR'],
+  },
 ]
 
 /** O que a API devolve para as telas que precisam de dados para mostrar o título. */
@@ -215,6 +220,7 @@ const CORPOS: Record<string, unknown> = {
     status: 'ABERTA',
   },
   '/api/rodadas/2/acompanhamento': { rodadaId: 2, campanhas: [] },
+  '/api/campanhas/21/resultado': { campanha: { id: 21, nome: 'Consolidada de setembro de 2026' } },
 }
 
 function apiDoPerfil(perfil: Perfil) {

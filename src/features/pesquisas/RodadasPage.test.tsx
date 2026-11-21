@@ -25,7 +25,14 @@ const PUBLICADA = {
   titulo: 'Consolidada de agosto',
   status: 'ENCERRADA',
   prazoResposta: '2026-09-10',
-  campanhas: [{ id: 11, nome: 'Consolidada de agosto de 2026', publicadaEm: '2026-09-18' }],
+  campanhas: [
+    {
+      id: 11,
+      nome: 'Consolidada de agosto de 2026',
+      publicada: true,
+      publicadaEm: '2026-09-18',
+    },
+  ],
 }
 const RASCUNHO = { id: 3, codigo: '003/26', titulo: 'Outubro', status: 'RASCUNHO', campanhas: [] }
 
@@ -77,6 +84,17 @@ describe('RodadasPage', () => {
     await userEvent.click(await screen.findByRole('link', { name: 'Consolidada de setembro' }))
 
     expect(router.state.location.pathname).toBe('/pesquisas/2')
+  })
+
+  it('campanha publicada leva ao resultado', async () => {
+    abrir()
+
+    expect(
+      await screen.findByRole('link', { name: 'Resultado de Consolidada de agosto de 2026' }),
+    ).toHaveAttribute('href', '/resultados/11')
+    expect(
+      screen.queryByRole('link', { name: 'Resultado de Consolidada de setembro de 2026' }),
+    ).not.toBeInTheDocument()
   })
 
   it('leva à criação de pesquisa', async () => {
