@@ -2,12 +2,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type FormEvent, useState } from 'react'
 import { abrirRodada, encerrarRodada, prorrogarRodada, reabrirRodada } from '@/api/rodadas'
 import { Button } from '@/components/ui/Button'
+import { Confirmacao } from '@/components/ui/Confirmacao'
 import { CampoTexto } from '@/components/ui/CampoTexto'
 import type { Esquemas } from '@/types/dominio'
 import comum from '../comum.module.css'
 import { erroDoPrazo } from '../rodadas'
 import styles from './AcoesDaRodada.module.css'
-import { Confirmacao } from './Confirmacao'
 
 type Pedido =
   | { tipo: 'abrir'; prazo: string }
@@ -24,7 +24,6 @@ const SUCESSO: Record<Pedido['tipo'], string> = {
 
 const ID_ENCERRAR = 'encerrar-pesquisa'
 const ID_SEM_REABRIR = 'motivo-sem-reabrir'
-const ID_CONFIRMACAO = 'confirmar-encerramento'
 
 function executar(rodadaId: number, pedido: Pedido) {
   switch (pedido.tipo) {
@@ -116,9 +115,11 @@ export function AcoesDaRodada({ rodada, hoje }: AcoesDaRodadaProps) {
             id={ID_ENCERRAR}
             variante="secundaria"
             disabled={acao.isPending}
-            aria-expanded={confirmando}
-            aria-controls={confirmando ? ID_CONFIRMACAO : undefined}
-            onClick={() => setConfirmando(true)}
+            aria-haspopup="dialog"
+            onClick={() => {
+              acao.reset()
+              setConfirmando(true)
+            }}
           >
             Encerrar pesquisa
           </Button>
@@ -133,19 +134,18 @@ export function AcoesDaRodada({ rodada, hoje }: AcoesDaRodadaProps) {
 
       {confirmando && (
         <Confirmacao
-          id={ID_CONFIRMACAO}
           titulo={`Encerrar a pesquisa ${rodada.codigo}?`}
-          rotuloConfirmar={acao.isPending ? 'Encerrando…' : 'Confirmar encerramento'}
-          ocupado={acao.isPending}
+          mensagem="Os parceiros não poderão mais responder. A equipe do OTO ainda pode lançar respostas até publicar, e a pesquisa pode ser reaberta enquanto nenhuma campanha for publicada."
+          rotuloConfirmar="Confirmar encerramento"
+          rotuloEnviando="Encerrando…"
+          enviando={acao.isPending}
+          falha={acao.error?.message}
           aoConfirmar={() => acao.mutate({ tipo: 'encerrar' })}
-          aoVoltar={cancelarEncerramento}
-        >
-          Os parceiros não poderão mais responder. A equipe do OTO ainda pode lançar respostas até
-          publicar, e a pesquisa pode ser reaberta enquanto nenhuma campanha for publicada.
-        </Confirmacao>
+          aoCancelar={cancelarEncerramento}
+        />
       )}
 
-      {acao.isError && (
+      {acao.isError && !confirmando && (
         <div role="alert" className={comum.alerta}>
           {acao.error.message}
         </div>

@@ -1,0 +1,20 @@
+.corpo {
+  display: grid;
+  gap: 18px;
+}
+
+.falha {
+  padding: 10px var(--espaco-3);
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-negativo);
+  border-radius: var(--raio-chip);
+  color: var(--cor-negativo);
+  font: var(--tipo-corpo-forte);
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+  padding-top: var(--espaco-2);
+}
