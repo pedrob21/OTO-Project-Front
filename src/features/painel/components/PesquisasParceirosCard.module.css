@@ -1,8 +1,3 @@
-/* Mesmo padrão do menu: o que ainda não tem página fica desativado, sem mudar de aparência. */
-.cartao button:disabled {
-  opacity: 1;
-}
-
 .cartao .botaoTopo {
   min-height: 45.5px;
   margin-top: -1px;
@@ -13,7 +8,7 @@
   padding: 0 14.25px;
 }
 
-.acoes button {
+.acoes a {
   min-height: 43.5px;
 }
 
