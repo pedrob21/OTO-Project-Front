@@ -1,0 +1,36 @@
+.titulos {
+  margin-bottom: 32.5px;
+  padding-top: 18.5px;
+}
+
+.sobrelinha {
+  padding-left: 2px;
+  color: var(--cor-texto-sobrelinha);
+  font: var(--tipo-sobrelinha);
+  text-transform: uppercase;
+}
+
+.titulo {
+  margin-top: 16px;
+  color: var(--cor-texto-titulo);
+  font: var(--tipo-titulo-pagina);
+}
+
+.formulario {
+  display: grid;
+  gap: var(--espaco-4);
+  width: 100%;
+  max-width: 400px;
+}
+
+.sucesso {
+  padding: var(--espaco-3);
+  border-radius: var(--raio-chip);
+  background: var(--cor-aberta-fundo);
+  color: var(--cor-aberta-texto);
+}
+
+.erro {
+  color: var(--cor-negativo);
+  font: var(--tipo-corpo-forte);
+}

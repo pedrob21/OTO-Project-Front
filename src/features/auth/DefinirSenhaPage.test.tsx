@@ -80,7 +80,7 @@ describe('DefinirSenhaPage', () => {
     expect(String(url)).toBe('http://localhost:8080/api/auth/definir-senha')
     expect(init?.method).toBe('POST')
     expect(JSON.parse(String(init?.body))).toEqual({ token: 'abc', novaSenha: '12345678' })
-    expect((init?.headers as Record<string, string>).Authorization).toBeUndefined()
+    expect(init?.headers).not.toHaveProperty('Authorization')
   })
 
   it('link usado ou expirado mostra o detalhe da API e continua na página', async () => {

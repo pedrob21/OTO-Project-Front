@@ -66,6 +66,7 @@
 }
 
 .acao {
+  display: block;
   width: calc(100% + 2 * var(--espaco-2));
   margin-inline: calc(-1 * var(--espaco-2));
   padding: var(--espaco-2);
@@ -75,6 +76,7 @@
   color: var(--cor-primaria-escura);
   font: var(--tipo-botao);
   text-align: left;
+  text-decoration: none;
   cursor: pointer;
 }
 
