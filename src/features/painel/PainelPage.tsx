@@ -13,17 +13,13 @@ import { OcupacaoMensalCard } from './components/OcupacaoMensalCard'
 import { PesquisasDoPainel } from './components/PesquisasDoPainel'
 import { PainelFiltros } from './components/PainelFiltros'
 import { TaxaOcupacaoDestaque } from './components/TaxaOcupacaoDestaque'
-import {
-  feriadosExpectativa,
-  feriadosRealizado,
-  parametrosVigentes,
-  rhcVigente,
-  serieMensal,
-} from './fixtures'
+import { parametrosVigentes, rhcVigente } from './fixtures'
 import { useComparativoDoPainel } from './hooks/useComparativoDoPainel'
 import { useCampanhaSelecionada } from './hooks/useCampanhaSelecionada'
 import { useCampanhasPublicadas } from './hooks/useCampanhasPublicadas'
+import { useFeriadosDoPainel } from './hooks/useFeriadosDoPainel'
 import { useResultadoDoPainel } from './hooks/useResultadoDoPainel'
+import { useSerieDoPainel } from './hooks/useSerieDoPainel'
 import styles from './PainelPage.module.css'
 import { partesDoPeriodo } from './periodo'
 
@@ -38,6 +34,10 @@ export function PainelPage() {
     queryFn: ({ signal }) => buscarReferencias(signal),
     staleTime: Infinity,
   })
+  const serie = useSerieDoPainel(selecionada)
+  const anoDaCampanha = partesDoPeriodo(selecionada?.periodoInicio)?.ano
+  const expectativa = useFeriadosDoPainel('EXPECTATIVA', anoDaCampanha)
+  const realizado = useFeriadosDoPainel('CONSOLIDADA', anoDaCampanha)
   const dados = resultado.data
   const comparativo = useComparativoDoPainel(selecionada, dados)
   const tipos = referencias.data?.tiposHospedagem ?? []
@@ -92,7 +92,13 @@ export function PainelPage() {
           </div>
 
           <div className={styles.linhaMensal}>
-            <OcupacaoMensalCard serie={serieMensal} />
+            <BlocoDoPainel
+              titulo="Taxa de ocupação mensal"
+              mensagemDeErro="Não foi possível carregar a taxa de ocupação mensal."
+              consultas={[publicadas, serie]}
+            >
+              {serie.data && <OcupacaoMensalCard serie={serie.data} />}
+            </BlocoDoPainel>
             <BlocoDoPainel
               titulo="Faixas de ocupação"
               mensagemDeErro="Não foi possível carregar as faixas de ocupação."
@@ -116,11 +122,17 @@ export function PainelPage() {
                 />
               )}
             </BlocoDoPainel>
-            <ExpectativaRealizadoCard
-              expectativa={feriadosExpectativa}
-              realizado={feriadosRealizado}
-              ano={partesDoPeriodo(selecionada?.periodoInicio)?.ano}
-            />
+            <BlocoDoPainel
+              titulo="Expectativa × realizado"
+              mensagemDeErro="Não foi possível carregar os feriados."
+              consultas={[publicadas, expectativa, realizado]}
+            >
+              <ExpectativaRealizadoCard
+                expectativa={expectativa.data ?? []}
+                realizado={realizado.data ?? []}
+                ano={anoDaCampanha}
+              />
+            </BlocoDoPainel>
           </div>
 
           <div className={styles.desempenho}>

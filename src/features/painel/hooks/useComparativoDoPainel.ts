@@ -1,12 +1,12 @@
 import { useQueries } from '@tanstack/react-query'
 import { useSearchParams } from 'react-router'
-import { buscarSerieMensal } from '@/api/dashboard'
 import type { Esquemas, Indicador } from '@/types/dominio'
 import { campanhaDoAnoComparado, montarComparativo, valorDaSerie } from '../comparacao'
 import { opcoesComparacao } from '../filtros'
 import { partesDoPeriodo } from '../periodo'
 import { useCampanhasPublicadas } from './useCampanhasPublicadas'
 import { useResultadoDoPainel } from './useResultadoDoPainel'
+import { consultaDaSerie } from './useSerieMensal'
 import { valorDoFiltro } from './usePainelFiltros'
 
 const INDICADORES: Indicador[] = ['TAXA_OCUPACAO', 'FLUXO_TURISTAS', 'DIARIA_MEDIA']
@@ -22,7 +22,9 @@ export function useComparativoDoPainel(
   const publicadas = useCampanhasPublicadas().data ?? []
   const [busca] = useSearchParams()
   const ano = Number(valorDoFiltro(busca, 'comparar', opcoesComparacao(campanha)))
-  const mes = partesDoPeriodo(campanha?.periodoInicio)?.mes
+  const partesDaCampanha = partesDoPeriodo(campanha?.periodoInicio)
+  const mes = partesDaCampanha?.mes
+  const anoDaCampanha = partesDaCampanha?.ano
 
   const doAnoComparado = campanhaDoAnoComparado(publicadas, campanha, ano)
   const publicado = useResultadoDoPainel(doAnoComparado?.campanhaId)
@@ -30,15 +32,10 @@ export function useComparativoDoPainel(
   const temHistorico = campanha?.tipoPeriodo === 'MENSAL' && !!ano && mes !== undefined
   const buscarHistorico = temHistorico && !doAnoComparado
   const series = useQueries({
-    queries: INDICADORES.map((indicador) => ({
-      queryKey: ['dashboard', 'serie-mensal', indicador, campanha?.modalidade, ano],
-      queryFn: ({ signal }: { signal: AbortSignal }) =>
-        buscarSerieMensal(
-          { indicador, modalidade: campanha?.modalidade, anoInicio: ano, anoFim: ano },
-          signal,
-        ),
-      enabled: buscarHistorico,
-    })),
+    queries: INDICADORES.map((indicador) => {
+      const consulta = consultaDaSerie(indicador, campanha?.modalidade, anoDaCampanha)
+      return { ...consulta, enabled: consulta.enabled && buscarHistorico }
+    }),
   })
 
   if (!atual || !ano) return undefined

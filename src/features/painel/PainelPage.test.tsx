@@ -72,9 +72,6 @@ describe('comparação com o ano anterior', () => {
     tipoPeriodo: 'MENSAL',
     periodoInicio: '2025-08-01',
   }
-  const serie = (indicador: string, valor: number) => ({
-    corpo: { indicador, anos: [{ ano: 2025, meses: [{ mes: 8, valor }] }] },
-  })
 
   it('usa o resultado publicado do mesmo mês do ano anterior', async () => {
     rotas['GET /api/campanhas/publicadas'] = { corpo: [...PUBLICADAS, AGOSTO_2025] }
@@ -85,22 +82,24 @@ describe('comparação com o ano anterior', () => {
 
     expect(await screen.findByText(/\+4,1\s*p\.p\./)).toBeInTheDocument()
     expect(screen.getAllByText('vs ago./2025').length).toBeGreaterThan(0)
-    expect(api.chamadas.map((chamada) => chamada.caminho)).not.toContain(
-      '/api/dashboard/serie-mensal',
-    )
+    const indicadores = api.chamadas
+      .filter((chamada) => chamada.caminho === '/api/dashboard/serie-mensal')
+      .map((chamada) => new URLSearchParams(chamada.busca).get('indicador'))
+    expect(indicadores).not.toContain('FLUXO_TURISTAS')
+    expect(indicadores).not.toContain('DIARIA_MEDIA')
   })
 
   it('sem publicada, usa a série histórica', async () => {
-    rotas['GET /api/dashboard/serie-mensal'] = [
-      serie('TAXA_OCUPACAO', 60.8),
-      serie('FLUXO_TURISTAS', 400_000),
-      serie('DIARIA_MEDIA', 700),
-    ]
+    const mesmaSerie = { corpo: { anos: [{ ano: 2025, meses: [{ mes: 8, valor: 60.8 }] }] } }
+    rotas['GET /api/dashboard/serie-mensal'] = mesmaSerie
     const api = abrir()
 
     expect(await screen.findByText(/\+2,0\s*p\.p\./)).toBeInTheDocument()
     const buscas = api.chamadas.filter((chamada) => chamada.caminho.endsWith('/serie-mensal'))
-    expect(new URLSearchParams(buscas[0]?.busca).get('anoInicio')).toBe('2025')
+    const indicadores = buscas.map((c) => new URLSearchParams(c.busca).get('indicador')).toSorted()
+    expect(indicadores).toEqual(['DIARIA_MEDIA', 'FLUXO_TURISTAS', 'TAXA_OCUPACAO'])
+    expect(new URLSearchParams(buscas[0]?.busca).get('anoInicio')).toBe('2024')
+    expect(new URLSearchParams(buscas[0]?.busca).get('anoFim')).toBe('2026')
   })
 
   it('sem nenhum dos dois, esconde a variação', async () => {
@@ -108,6 +107,116 @@ describe('comparação com o ano anterior', () => {
 
     await tituloDoDestaque('agosto')
     await vi.waitFor(() => expect(screen.queryByText(/^vs /)).not.toBeInTheDocument())
+  })
+})
+
+const FERIADO = (ano: number, taxaOcupacao: number) => [
+  {
+    feriadoCodigo: 'CARNAVAL',
+    nome: 'Carnaval',
+    anos: [{ ano, taxaOcupacao, origem: 'SISTEMA' }],
+  },
+]
+
+describe('série mensal e feriados da API', () => {
+  beforeEach(() => {
+    rotas['GET /api/dashboard/serie-mensal'] = {
+      corpo: {
+        indicador: 'TAXA_OCUPACAO',
+        anos: [
+          {
+            ano: 2026,
+            meses: [
+              { mes: 7, valor: 51.3 },
+              { mes: 8, valor: 62.8 },
+            ],
+          },
+          { ano: 2025, meses: [{ mes: 8, valor: 58.7 }] },
+          { ano: 2024, meses: [{ mes: 8 }] },
+        ],
+      },
+    }
+    rotas['GET /api/dashboard/feriados'] = [
+      { corpo: FERIADO(2026, 80) },
+      { corpo: FERIADO(2026, 87) },
+    ]
+  })
+
+  it('o gráfico mensal usa a série da API, sem os anos sem valor', async () => {
+    const api = abrir()
+
+    const legenda = await screen.findByText('2025')
+    expect(legenda).toBeInTheDocument()
+    expect(screen.queryByText('2024')).not.toBeInTheDocument()
+    expect(
+      screen.getByText(/Consolidado mensal dos meios de hospedagem regulares, 2025 a 2026/),
+    ).toBeInTheDocument()
+
+    const busca = api.chamadas.find((c) => c.caminho === '/api/dashboard/serie-mensal')
+    const parametros = new URLSearchParams(busca?.busca)
+    expect(parametros.get('modalidade')).toBe('CONSOLIDADA')
+    expect(parametros.get('indicador')).toBe('TAXA_OCUPACAO')
+  })
+
+  it('a série da taxa é buscada uma vez e dividida com a comparação', async () => {
+    const api = abrir()
+
+    await screen.findByText('2025')
+    await tituloDoDestaque('agosto')
+    const taxas = api.chamadas.filter(
+      (c) =>
+        c.caminho === '/api/dashboard/serie-mensal' &&
+        new URLSearchParams(c.busca).get('indicador') === 'TAXA_OCUPACAO',
+    )
+    expect(taxas).toHaveLength(1)
+  })
+
+  it('o expectativa x realizado busca as duas modalidades do ano da campanha', async () => {
+    const api = abrir()
+
+    await tituloDoDestaque('agosto')
+    await vi.waitFor(() =>
+      expect(api.chamadas.filter((c) => c.caminho === '/api/dashboard/feriados')).toHaveLength(2),
+    )
+    const feriados = api.chamadas.filter((c) => c.caminho === '/api/dashboard/feriados')
+    expect(feriados.map((c) => new URLSearchParams(c.busca).get('modalidade')).toSorted()).toEqual([
+      'CONSOLIDADA',
+      'EXPECTATIVA',
+    ])
+    expect(new URLSearchParams(feriados[0]?.busca).get('anoInicio')).toBe('2026')
+    expect(await screen.findByText('Carnaval')).toBeInTheDocument()
+  })
+
+  it('sem dados, os dois cartões mostram o estado vazio', async () => {
+    rotas['GET /api/dashboard/serie-mensal'] = { corpo: { anos: [] } }
+    rotas['GET /api/dashboard/feriados'] = { corpo: [] }
+    abrir()
+
+    expect(await screen.findByText('Ainda não há taxas mensais publicadas')).toBeInTheDocument()
+    expect(
+      await screen.findByText('Ainda não há feriados publicados neste ano'),
+    ).toBeInTheDocument()
+  })
+
+  it('erro na série derruba só o cartão mensal', async () => {
+    rotas['GET /api/dashboard/serie-mensal'] = { status: 500, corpo: { detail: 'série fora' } }
+    abrir()
+
+    expect(
+      await screen.findByText('Não foi possível carregar a taxa de ocupação mensal.'),
+    ).toBeInTheDocument()
+    await tituloDoDestaque('agosto')
+    expect(screen.getByRole('heading', { name: 'Expectativa × realizado' })).toBeInTheDocument()
+    expect(screen.queryByText('Não foi possível carregar os feriados.')).not.toBeInTheDocument()
+  })
+
+  it('erro nos feriados derruba só o cartão de expectativa', async () => {
+    rotas['GET /api/dashboard/feriados'] = { status: 500, corpo: { detail: 'feriados fora' } }
+    abrir()
+
+    expect(await screen.findByText('Não foi possível carregar os feriados.')).toBeInTheDocument()
+    await tituloDoDestaque('agosto')
+    expect(await screen.findByText('2025')).toBeInTheDocument()
   })
 })
 
@@ -166,7 +275,9 @@ describe('PainelPage com dados da API', () => {
     await tituloDoDestaque('agosto')
     expect(screen.getAllByText('Resort').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Pousada').length).toBeGreaterThan(0)
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('Não foi possível carregar o desempenho por tipo.'),
+    ).not.toBeInTheDocument()
   })
 
   it('erro no resultado aparece nos blocos dele e não derruba os outros', async () => {
