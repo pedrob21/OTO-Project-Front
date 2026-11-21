@@ -1,10 +1,9 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { Link, useParams } from 'react-router'
 import { ErroRequisicao } from '@/api/erros'
 import { buscarReferencias } from '@/api/referencias'
 import { buscarResultado } from '@/api/resultados'
-import { IconeDownload } from '@/components/icons'
-import { Button } from '@/components/ui/Button'
+import { BaixarCsvButton } from '@/components/BaixarCsvButton'
 import { Card } from '@/components/ui/Card'
 import { Carregando } from '@/components/ui/Carregando'
 import { ErroApi } from '@/components/ui/ErroApi'
@@ -14,33 +13,7 @@ import { DesempenhoPorTipoCard } from '@/features/painel/components/DesempenhoPo
 import comum from '@/features/pesquisas/comum.module.css'
 import { IndicadoresDaCampanha } from '@/features/pesquisas/components/IndicadoresDaCampanha'
 import { formatarData } from '@/lib/formatos'
-import { baixarCsvDoResultado } from './baixarCsv'
 import styles from './ResultadoCampanhaPage.module.css'
-
-function BaixarCsv({ campanhaId }: { campanhaId: number }) {
-  const download = useMutation({ mutationFn: () => baixarCsvDoResultado(campanhaId) })
-
-  return (
-    <div className={styles.acoes}>
-      <Button
-        variante="secundaria"
-        iconeEsquerda={<IconeDownload tamanho={18} />}
-        disabled={download.isPending}
-        onClick={() => download.mutate()}
-      >
-        {download.isPending ? 'Baixando…' : 'Baixar CSV'}
-      </Button>
-      {download.isError && (
-        <p role="alert" className={`${comum.alerta} ${styles.erroDownload}`}>
-          Não foi possível baixar o arquivo. {download.error.message}
-        </p>
-      )}
-      <p role="status" className={comum.oculto}>
-        {download.isSuccess ? `Arquivo ${download.data} baixado.` : ''}
-      </p>
-    </div>
-  )
-}
 
 /** FE-08: resultado publicado. Para quem não é ADMIN, a API oculta os tipos com poucas respostas. */
 export function ResultadoCampanhaPage() {
@@ -78,7 +51,11 @@ export function ResultadoCampanhaPage() {
             </p>
           )}
         </div>
-        {resultado.data && <BaixarCsv campanhaId={campanhaId} />}
+        {resultado.data && (
+          <div className={styles.acoes}>
+            <BaixarCsvButton campanhaId={campanhaId} />
+          </div>
+        )}
       </div>
 
       {resultado.isPending && <Carregando texto="Carregando o resultado" />}

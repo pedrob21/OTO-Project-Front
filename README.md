@@ -197,7 +197,7 @@ Pendências do fluxo das pesquisas:
 - Quando a branch `feature/testes-cucumber` do backend entrar na `main` dele, rodar `npm run api:tipos` e usar `aceitaResposta` e `respostasAte` da pendência para desativar o formulário do parceiro e mostrar "Respostas até dd/mm/aaaa". O cálculo da tolerância fica na API
 - Ligar os botões "Acompanhamento completo", "Ver pendências" e "Lançar resposta" do cartão do painel às novas telas
 - Diárias médias digitadas pela equipe (`/api/campanhas/{id}/diarias`) na prévia
-- Esta branch duplicou de propósito algumas peças das branches `feat/senha-csv-metodologia` e `feat/cadastros` (download do CSV, tabela e confirmação). O que fazer com cada uma no merge está em [`docs/CONFLITOS.md`](docs/CONFLITOS.md)
+- O fluxo das pesquisas ainda tem peças duplicadas de Cadastros (tabela, confirmação e formatação da diária). A lista e o que fazer com cada uma estão em [`docs/CONFLITOS.md`](docs/CONFLITOS.md)
 
 ## Decisões em aberto
 
