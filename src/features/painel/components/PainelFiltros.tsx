@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { buscarReferencias } from '@/api/referencias'
-import { IconeDownload, IconeSetaBaixoLarga } from '@/components/icons'
-import { Button } from '@/components/ui/Button'
+import { BaixarCsvButton } from '@/components/BaixarCsvButton'
 import { Carregando } from '@/components/ui/Carregando'
 import { ErroApi } from '@/components/ui/ErroApi'
 import { Select } from '@/components/ui/Select'
@@ -65,14 +64,11 @@ export function PainelFiltros() {
         opcoes={tipoOpcoes}
         aoMudar={(valor) => definir('tipo', valor)}
       />
-      <Button
-        variante="amarela"
-        className={styles.exportar}
-        iconeEsquerda={<IconeDownload tamanho={23} className={styles.iconeDownload} />}
-        iconeDireita={<IconeSetaBaixoLarga tamanho={32} />}
-      >
-        Exportar
-      </Button>
+      {selecionada?.campanhaId !== undefined && (
+        <div className={styles.exportar}>
+          <BaixarCsvButton campanhaId={selecionada.campanhaId} />
+        </div>
+      )}
     </div>
   )
 }

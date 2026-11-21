@@ -1,8 +1,9 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import * as resultados from '@/api/resultados'
 import { criarApiFalsa, type RotasFalsas } from '@/test/apiFalsa'
-import { abrirTela } from '@/test/telas'
+import { ADMIN_LOGADO, abrirTela } from '@/test/telas'
 import { PainelFiltros } from './PainelFiltros'
 
 const PUBLICADAS = [
@@ -37,7 +38,10 @@ beforeEach(() => {
   }
 })
 
-afterEach(() => vi.unstubAllGlobals())
+afterEach(() => {
+  vi.unstubAllGlobals()
+  vi.restoreAllMocks()
+})
 
 function abrir(caminho = '/') {
   const api = criarApiFalsa(rotas)
@@ -123,5 +127,44 @@ describe('PainelFiltros', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Tentar novamente' }))
 
     expect(await screen.findByLabelText('Campanha')).toBeInTheDocument()
+  })
+
+  describe('baixar csv', () => {
+    it('baixa o csv da campanha selecionada, e o Exportar não existe mais', async () => {
+      const baixar = vi.spyOn(resultados, 'baixarResultadoCsv').mockResolvedValue()
+      abrir()
+
+      await userEvent.click(await screen.findByRole('button', { name: 'Baixar CSV' }))
+
+      expect(baixar).toHaveBeenCalledWith(15)
+      expect(screen.queryByRole('button', { name: 'Exportar' })).not.toBeInTheDocument()
+    })
+
+    it('segue a campanha da URL e a troca de campanha', async () => {
+      const baixar = vi.spyOn(resultados, 'baixarResultadoCsv').mockResolvedValue()
+      abrir('/?campanha=13')
+
+      await userEvent.click(await screen.findByRole('button', { name: 'Baixar CSV' }))
+      expect(baixar).toHaveBeenLastCalledWith(13)
+
+      await userEvent.selectOptions(screen.getByLabelText('Campanha'), '15')
+      await userEvent.click(screen.getByRole('button', { name: 'Baixar CSV' }))
+      expect(baixar).toHaveBeenLastCalledWith(15)
+    })
+
+    it('o PARCEIRO também baixa: a API libera o csv para todos os perfis', async () => {
+      criarApiFalsa(rotas)
+      abrirTela(<PainelFiltros />, { usuario: { ...ADMIN_LOGADO, perfil: 'PARCEIRO' } })
+
+      expect(await screen.findByRole('button', { name: 'Baixar CSV' })).toBeInTheDocument()
+    })
+
+    it('sem campanha publicada, não mostra o botão', async () => {
+      rotas['GET /api/campanhas/publicadas'] = { corpo: [] }
+      abrir()
+
+      await screen.findByLabelText('Campanha')
+      expect(screen.queryByRole('button', { name: 'Baixar CSV' })).not.toBeInTheDocument()
+    })
   })
 })
