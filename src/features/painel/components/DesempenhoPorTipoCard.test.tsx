@@ -7,7 +7,7 @@ import {
   notaDosForaDaReceita,
   totalDoDesempenho,
 } from '../desempenho'
-import { referencias, resultado } from '../fixtures'
+import { referencias, resultado } from '../dadosDeTeste'
 import { DesempenhoPorTipoCard } from './DesempenhoPorTipoCard'
 
 const tipos = referencias.tiposHospedagem ?? []

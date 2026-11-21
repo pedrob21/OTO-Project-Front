@@ -1,4 +1,4 @@
-// Dados da tela exportada, no formato da API, para montar o painel antes da integração (T15).
+// Dados de teste do painel, no formato da API, tirados da tela exportada do design.
 // Os totais de leitos são aproximados, e as séries mensais foram lidas das linhas do gráfico.
 import type { Esquemas } from '@/types/dominio'
 
@@ -47,33 +47,6 @@ export const referencias: Esquemas['Referencias'] = {
     { codigo: 'EXCELENTE', nome: 'Excelente', percentualMinimo: 81 },
   ],
 }
-
-export const campanhasPublicadas: Esquemas['CampanhaPublicadaResponse'][] = [
-  {
-    campanhaId: 15,
-    nome: 'Agosto de 2026',
-    modalidade: 'CONSOLIDADA',
-    tipoPeriodo: 'MENSAL',
-    periodoInicio: '2026-08-01',
-    periodoFim: '2026-08-31',
-    publicadaEm: '2026-09-18T12:00:00Z',
-    taxaOcupacao: 62.8,
-    faixa: { codigo: 'OTIMA', nome: 'Ótima' },
-    fluxoTotal: 496_660,
-    diariaMedia: 765,
-  },
-  {
-    campanhaId: 13,
-    nome: 'Julho de 2026',
-    modalidade: 'CONSOLIDADA',
-    tipoPeriodo: 'MENSAL',
-    periodoInicio: '2026-07-01',
-    periodoFim: '2026-07-31',
-    publicadaEm: '2026-08-12T12:00:00Z',
-    taxaOcupacao: 85.2,
-    faixa: { codigo: 'EXCELENTE', nome: 'Excelente' },
-  },
-]
 
 export const resultado: Esquemas['ResultadoResponse'] = {
   campanha: {
@@ -200,7 +173,7 @@ export const parametrosVigentes: Esquemas['ParametroResponse'] = {
   fonte: 'Pesquisa de Demanda Turística 2024',
 }
 
-/** A data da tela exportada: é dela que sai o "faltam 4 dias". A T15 passa a usar a data de hoje. */
+/** A data da tela exportada: é dela que sai o "faltam 4 dias". O painel usa a data de hoje. */
 export const hojeDoDesign = '2026-10-05'
 
 export const rodadaAberta: Esquemas['RodadaResponse'] = {

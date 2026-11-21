@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import { dominioDeFeriados, linhasDeFeriados, posicaoNoDominio } from '../feriados'
-import { feriadosExpectativa, feriadosRealizado } from '../fixtures'
+import { feriadosExpectativa, feriadosRealizado } from '../dadosDeTeste'
 import { ExpectativaRealizadoCard } from './ExpectativaRealizadoCard'
 
 function abrir(expectativa = feriadosExpectativa, realizado = feriadosRealizado, ano = 2026) {

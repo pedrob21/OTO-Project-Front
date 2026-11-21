@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { criarApiFalsa, type RotasFalsas } from '@/test/apiFalsa'
 import { abrirTela } from '@/test/telas'
 import type { Usuario } from '@/types/dominio'
-import { referencias, resultado } from './fixtures'
+import { referencias, resultado } from './dadosDeTeste'
 import { PainelPage } from './PainelPage'
 
 const VISUALIZADOR: Usuario = {

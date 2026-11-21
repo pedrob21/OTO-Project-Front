@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { corDaFaixa, faixasDaRegua, posicaoNaRegua } from './faixas'
-import { referencias } from './fixtures'
+import { referencias } from './dadosDeTeste'
 import { partesDoPeriodo, textoDoPeriodo } from './periodo'
 
 const FAIXAS = faixasDaRegua(referencias.faixasOcupacao ?? [])

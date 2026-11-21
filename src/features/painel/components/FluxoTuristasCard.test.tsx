@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import { parametrosVigentes, resultado, rhcVigente } from '../fixtures'
+import { parametrosVigentes, resultado, rhcVigente } from '../dadosDeTeste'
 import { FluxoTuristasCard } from './FluxoTuristasCard'
 
 function abrir(sobrescrever = {}) {

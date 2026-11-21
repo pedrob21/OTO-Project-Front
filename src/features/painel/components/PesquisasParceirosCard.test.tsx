@@ -10,7 +10,7 @@ import {
   referencias,
   rodadaAberta,
   rodadasRecentes,
-} from '../fixtures'
+} from '../dadosDeTeste'
 import {
   campanhaDeReferencia,
   idsRecentesPublicadas,
