@@ -21,6 +21,7 @@ describe('itensDoPerfil', () => {
     expect(cadastros?.submenu?.map((item) => item.para)).toEqual([
       '/cadastros/usuarios',
       '/cadastros/estabelecimentos',
+      '/cadastros/parametros',
     ])
     expect(rotulos('PARCEIRO')).not.toContain('Cadastros')
     expect(rotulos('VISUALIZADOR')).not.toContain('Cadastros')

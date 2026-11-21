@@ -52,6 +52,7 @@ describe('números', () => {
   it('moeda', () => {
     expect(formatarMoeda(765)).toBe(`R$${nbsp}765`)
     expect(formatarMoeda(1234)).toBe(`R$${nbsp}1.234`)
+    expect(formatarMoeda(250, 2)).toBe(`R$${nbsp}250,00`)
     expect(formatarMoedaCompacta(89_000_000)).toBe(`R$${nbsp}89,0${nbsp}mi`)
     expect(formatarMoedaCompacta(5_100_000)).toBe(`R$${nbsp}5,1${nbsp}mi`)
   })

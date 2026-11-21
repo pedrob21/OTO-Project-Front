@@ -8,7 +8,6 @@ import {
   listarCapacidades,
   registrarCapacidade,
 } from '@/api/estabelecimentos'
-import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Carregando } from '@/components/ui/Carregando'
@@ -24,13 +23,9 @@ import { formDosCampos, pedidoDosCampos, type FormDeCampos } from '../campos'
 import { Confirmacao } from '../Confirmacao'
 import { FormularioDeCampos } from '../FormularioDeCampos'
 import { useMutacaoCadastro } from '../useMutacaoCadastro'
-import {
-  CAMPOS_CAPACIDADE,
-  capacidadeVigente,
-  errosDaCapacidade,
-  ordenarCapacidades,
-  REGRAS_CAPACIDADE,
-} from './capacidades'
+import { SituacaoDaVigencia } from '../SituacaoDaVigencia'
+import { ordenarPorVigencia, situacaoDaVigencia } from '../vigencias'
+import { CAMPOS_CAPACIDADE, errosDaCapacidade, REGRAS_CAPACIDADE } from './capacidades'
 
 type Capacidade = Esquemas['CapacidadeResponse']
 type Edicao =
@@ -59,7 +54,6 @@ export function CapacidadesPage({ hoje: hojeFixo }: CapacidadesPageProps) {
     queryFn: ({ signal }) => listarCapacidades(id, signal),
   })
   const nome = estabelecimento.data?.dados?.nomeFantasia
-  const vigente = capacidadeVigente(capacidades.data ?? [], hoje)
 
   const fechar = () => setEdicao(null)
 
@@ -114,14 +108,9 @@ export function CapacidadesPage({ hoje: hojeFixo }: CapacidadesPageProps) {
     },
     {
       titulo: 'Situação',
-      celula: (linha) =>
-        linha.id === vigente?.id ? (
-          <Badge variante="publicada">Vigente</Badge>
-        ) : (linha.vigenteDesde ?? '') > hoje ? (
-          <Badge variante="aberta">Futura</Badge>
-        ) : (
-          <Badge variante="inativa">Anterior</Badge>
-        ),
+      celula: (linha) => (
+        <SituacaoDaVigencia situacao={situacaoDaVigencia(linha, capacidades.data ?? [], hoje)} />
+      ),
     },
   ]
 
@@ -164,7 +153,7 @@ export function CapacidadesPage({ hoje: hojeFixo }: CapacidadesPageProps) {
           <Tabela
             legenda={`Capacidades${nome ? ` de ${nome}` : ''}`}
             colunas={colunas}
-            linhas={ordenarCapacidades(capacidades.data)}
+            linhas={ordenarPorVigencia(capacidades.data)}
             chave={(linha) => linha.id ?? 0}
             vazio={{
               titulo: 'Nenhuma capacidade cadastrada',

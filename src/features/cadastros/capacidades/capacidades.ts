@@ -1,8 +1,5 @@
-import type { Esquemas } from '@/types/dominio'
 import type { DefCampo, FormDeCampos } from '../campos'
 import type { ErrosDoFormulario, RegraDoCampo } from '../falhaDaApi'
-
-type Capacidade = Esquemas['CapacidadeResponse']
 
 // Limites iguais aos da API (CapacidadeRequest).
 export const CAMPOS_CAPACIDADE: DefCampo[] = [
@@ -33,16 +30,4 @@ export function errosDaCapacidade(
   const uh = Number(form[`${prefixo}qtdUh`])
   const pcd = Number(form[`${prefixo}qtdUhPcd`])
   return pcd > uh ? { [`${prefixo}qtdUhPcd`]: 'As UH PCD não podem passar o total de UH.' } : {}
-}
-
-/** Da vigência mais recente para a mais antiga. */
-export function ordenarCapacidades(capacidades: Capacidade[]): Capacidade[] {
-  return capacidades.toSorted((a, b) => (b.vigenteDesde ?? '').localeCompare(a.vigenteDesde ?? ''))
-}
-
-/** A que vale hoje: a mais recente que já começou. */
-export function capacidadeVigente(capacidades: Capacidade[], hoje: string): Capacidade | undefined {
-  return ordenarCapacidades(capacidades).find(
-    (capacidade) => (capacidade.vigenteDesde ?? '') <= hoje,
-  )
 }

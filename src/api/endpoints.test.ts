@@ -13,7 +13,13 @@ import {
   reativarEstabelecimento,
   registrarCapacidade,
 } from './estabelecimentos'
-import { buscarParametrosVigentes } from './parametros'
+import {
+  alterarParametros,
+  buscarParametrosVigentes,
+  criarParametros,
+  excluirParametros,
+  listarParametros,
+} from './parametros'
 import { buscarHistoricoDaResposta, enviarResposta, listarRespostasDaCampanha } from './respostas'
 import {
   buscarPrevia,
@@ -120,6 +126,33 @@ describe('parâmetros e RHC', () => {
     await buscarParametrosVigentes()
 
     expect(chamada().url).toBe('http://localhost:8080/api/parametros-calculo/vigente')
+  })
+
+  it('parâmetros: lista, cria, corrige e exclui', async () => {
+    const parametros = {
+      vigenteDesde: '2027-01-01',
+      percentualDayUse: 15.15,
+      diasPermanenciaMedia: 4,
+      diasEmParques: 2,
+      gastoMedioDiario: 250,
+      gastoMedioIngresso: 105,
+      percentualMinimoLeitosPublicacao: 70,
+      fonte: 'Pesquisa de Demanda Turística 2026',
+    }
+    await listarParametros()
+    await criarParametros(parametros)
+    await alterarParametros(3, parametros)
+    await excluirParametros(3)
+
+    expect(
+      fetchFalso.mock.calls.map((_, indice) => [chamada(indice).metodo, chamada(indice).url]),
+    ).toEqual([
+      ['GET', 'http://localhost:8080/api/parametros-calculo'],
+      ['POST', 'http://localhost:8080/api/parametros-calculo'],
+      ['PUT', 'http://localhost:8080/api/parametros-calculo/3'],
+      ['DELETE', 'http://localhost:8080/api/parametros-calculo/3'],
+    ])
+    expect(chamada(1).corpo).toEqual(parametros)
   })
 
   it('RHC vigente', async () => {

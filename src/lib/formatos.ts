@@ -72,9 +72,9 @@ export function formatarCompacto(valor: Valor): string {
   return numero(valor, 0)
 }
 
-/** 765 → "R$ 765" */
-export function formatarMoeda(valor: Valor): string {
-  return semValor(valor) ? VAZIO : `R$${ESPACO}${numero(valor, 0)}`
+/** 765 → "R$ 765"; com 2 casas, 250 → "R$ 250,00" */
+export function formatarMoeda(valor: Valor, casas = 0): string {
+  return semValor(valor) ? VAZIO : `R$${ESPACO}${numero(valor, casas)}`
 }
 
 /** 89000000 → "R$ 89,0 mi" */
