@@ -1,4 +1,5 @@
 import { render, screen, within } from '@testing-library/react'
+import { MemoryRouter } from 'react-router'
 import { describe, expect, it } from 'vitest'
 import { diasAte, textoDoPrazo } from '@/lib/datas'
 import {
@@ -9,7 +10,7 @@ import {
   referencias,
   rodadaAberta,
   rodadasRecentes,
-} from '../fixtures'
+} from '../dadosDeTeste'
 import {
   campanhaDeReferencia,
   idsRecentesPublicadas,
@@ -24,15 +25,17 @@ const tipos = referencias.tiposHospedagem ?? []
 
 function abrirCartao(props: Partial<Parameters<typeof PesquisasParceirosCard>[0]> = {}) {
   return render(
-    <PesquisasParceirosCard
-      rodadaAberta={rodadaAberta}
-      acompanhamento={acompanhamento}
-      rodadas={rodadasRecentes}
-      acompanhamentos={acompanhamentosRecentes}
-      tipos={tipos}
-      hoje={hojeDoDesign}
-      {...props}
-    />,
+    <MemoryRouter>
+      <PesquisasParceirosCard
+        rodadaAberta={rodadaAberta}
+        acompanhamento={acompanhamento}
+        rodadas={rodadasRecentes}
+        acompanhamentos={acompanhamentosRecentes}
+        tipos={tipos}
+        hoje={hojeDoDesign}
+        {...props}
+      />
+    </MemoryRouter>,
   )
 }
 
@@ -158,12 +161,24 @@ describe('PesquisasParceirosCard', () => {
     expect(within(primeira as HTMLElement).getByText('58 de 72')).toBeInTheDocument()
   })
 
-  it('as ações sem página ficam desativadas', () => {
+  it('os botões levam ao acompanhamento da rodada aberta', () => {
     abrirCartao()
 
+    const destino = `/pesquisas/${rodadaAberta.id}`
     for (const nome of ['Acompanhamento completo', 'Ver pendências', 'Lançar resposta']) {
-      expect(screen.getByRole('button', { name: nome })).toBeDisabled()
+      expect(screen.getByRole('link', { name: nome })).toHaveAttribute('href', destino)
     }
+    expect(screen.queryByTitle('Em construção')).not.toBeInTheDocument()
+  })
+
+  it('sem rodada aberta, o acompanhamento completo leva à lista de pesquisas', () => {
+    abrirCartao({ rodadaAberta: undefined, acompanhamento: undefined })
+
+    expect(screen.getByRole('link', { name: 'Acompanhamento completo' })).toHaveAttribute(
+      'href',
+      '/pesquisas',
+    )
+    expect(screen.queryByRole('link', { name: 'Lançar resposta' })).not.toBeInTheDocument()
   })
 
   it('sem rodada aberta e sem publicadas, mostra os estados vazios', () => {

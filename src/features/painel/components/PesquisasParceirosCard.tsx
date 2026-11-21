@@ -1,13 +1,14 @@
 import type { ReactNode } from 'react'
+import { Link } from 'react-router'
 import { IconeCheck, IconeRelogio } from '@/components/icons'
 import { Badge } from '@/components/ui/Badge'
 import { BarraProgresso } from '@/components/ui/BarraProgresso'
-import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { EstadoVazio } from '@/components/ui/EstadoVazio'
 import { textoDoPrazo } from '@/lib/datas'
 import { formatarData, formatarInteiro, formatarPercentual } from '@/lib/formatos'
 import type { Esquemas } from '@/types/dominio'
+import comum from '@/features/pesquisas/comum.module.css'
 import { campanhaDeReferencia, rodadasRecentesPublicadas, textoDasFaltantes } from '../pesquisas'
 import styles from './PesquisasParceirosCard.module.css'
 
@@ -24,8 +25,6 @@ type PesquisasParceirosCardProps = {
   /** ação do estado vazio, como levar à criação de uma pesquisa */
   acaoSemRodada?: ReactNode
 }
-
-const EM_CONSTRUCAO = 'Em construção'
 
 function respostas(campanha: Esquemas['AcompanhamentoCampanha'] | undefined): string {
   return `${formatarInteiro(campanha?.qtdRespondentes)} de ${formatarInteiro(campanha?.qtdMh)}`
@@ -65,6 +64,7 @@ function RodadaAberta({
 }) {
   const campanha = campanhaDeReferencia(acompanhamento)
   const { qtdMh = 0, qtdRespondentes = 0 } = campanha ?? {}
+  const rotaDoAcompanhamento = `/pesquisas/${rodada.id}`
 
   return (
     <div className={styles.aberta}>
@@ -97,12 +97,12 @@ function RodadaAberta({
       )}
 
       <div className={styles.acoes}>
-        <Button variante="secundaria" disabled title={EM_CONSTRUCAO}>
+        <Link to={rotaDoAcompanhamento} className={comum.botaoLinkSecundario}>
           Ver pendências
-        </Button>
-        <Button className={styles.botaoLancar} disabled title={EM_CONSTRUCAO}>
+        </Link>
+        <Link to={rotaDoAcompanhamento} className={`${comum.botaoLink} ${styles.botaoLancar}`}>
           Lançar resposta
-        </Button>
+        </Link>
       </div>
     </div>
   )
@@ -126,9 +126,12 @@ export function PesquisasParceirosCard({
       titulo="Pesquisas com os parceiros"
       subtitulo="Respostas dos meios de hospedagem às rodadas de taxa de ocupação"
       acao={
-        <Button className={styles.botaoTopo} variante="secundaria" disabled title={EM_CONSTRUCAO}>
+        <Link
+          to={rodadaAberta ? `/pesquisas/${rodadaAberta.id}` : '/pesquisas'}
+          className={`${comum.botaoLinkSecundario} ${styles.botaoTopo}`}
+        >
           Acompanhamento completo
-        </Button>
+        </Link>
       }
     >
       <div className={styles.colunas}>

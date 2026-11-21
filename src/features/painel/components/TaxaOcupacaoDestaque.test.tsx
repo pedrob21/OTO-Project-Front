@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import { comparativo, referencias, resultado } from '../fixtures'
+import { comparativo, referencias, resultado } from '../dadosDeTeste'
 import { TaxaOcupacaoDestaque } from './TaxaOcupacaoDestaque'
 
 const FAIXAS = referencias.faixasOcupacao ?? []

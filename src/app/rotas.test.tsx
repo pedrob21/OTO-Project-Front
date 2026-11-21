@@ -328,6 +328,7 @@ describe('acesso por perfil', () => {
     fetchFalso.mockImplementation(async (url) => {
       const { pathname } = new URL(String(url))
       if (pathname === '/api/me') return json(200, { ...ADMIN, perfil })
+      if (pathname === '/api/campanhas/publicadas') return json(200, [{ campanhaId: 15 }])
       return json(200, pathname === '/api/parametros-calculo/vigente' ? {} : [])
     })
   }
