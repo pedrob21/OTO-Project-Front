@@ -16,8 +16,6 @@ export function LoginPage() {
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
 
-  const senhaDefinida = (location.state as { senhaDefinida?: boolean } | null)?.senhaDefinida
-
   const login = useMutation({
     mutationFn: () => entrar(email, senha),
   })
@@ -48,11 +46,6 @@ export function LoginPage() {
       <form className={styles.formulario} onSubmit={enviar} noValidate>
         <h1 className={styles.titulo}>Entrar no painel</h1>
 
-        {senhaDefinida && (
-          <p role="status" className={styles.aviso}>
-            Senha definida. Entre com seu e-mail e a nova senha.
-          </p>
-        )}
         {sessaoExpirou && !login.isError && (
           <p role="status" className={styles.aviso}>
             Sua sessão expirou. Entre novamente para continuar.

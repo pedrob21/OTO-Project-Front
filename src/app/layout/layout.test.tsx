@@ -90,7 +90,7 @@ describe('menu do usuário', () => {
 
     expect(botao()).toHaveAttribute('aria-expanded', 'true')
     expect(screen.getByText('admin@oto.test')).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: 'Trocar senha' })).toHaveFocus()
+    expect(screen.getByRole('menuitem', { name: 'Sair' })).toHaveFocus()
   })
 
   it('Esc fecha e devolve o foco ao botão', async () => {
@@ -108,34 +108,10 @@ describe('menu do usuário', () => {
     botao().focus()
 
     await userEvent.keyboard('{ArrowDown}')
-    await waitFor(() =>
-      expect(screen.getByRole('menuitem', { name: 'Trocar senha' })).toHaveFocus(),
-    )
-    await userEvent.keyboard('{ArrowDown}')
-    expect(screen.getByRole('menuitem', { name: 'Sair' })).toHaveFocus()
+    await waitFor(() => expect(screen.getByRole('menuitem', { name: 'Sair' })).toHaveFocus())
     await userEvent.keyboard('{Enter}')
 
     expect(sair).toHaveBeenCalledOnce()
-  })
-
-  it('oferece o link para trocar a senha', async () => {
-    abrir()
-    await userEvent.click(botao())
-
-    expect(screen.getByRole('menuitem', { name: 'Trocar senha' })).toHaveAttribute(
-      'href',
-      '/minha-senha',
-    )
-  })
-
-  it('setas percorrem os itens em ciclo', async () => {
-    abrir()
-    await userEvent.click(botao())
-
-    await userEvent.keyboard('{ArrowUp}')
-    expect(screen.getByRole('menuitem', { name: 'Sair' })).toHaveFocus()
-    await userEvent.keyboard('{ArrowDown}')
-    expect(screen.getByRole('menuitem', { name: 'Trocar senha' })).toHaveFocus()
   })
 
   it('clicar fora fecha', async () => {

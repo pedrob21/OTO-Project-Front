@@ -5,7 +5,7 @@ Interface web do **Observatório de Turismo de Olímpia (OTO)**. Reúne, em um p
 A API fica no repositório [OTO-Project](https://github.com/pedrob21/OTO-Project) (Spring Boot e PostgreSQL).
 
 > [!IMPORTANT]
-> **Em desenvolvimento.** O login, a definição de senha, a criação de pesquisas e o cartão "Pesquisas com os parceiros" já usam a API. Os demais blocos do painel ainda mostram dados fixos ([`fixtures.ts`](src/features/painel/fixtures.ts)), e a integração deles é a [próxima etapa](#próximas-tasks).
+> **Em desenvolvimento.** O login, a criação de pesquisas e o cartão "Pesquisas com os parceiros" já usam a API. Os demais blocos do painel ainda mostram dados fixos ([`fixtures.ts`](src/features/painel/fixtures.ts)), e a integração deles é a [próxima etapa](#próximas-tasks).
 
 ## Sumário
 
@@ -24,8 +24,6 @@ A API fica no repositório [OTO-Project](https://github.com/pedrob21/OTO-Project
 **Prontas**
 
 - Login com JWT, expiração de sessão e controle de acesso por perfil
-- Definição de senha por link (`/definir-senha?token=...`), usada no convite e na redefinição, e troca da própria senha pelo menu do usuário (`/minha-senha`)
-- Página "Como calculamos a taxa de ocupação e o fluxo de turistas" (`/metodologia`), para todos os perfis
 - Cabeçalho, menu, rodapé, e cabeçalho e filtros fixos durante a rolagem
 - Criação de pesquisa com campanhas (modalidade, período, diárias e prazo), só para o ADMIN, em `/pesquisas/nova`
 - Painel de indicadores, com dados fixos, exceto as pesquisas:
@@ -128,10 +126,9 @@ Se o navegador acusar erro de CORS, confira `CORS_ORIGENS` no `.env` do backend.
     │   ├── charts/      # Gráficos reutilizáveis
     │   └── ui/          # Botão, cartão, select, selo, estados de vazio e de erro
     ├── features/
-    │   ├── auth/        # Contexto de sessão, login, definição e troca de senha e proteção de rotas
-    │   ├── metodologia/ # Página estática do cálculo dos indicadores
+    │   ├── auth/        # Contexto de sessão, login e proteção de rotas
     │   └── painel/      # Página, cartões, regras de cálculo e dados fixos
-    ├── lib/             # Formatadores pt-BR, leitura de decimais, download e regras de perfil
+    ├── lib/             # Formatadores pt-BR e regras de perfil
     ├── styles/          # Tokens do design e estilos globais
     ├── test/            # Configuração dos testes
     └── types/           # Tipos de domínio derivados da API
@@ -156,11 +153,11 @@ Com o servidor local no ar, os tokens e os componentes podem ser conferidos ao l
 | Task | Entrega | Pronto quando | Depende de |
 |---|---|---|---|
 | **T15. Integração com a API** | Trocar os dados fixos pelas chamadas reais, com carregamento, vazio e erro independentes em cada bloco | A tela funciona com o backend local nos três perfis, inclusive com o banco sem publicações | D2, D3, D7 e D8 |
-| **T16. Exportação** | O botão `BaixarCsvButton` e a chamada `baixarResultadoCsv` já existem. Falta encaixar o botão na tela do resultado, que hoje usa dados fixos | O arquivo abre no Excel com a acentuação correta | D5 |
+| **T16. Exportação** | Baixar o `resultado.csv` com o token de acesso, mostrando progresso e erro | O arquivo abre no Excel com a acentuação correta | D5 |
 | **T17. Responsividade e acessibilidade** | Adaptar para tablet e celular, corrigir os ajustes pendentes em 1280 px e fazer a auditoria WCAG AA | Sem rolagem horizontal da página em 360 px e sem falhas AA abertas | T15 |
 | **T18. Otimização e revisão final** | Dividir o código por rota, otimizar fontes e imagens, analisar o tamanho do pacote, adicionar favicon e comparar a tela inteira com o design | Lighthouse medido e registrado, sem pendências visuais abertas | T17 |
 
-Ainda sem task definida: as telas de Pesquisas, Indicadores, Relatórios e Cadastros, que hoje aparecem desativadas no menu.
+Ainda sem task definida: a página de definição de senha do convite (`/definir-senha`) e as telas de Pesquisas, Indicadores, Relatórios e Cadastros, que hoje aparecem desativadas no menu.
 
 ## Decisões em aberto
 

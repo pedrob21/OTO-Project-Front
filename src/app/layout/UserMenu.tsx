@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
-import { Link } from 'react-router'
 import { IconeSetaBaixo } from '@/components/icons'
 import { useAuth } from '@/features/auth/AuthContext'
 import { iniciais } from '@/lib/perfis'
@@ -10,12 +9,12 @@ export function UserMenu() {
   const [aberto, setAberto] = useState(false)
   const raiz = useRef<HTMLDivElement>(null)
   const botao = useRef<HTMLButtonElement>(null)
-  const primeiroItem = useRef<HTMLAnchorElement>(null)
+  const itemSair = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     if (!aberto) return
 
-    primeiroItem.current?.focus()
+    itemSair.current?.focus()
 
     function aoClicarFora(evento: PointerEvent) {
       if (!raiz.current?.contains(evento.target as Node)) setAberto(false)
@@ -33,13 +32,6 @@ export function UserMenu() {
     if (evento.key === 'ArrowDown' && !aberto) {
       evento.preventDefault()
       setAberto(true)
-    }
-    if ((evento.key === 'ArrowDown' || evento.key === 'ArrowUp') && aberto) {
-      evento.preventDefault()
-      const itens = [...(raiz.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])]
-      const passo = evento.key === 'ArrowDown' ? 1 : -1
-      const atual = itens.indexOf(document.activeElement as HTMLElement)
-      itens.at((atual + passo) % itens.length)?.focus()
     }
   }
 
@@ -64,16 +56,13 @@ export function UserMenu() {
         <div className={styles.painel}>
           {usuario?.email && <p className={styles.email}>{usuario.email}</p>}
           <div role="menu" aria-label="Conta">
-            <Link
-              ref={primeiroItem}
-              to="/minha-senha"
+            <button
+              ref={itemSair}
+              type="button"
               role="menuitem"
               className={styles.acao}
-              onClick={() => setAberto(false)}
+              onClick={sair}
             >
-              Trocar senha
-            </Link>
-            <button type="button" role="menuitem" className={styles.acao} onClick={sair}>
               Sair
             </button>
           </div>

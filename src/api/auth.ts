@@ -12,15 +12,3 @@ export function entrar(credenciais: Esquemas['LoginRequest']) {
 export function buscarUsuarioLogado(signal?: AbortSignal) {
   return requisicao<Usuario>('/api/me', { signal })
 }
-
-export function definirSenha(corpo: Esquemas['DefinirSenhaRequest']) {
-  return requisicao<void>('/api/auth/definir-senha', {
-    metodo: 'POST',
-    corpo,
-    autenticada: false,
-  })
-}
-
-export function trocarMinhaSenha(corpo: Esquemas['TrocaSenhaRequest']) {
-  return requisicao<void>('/api/me/senha', { metodo: 'PUT', corpo })
-}

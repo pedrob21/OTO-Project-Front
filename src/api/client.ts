@@ -30,7 +30,7 @@ function montarUrl(caminho: string, parametros: Parametros = {}): string {
   return `${API_URL}${caminho}${texto ? `?${texto}` : ''}`
 }
 
-async function enviar(caminho: string, opcoes: Opcoes): Promise<Response> {
+export async function requisicao<T>(caminho: string, opcoes: Opcoes = {}): Promise<T> {
   const { metodo = 'GET', corpo, parametros, signal, autenticada = true } = opcoes
   const token = autenticada ? lerToken() : null
 
@@ -56,25 +56,6 @@ async function enviar(caminho: string, opcoes: Opcoes): Promise<Response> {
     throw await ErroRequisicao.daResposta(resposta)
   }
 
-  return resposta
-}
-
-export async function requisicao<T>(caminho: string, opcoes: Opcoes = {}): Promise<T> {
-  const resposta = await enviar(caminho, opcoes)
   if (resposta.status === 204) return undefined as T
   return (await resposta.json()) as T
-}
-
-export type Arquivo = {
-  blob: Blob
-  /** cabeçalho Content-Disposition, de onde sai o nome do arquivo */
-  contentDisposition: string | null
-}
-
-export async function requisicaoArquivo(caminho: string, opcoes: Opcoes = {}): Promise<Arquivo> {
-  const resposta = await enviar(caminho, opcoes)
-  return {
-    blob: await resposta.blob(),
-    contentDisposition: resposta.headers.get('Content-Disposition'),
-  }
 }
