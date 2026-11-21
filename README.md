@@ -5,7 +5,7 @@ Interface web do **Observatório de Turismo de Olímpia (OTO)**. Reúne, em um p
 A API fica no repositório [OTO-Project](https://github.com/pedrob21/OTO-Project) (Spring Boot e PostgreSQL).
 
 > [!IMPORTANT]
-> **Em desenvolvimento.** O login, a definição de senha, o fluxo das pesquisas (da criação à publicação), o resultado de cada campanha, os cadastros do ADMIN e o cartão "Pesquisas com os parceiros" já usam a API. Os demais blocos do painel ainda mostram dados fixos ([`fixtures.ts`](src/features/painel/fixtures.ts)), e a integração deles é a [próxima etapa](#próximas-tasks).
+> **Em desenvolvimento.** O login, a definição de senha, o fluxo das pesquisas (da criação à publicação), o resultado de cada campanha, os cadastros do ADMIN e o painel de indicadores já usam a API. Faltam a responsividade, a acessibilidade e a revisão final, nas [próximas tasks](#próximas-tasks).
 
 ## Sumário
 
@@ -16,7 +16,7 @@ A API fica no repositório [OTO-Project](https://github.com/pedrob21/OTO-Project
 - [Estrutura do projeto](#estrutura-do-projeto)
 - [Arquitetura e convenções](#arquitetura-e-convenções)
 - [Próximas tasks](#próximas-tasks)
-- [Decisões em aberto](#decisões-em-aberto)
+- [Decisões](#decisões)
 - [Como contribuir](#como-contribuir)
 
 ## Funcionalidades
@@ -40,14 +40,15 @@ A API fica no repositório [OTO-Project](https://github.com/pedrob21/OTO-Project
   - parâmetros de cálculo e totais da hospedagem caseira (RHC), por vigência
   - referências: tipos de hospedagem, feriados e eventos, e faixas de ocupação
   - série histórica, com importação de CSV que mostra os erros de cada linha
-- Painel de indicadores, com dados fixos, exceto as pesquisas:
-  - filtros de campanha, comparação e tipo de hospedagem, guardados na URL
-  - destaque da taxa de ocupação e indicadores de resumo
+- Painel de indicadores, com dados da API e carregamento, vazio e erro independentes em cada bloco:
+  - filtros de campanha, comparação e tipo de hospedagem, guardados na URL. A campanha padrão é a publicada mais recente; sem nenhuma publicada, o painel mostra um estado vazio
+  - destaque da taxa de ocupação e indicadores de resumo, com a variação em relação ao ano escolhido em "Comparar com"
   - taxa de ocupação mensal em gráfico e tabela
-  - faixas de ocupação e fluxo estimado de turistas
+  - faixas de ocupação e fluxo estimado de turistas, com o RHC e os parâmetros vigentes no início do período da campanha
   - expectativa × realizado nos feriados
-  - desempenho por tipo de hospedagem, com ocultação por sigilo
-  - pesquisas com os parceiros, com dados da API
+  - desempenho por tipo de hospedagem, com ocultação por sigilo e o filtro por tipo
+  - botão "Baixar CSV" da campanha selecionada
+  - pesquisas com os parceiros, com os botões "Acompanhamento completo", "Ver pendências" e "Lançar resposta" ligados às telas de pesquisas
 
 **O que cada perfil vê no cartão de pesquisas**
 
@@ -157,7 +158,7 @@ Antes dos testes, o Playwright gera o build e sobe o `npm run preview` na porta 
     │   ├── auth/        # Contexto de sessão, login, definição e troca de senha e proteção de rotas
     │   ├── cadastros/   # Telas de cadastro do ADMIN, com formulário em diálogo
     │   ├── metodologia/ # Página estática do cálculo dos indicadores
-    │   ├── painel/      # Página, cartões, regras de cálculo e dados fixos
+    │   ├── painel/      # Página, cartões, consultas à API e regras de cálculo
     │   ├── pesquisas/   # Criação, lista, acompanhamento, resposta, prévia e publicação
     │   └── resultados/  # Resultado publicado de uma campanha e download do CSV
     ├── lib/             # Formatadores pt-BR, leitura de decimais, download e regras de perfil
@@ -185,9 +186,7 @@ Com o servidor local no ar, os tokens e os componentes podem ser conferidos ao l
 
 | Task | Entrega | Pronto quando | Depende de |
 |---|---|---|---|
-| **T15. Integração com a API** | Trocar os dados fixos pelas chamadas reais, com carregamento, vazio e erro independentes em cada bloco | A tela funciona com o backend local nos três perfis, inclusive com o banco sem publicações | D2, D3, D7 e D8 |
-| **T16. Exportação** | Baixar o `resultado.csv` com o token de acesso, mostrando progresso e erro | O arquivo abre no Excel com a acentuação correta | D5 |
-| **T17. Responsividade e acessibilidade** | Adaptar para tablet e celular, inclusive as tabelas e os diálogos de Cadastros, corrigir os ajustes pendentes em 1280 px e fazer a auditoria WCAG AA | Sem rolagem horizontal da página em 360 px e sem falhas AA abertas | T15 |
+| **T17. Responsividade e acessibilidade** | Adaptar para tablet e celular, inclusive as tabelas e os diálogos de Cadastros, corrigir os ajustes pendentes em 1280 px e fazer a auditoria WCAG AA | Sem rolagem horizontal da página em 360 px e sem falhas AA abertas | — |
 | **T18. Otimização e revisão final** | Dividir o código por rota, otimizar fontes e imagens, analisar o tamanho do pacote, adicionar favicon e comparar a tela inteira com o design | Lighthouse medido e registrado, sem pendências visuais abertas | T17 |
 
 Ainda sem task definida: o cadastro do catálogo do inventário (`/api/inventario`) e as telas de Indicadores e Relatórios, que hoje aparecem desativadas no menu.
@@ -195,20 +194,23 @@ Ainda sem task definida: o cadastro do catálogo do inventário (`/api/inventari
 Pendências do fluxo das pesquisas:
 
 - Quando a branch `feature/testes-cucumber` do backend entrar na `main` dele, rodar `npm run api:tipos` e usar `aceitaResposta` e `respostasAte` da pendência para desativar o formulário do parceiro e mostrar "Respostas até dd/mm/aaaa". O cálculo da tolerância fica na API
-- Ligar os botões "Acompanhamento completo", "Ver pendências" e "Lançar resposta" do cartão do painel às novas telas
 - Diárias médias digitadas pela equipe (`/api/campanhas/{id}/diarias`) na prévia
 - Quando a branch `fix/prazos-e-resultado` do backend entrar, `GET /api/campanhas/{id}/resultado` e o `resultado.csv` passam a responder 422 para campanha não publicada e 404 só para campanha inexistente. A `ResultadoCampanhaPage` hoje trata 404 como "ainda não publicada": trocar para 422 e mostrar "campanha não encontrada" no 404
 - Há dois leitores de número digitado: `lerNumero` (`features/pesquisas/respostas.ts`, aceita ponto de milhar e deixa a contagem de casas para a validação) e `lerDecimal` (`lib/numeros.ts`, limita as casas e aceita sinal). Juntar num só quando a tela do parceiro for revista
 
-## Decisões em aberto
+## Decisões
 
-| # | Pergunta | Trava |
-|---|---|---|
-| D2 | O filtro "Tipo de hospedagem" afeta só o que a API separa por tipo, ou o backend passa a filtrar fluxo, faixas, série mensal e feriados? | T15 |
-| D3 | A variação da receita e os períodos anteriores ao sistema não têm fonte na API. Esconder quando faltar dado, ou incluir no backend? | T15 |
-| D5 | O botão "Exportar" tem seta de menu, mas a API só oferece CSV. Vira botão direto, ou haverá outros formatos? | T16 |
-| D7 | A versão do cartão de pesquisas para o parceiro, e o que mostrar quando ele não tem acesso aos dados de hospedagem caseira | T15 |
-| D8 | O design mostra o código da rodada nos filtros, mas `/api/campanhas/publicadas` não o envia. Incluir no backend, ou tirar do texto? | T15 |
+Não há decisões em aberto.
+
+**Fechadas**
+
+| # | Decisão |
+|---|---|
+| D2 | O filtro "Tipo de hospedagem" afeta só o que a API separa por tipo (`porTipo` do resultado, ou seja, o desempenho por tipo). Com um tipo escolhido, os outros cartões mostram a nota "todos os tipos". Tipo oculto por sigilo mostra o aviso, sem inventar valor |
+| D3 | A comparação usa o resultado publicado do mesmo mês (ou do mesmo feriado) no ano escolhido em "Comparar com". Sem ele, usa a série histórica mensal (`/api/dashboard/serie-mensal`). Feriado sem publicada fica sem variação, pois a série é mensal. Sem nenhum dos dois, a variação fica escondida, sem inventar zero. A variação da receita, sem fonte na API, fica escondida |
+| D5 | "Exportar" virou um botão direto "Baixar CSV" da campanha selecionada |
+| D7 | O PARCEIRO continua vendo o cartão de pendências que já existe. Como não tem acesso ao RHC, vê o fluxo de turistas sem o detalhe da hospedagem caseira |
+| D8 | O código da rodada saiu do texto do seletor de campanha |
 
 ## Como contribuir
 
