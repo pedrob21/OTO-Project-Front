@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { definirAoExpirarSessao, requisicao } from './client'
+import { definirAoExpirarSessao, requisicao, requisicaoArquivo } from './client'
 import { ErroRequisicao } from './erros'
 import { limparSessao, salvarSessao } from './sessao'
 
@@ -211,5 +211,56 @@ describe('400, 403 e 422', () => {
     await expect(requisicao('/api/x')).rejects.toMatchObject({
       message: 'Entidade não processável',
     })
+  })
+})
+
+describe('requisicaoArquivo', () => {
+  it('envia o token e devolve o blob com o Content-Disposition', async () => {
+    entrarComToken()
+    fetchFalso.mockResolvedValue(
+      new Response('a;b', {
+        headers: { 'Content-Disposition': 'attachment; filename="x.csv"' },
+      }),
+    )
+
+    const { blob, contentDisposition } = await requisicaoArquivo('/api/x.csv')
+
+    expect(cabecalhosDaChamada().Authorization).toBe('Bearer abc')
+    expect(await blob.text()).toBe('a;b')
+    expect(contentDisposition).toBe('attachment; filename="x.csv"')
+  })
+
+  it('sem o cabeçalho, devolve null', async () => {
+    fetchFalso.mockResolvedValue(new Response('a'))
+
+    await expect(requisicaoArquivo('/api/x.csv')).resolves.toMatchObject({
+      contentDisposition: null,
+    })
+  })
+
+  it('401 com token avisa que a sessão expirou, como as outras chamadas', async () => {
+    entrarComToken()
+    const aoExpirar = vi.fn()
+    definirAoExpirarSessao(aoExpirar)
+    fetchFalso.mockResolvedValue(new Response(null, { status: 401 }))
+
+    await expect(requisicaoArquivo('/api/x.csv')).rejects.toMatchObject({ status: 401 })
+
+    expect(aoExpirar).toHaveBeenCalledOnce()
+  })
+
+  it('erro vira ErroRequisicao com o detalhe, sem ler o corpo como arquivo', async () => {
+    fetchFalso.mockResolvedValue(json(404, { detail: 'Campanha não encontrada.' }))
+
+    await expect(requisicaoArquivo('/api/x.csv')).rejects.toMatchObject({
+      status: 404,
+      message: 'Campanha não encontrada.',
+    })
+  })
+
+  it('falha de rede vira status 0', async () => {
+    fetchFalso.mockRejectedValue(new TypeError('Failed to fetch'))
+
+    await expect(requisicaoArquivo('/api/x.csv')).rejects.toMatchObject({ status: 0 })
   })
 })
