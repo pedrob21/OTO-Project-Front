@@ -101,6 +101,17 @@ describe('submenu Cadastros', () => {
     expect(botao()).toHaveAttribute('aria-expanded', 'false')
   })
 
+  it('lista Inventário com o destino do catálogo', async () => {
+    abrir()
+
+    await userEvent.click(botao())
+
+    expect(screen.getByRole('link', { name: 'Inventário' })).toHaveAttribute(
+      'href',
+      '/cadastros/inventario',
+    )
+  })
+
   it('abre pelo teclado e Esc fecha, devolvendo o foco', async () => {
     abrir()
     botao().focus()

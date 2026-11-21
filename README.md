@@ -39,6 +39,8 @@ A API fica no repositório [OTO-Project](https://github.com/pedrob21/OTO-Project
   - estabelecimentos, com os dados da Secretaria, e o histórico de capacidade (UH e leitos) de cada um
   - parâmetros de cálculo e totais da hospedagem caseira (RHC), por vigência
   - referências: tipos de hospedagem, feriados e eventos, e faixas de ocupação
+  - inventário: catálogo de grupos e itens por categoria (serviços e equipamentos, acessibilidade e sustentabilidade), com inativação e exclusão de itens nunca marcados e de grupos vazios, em `/cadastros/inventario`
+  - inventário de cada estabelecimento, com um item por checkbox, complemento em texto quando o item permite e a data da última atualização, em `/cadastros/estabelecimentos/:id/inventario`
   - série histórica, com importação de CSV que mostra os erros de cada linha
 - Painel de indicadores, com dados fixos, exceto as pesquisas:
   - filtros de campanha, comparação e tipo de hospedagem, guardados na URL
@@ -147,7 +149,7 @@ Antes dos testes, o Playwright gera o build e sobe o `npm run preview` na porta 
 ├── docs/referencia/     # Tela exportada do Figma
 ├── public/
 └── src/
-    ├── api/             # Cliente HTTP, sessão, chamadas por recurso e tipos gerados
+    ├── api/             # Cliente HTTP, sessão, chamadas por recurso (como `inventario.ts`) e tipos gerados
     ├── app/             # Rotas, provedores e layout (cabeçalho, menu e rodapé)
     ├── assets/          # Logos
     ├── components/
@@ -155,7 +157,8 @@ Antes dos testes, o Playwright gera o build e sobe o `npm run preview` na porta 
     │   └── ui/          # Botão, cartão, select, selo, tabela, diálogo, estados de vazio e de erro
     ├── features/
     │   ├── auth/        # Contexto de sessão, login, definição e troca de senha e proteção de rotas
-    │   ├── cadastros/   # Telas de cadastro do ADMIN, com formulário em diálogo
+    │   ├── cadastros/   # Telas de cadastro do ADMIN, com formulário em diálogo (inclui o catálogo do inventário em `inventario/`)
+    │   ├── inventario/  # Editor de inventário de um estabelecimento (`EditorDeInventario`), reaproveitável por outros perfis
     │   ├── metodologia/ # Página estática do cálculo dos indicadores
     │   ├── painel/      # Página, cartões, regras de cálculo e dados fixos
     │   ├── pesquisas/   # Criação, lista, acompanhamento, resposta, prévia e publicação
@@ -190,7 +193,7 @@ Com o servidor local no ar, os tokens e os componentes podem ser conferidos ao l
 | **T17. Responsividade e acessibilidade** | Adaptar para tablet e celular, inclusive as tabelas e os diálogos de Cadastros, corrigir os ajustes pendentes em 1280 px e fazer a auditoria WCAG AA | Sem rolagem horizontal da página em 360 px e sem falhas AA abertas | T15 |
 | **T18. Otimização e revisão final** | Dividir o código por rota, otimizar fontes e imagens, analisar o tamanho do pacote, adicionar favicon e comparar a tela inteira com o design | Lighthouse medido e registrado, sem pendências visuais abertas | T17 |
 
-Ainda sem task definida: o cadastro do catálogo do inventário (`/api/inventario`) e as telas de Indicadores e Relatórios, que hoje aparecem desativadas no menu.
+Ainda sem task definida: as telas de Indicadores e Relatórios, que hoje aparecem desativadas no menu.
 
 Pendências do fluxo das pesquisas:
 
