@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import { resultado } from '../fixtures'
+import { resultado } from '../dadosDeTeste'
 import { notaDeConcentracao } from '../faixas'
 import { FaixasOcupacaoCard } from './FaixasOcupacaoCard'
 

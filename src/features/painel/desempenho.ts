@@ -89,3 +89,8 @@ export function notaDosForaDaReceita(porTipo: Tipo[], tipos: Esquemas['TipoRef']
 
   return `${nomes.charAt(0).toUpperCase()}${nomes.slice(1)} ${verbo} na taxa de ocupação geral, mas não no cálculo da receita.`
 }
+
+/** Só a linha do tipo escolhido no filtro. Sem linha, o tipo não tem valores neste resultado. */
+export function linhasDoTipo(porTipo: Tipo[], codigo: string): Tipo[] {
+  return porTipo.filter((tipo) => tipo.tipoHospedagemCodigo === codigo)
+}

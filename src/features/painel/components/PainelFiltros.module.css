@@ -44,11 +44,10 @@
   --select-recuo-seta: 13.5px;
 }
 
-.filtros .exportar {
+.exportar {
   min-width: 0;
-  padding: 0 10.5px 0 18px;
 }
 
-.iconeDownload {
-  color: var(--cor-primaria-escura);
+.exportar button {
+  width: 100%;
 }

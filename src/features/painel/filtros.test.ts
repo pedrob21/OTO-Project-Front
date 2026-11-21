@@ -2,23 +2,14 @@ import { describe, expect, it } from 'vitest'
 import { opcoesCampanha, opcoesComparacao, opcoesTipo } from './filtros'
 
 describe('opcoesCampanha', () => {
-  it('monta o texto do design', () => {
+  it('monta o texto sem o código da rodada', () => {
     expect(
-      opcoesCampanha([
-        {
-          campanhaId: 15,
-          nome: 'Agosto de 2026',
-          modalidade: 'CONSOLIDADA',
-          codigoRodada: '015/26',
-        },
-      ]),
-    ).toEqual([{ valor: '15', rotulo: 'Agosto de 2026 • consolidada (015/26)' }])
+      opcoesCampanha([{ campanhaId: 15, nome: 'Agosto de 2026', modalidade: 'CONSOLIDADA' }]),
+    ).toEqual([{ valor: '15', rotulo: 'Agosto de 2026 • consolidada' }])
   })
 
-  it('sem código da rodada, omite os parênteses', () => {
-    expect(
-      opcoesCampanha([{ campanhaId: 9, nome: 'FEFOL 2026', modalidade: 'EXPECTATIVA' }])[0]?.rotulo,
-    ).toBe('FEFOL 2026 • expectativa')
+  it('sem modalidade, usa só o nome', () => {
+    expect(opcoesCampanha([{ campanhaId: 9, nome: 'FEFOL 2026' }])[0]?.rotulo).toBe('FEFOL 2026')
   })
 })
 

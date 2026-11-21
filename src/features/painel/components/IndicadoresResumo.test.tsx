@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import { comparativo, resultado } from '../fixtures'
+import { comparativo, resultado } from '../dadosDeTeste'
 import { IndicadoresResumo } from './IndicadoresResumo'
 
 describe('IndicadoresResumo', () => {
