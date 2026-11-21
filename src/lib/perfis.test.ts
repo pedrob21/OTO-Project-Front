@@ -18,7 +18,10 @@ describe('itensDoPerfil', () => {
   it('Cadastros só aparece para o ADMIN, com o submenu', () => {
     const cadastros = itensDoPerfil('ADMIN').find((item) => item.rotulo === 'Cadastros')
 
-    expect(cadastros?.submenu?.map((item) => item.para)).toEqual(['/cadastros/usuarios'])
+    expect(cadastros?.submenu?.map((item) => item.para)).toEqual([
+      '/cadastros/usuarios',
+      '/cadastros/estabelecimentos',
+    ])
     expect(rotulos('PARCEIRO')).not.toContain('Cadastros')
     expect(rotulos('VISUALIZADOR')).not.toContain('Cadastros')
     expect(rotulos(undefined)).not.toContain('Cadastros')

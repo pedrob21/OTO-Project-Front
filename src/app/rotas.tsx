@@ -63,6 +63,14 @@ export const rotas: RouteObject[] = [
                     .UsuariosPage,
                 }),
               },
+              {
+                path: '/cadastros/estabelecimentos',
+                lazy: async () => ({
+                  Component: (
+                    await import('@/features/cadastros/estabelecimentos/EstabelecimentosPage')
+                  ).EstabelecimentosPage,
+                }),
+              },
             ],
           },
           {

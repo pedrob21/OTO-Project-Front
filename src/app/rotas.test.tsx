@@ -258,7 +258,10 @@ describe.each(ROTAS_DAS_PESQUISAS)('rota $caminho', ({ caminho, titulo, perfis }
 })
 
 // FE-05: as telas de Cadastros são só do ADMIN.
-const ROTAS_CADASTRO = [{ caminho: '/cadastros/usuarios', titulo: 'Usuários' }]
+const ROTAS_CADASTRO = [
+  { caminho: '/cadastros/usuarios', titulo: 'Usuários' },
+  { caminho: '/cadastros/estabelecimentos', titulo: 'Estabelecimentos' },
+]
 
 describe.each(ROTAS_CADASTRO)('$caminho', ({ caminho, titulo }) => {
   function responderComo(perfil: string) {

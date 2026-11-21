@@ -17,6 +17,7 @@ export type ItemMenu = {
 
 export const SUBMENU_CADASTROS: ItemSubmenu[] = [
   { rotulo: 'Usuários', para: '/cadastros/usuarios' },
+  { rotulo: 'Estabelecimentos', para: '/cadastros/estabelecimentos' },
 ]
 
 export const ITENS_MENU: ItemMenu[] = [

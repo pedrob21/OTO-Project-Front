@@ -1,7 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buscarFeriados, buscarResumo, buscarSerieMensal } from './dashboard'
 import { ErroRequisicao } from './erros'
-import { listarEstabelecimentos } from './estabelecimentos'
+import {
+  alterarEstabelecimento,
+  buscarEstabelecimento,
+  criarEstabelecimento,
+  inativarEstabelecimento,
+  listarEstabelecimentos,
+  reativarEstabelecimento,
+} from './estabelecimentos'
 import { buscarParametrosVigentes } from './parametros'
 import { buscarHistoricoDaResposta, enviarResposta, listarRespostasDaCampanha } from './respostas'
 import {
@@ -318,5 +325,36 @@ describe('estabelecimentos', () => {
 
     expect(chamada(0).url).toBe('http://localhost:8080/api/estabelecimentos?tipo=HOTEL&ativo=true')
     expect(chamada(1).url).toBe('http://localhost:8080/api/estabelecimentos')
+  })
+
+  it('busca, cria, altera, inativa e reativa', async () => {
+    const dados = { nomeFantasia: 'Hotel Exemplo' }
+    const secretaria = { tipoHospedagemCodigo: 'HOTEL', situacao: 'REGULAR' as const }
+    await buscarEstabelecimento(12)
+    await criarEstabelecimento({
+      dados,
+      secretaria,
+      capacidade: {
+        vigenteDesde: '2026-01-01',
+        qtdUh: 40,
+        qtdUhPcd: 2,
+        qtdLeitos: 120,
+        maxLeitosPorUh: 4,
+      },
+    })
+    await alterarEstabelecimento(12, { dados, secretaria })
+    await inativarEstabelecimento(12)
+    await reativarEstabelecimento(12)
+
+    expect(
+      fetchFalso.mock.calls.map((_, indice) => [chamada(indice).metodo, chamada(indice).url]),
+    ).toEqual([
+      ['GET', 'http://localhost:8080/api/estabelecimentos/12'],
+      ['POST', 'http://localhost:8080/api/estabelecimentos'],
+      ['PUT', 'http://localhost:8080/api/estabelecimentos/12'],
+      ['POST', 'http://localhost:8080/api/estabelecimentos/12/inativar'],
+      ['POST', 'http://localhost:8080/api/estabelecimentos/12/reativar'],
+    ])
+    expect(chamada(1).corpo).toMatchObject({ capacidade: { qtdUh: 40 }, secretaria })
   })
 })
