@@ -138,6 +138,13 @@ export const rotas: RouteObject[] = [
                     .ResponderPesquisaPage,
                 }),
               },
+              {
+                path: '/meu-estabelecimento',
+                lazy: async () => ({
+                  Component: (await import('@/features/estabelecimento/MeuEstabelecimentoPage'))
+                    .MeuEstabelecimentoPage,
+                }),
+              },
             ],
           },
         ],

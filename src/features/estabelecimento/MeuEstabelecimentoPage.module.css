@@ -1,0 +1,5 @@
+.estabelecimentos {
+  display: grid;
+  gap: 17.5px;
+  max-width: 920px;
+}

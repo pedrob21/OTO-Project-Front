@@ -160,14 +160,17 @@ export function formDoEstabelecimento(
 export function errosDoEstabelecimento(
   form: FormEstabelecimento,
   novo: boolean,
+  somenteDados = false,
 ): ErrosDoFormulario {
   const erros: ErrosDoFormulario = {}
-  const campos = [...CAMPOS_DADOS, ...CAMPOS_SECRETARIA, ...(novo ? CAMPOS_CAPACIDADE : [])]
+  const campos = somenteDados
+    ? CAMPOS_DADOS
+    : [...CAMPOS_DADOS, ...CAMPOS_SECRETARIA, ...(novo ? CAMPOS_CAPACIDADE : [])]
   for (const campo of campos) {
     const erro = erroDoCampo(campo, String(form[campo.nome] ?? ''))
     if (erro) erros[campo.nome] = erro
   }
-  if (!form['secretaria.tipoHospedagemCodigo']) {
+  if (!somenteDados && !form['secretaria.tipoHospedagemCodigo']) {
     erros['secretaria.tipoHospedagemCodigo'] = 'Escolha o tipo de hospedagem.'
   }
   if (novo && !erros['capacidade.qtdUhPcd'])
@@ -217,6 +220,12 @@ export function pedidoDeCriacao(form: FormEstabelecimento): Esquemas['CriacaoReq
   }
 }
 
-export function pedidoDeAlteracao(form: FormEstabelecimento): Esquemas['AtualizacaoRequest'] {
-  return { dados: dadosDoPedido(form), secretaria: secretariaDoPedido(form) }
+/** O PARCEIRO altera só os dados cadastrais: o bloco da Secretaria nem vai no pedido. */
+export function pedidoDeAlteracao(
+  form: FormEstabelecimento,
+  somenteDados = false,
+): Esquemas['AtualizacaoRequest'] {
+  return somenteDados
+    ? { dados: dadosDoPedido(form) }
+    : { dados: dadosDoPedido(form), secretaria: secretariaDoPedido(form) }
 }
