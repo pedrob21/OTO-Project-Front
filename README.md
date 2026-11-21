@@ -5,7 +5,7 @@ Interface web do **Observatório de Turismo de Olímpia (OTO)**. Reúne, em um p
 A API fica no repositório [OTO-Project](https://github.com/pedrob21/OTO-Project) (Spring Boot e PostgreSQL).
 
 > [!IMPORTANT]
-> **Em desenvolvimento.** O login, a criação de pesquisas e o cartão "Pesquisas com os parceiros" já usam a API. Os demais blocos do painel ainda mostram dados fixos ([`fixtures.ts`](src/features/painel/fixtures.ts)), e a integração deles é a [próxima etapa](#próximas-tasks).
+> **Em desenvolvimento.** O login, o fluxo das pesquisas (da criação à publicação), o resultado de cada campanha e o cartão "Pesquisas com os parceiros" já usam a API. Os demais blocos do painel ainda mostram dados fixos ([`fixtures.ts`](src/features/painel/fixtures.ts)), e a integração deles é a [próxima etapa](#próximas-tasks).
 
 ## Sumário
 
@@ -26,6 +26,12 @@ A API fica no repositório [OTO-Project](https://github.com/pedrob21/OTO-Project
 - Login com JWT, expiração de sessão e controle de acesso por perfil
 - Cabeçalho, menu, rodapé, e cabeçalho e filtros fixos durante a rolagem
 - Criação de pesquisa com campanhas (modalidade, período, diárias e prazo), só para o ADMIN, em `/pesquisas/nova`
+- Fluxo das pesquisas com os parceiros:
+  - lista das rodadas com filtro por situação (rascunho, aberta, encerrada e publicada), em `/pesquisas`
+  - acompanhamento da rodada, com a taxa de resposta por estabelecimentos e por leitos, o mínimo de 70% para publicar e as ações de abrir, prorrogar, encerrar (com confirmação) e reabrir, em `/pesquisas/:id`
+  - lançamento da resposta pelo ADMIN: lança ou corrige a resposta de um estabelecimento a partir do acompanhamento, com a versão enviada e o histórico. Um erro da API não apaga o que foi digitado
+  - prévia e publicação da campanha, com os impedimentos ligados ao botão "Publicar" e o cancelamento da publicação, em `/pesquisas/:id/campanhas/:campanhaId/previa`
+- Resultado publicado de cada campanha, para todos os perfis, com a ocultação por sigilo e o botão "Baixar CSV", em `/resultados/:campanhaId`
 - Painel de indicadores, com dados fixos, exceto as pesquisas:
   - filtros de campanha, comparação e tipo de hospedagem, guardados na URL
   - destaque da taxa de ocupação e indicadores de resumo
@@ -40,7 +46,7 @@ A API fica no repositório [OTO-Project](https://github.com/pedrob21/OTO-Project
 | Perfil | Conteúdo |
 |---|---|
 | `ADMIN` | Rodada aberta, progresso das respostas e rodadas recentes |
-| `PARCEIRO` | Pesquisas abertas dos seus estabelecimentos (versão provisória) |
+| `PARCEIRO` | Pesquisas abertas dos seus estabelecimentos (versão provisória). O menu "Pesquisas" leva à tela de resposta |
 | `VISUALIZADOR` | O cartão não aparece |
 
 As permissões na tela só organizam a interface. Quem barra o acesso aos dados é a API.
@@ -127,7 +133,9 @@ Se o navegador acusar erro de CORS, confira `CORS_ORIGENS` no `.env` do backend.
     │   └── ui/          # Botão, cartão, select, selo, estados de vazio e de erro
     ├── features/
     │   ├── auth/        # Contexto de sessão, login e proteção de rotas
-    │   └── painel/      # Página, cartões, regras de cálculo e dados fixos
+    │   ├── painel/      # Página, cartões, regras de cálculo e dados fixos
+    │   ├── pesquisas/   # Criação, lista, acompanhamento, resposta, prévia e publicação
+    │   └── resultados/  # Resultado publicado de uma campanha e download do CSV
     ├── lib/             # Formatadores pt-BR e regras de perfil
     ├── styles/          # Tokens do design e estilos globais
     ├── test/            # Configuração dos testes
@@ -157,7 +165,14 @@ Com o servidor local no ar, os tokens e os componentes podem ser conferidos ao l
 | **T17. Responsividade e acessibilidade** | Adaptar para tablet e celular, corrigir os ajustes pendentes em 1280 px e fazer a auditoria WCAG AA | Sem rolagem horizontal da página em 360 px e sem falhas AA abertas | T15 |
 | **T18. Otimização e revisão final** | Dividir o código por rota, otimizar fontes e imagens, analisar o tamanho do pacote, adicionar favicon e comparar a tela inteira com o design | Lighthouse medido e registrado, sem pendências visuais abertas | T17 |
 
-Ainda sem task definida: a página de definição de senha do convite (`/definir-senha`) e as telas de Pesquisas, Indicadores, Relatórios e Cadastros, que hoje aparecem desativadas no menu.
+Ainda sem task definida: a página de definição de senha do convite (`/definir-senha`) e as telas de Indicadores, Relatórios e Cadastros, que hoje aparecem desativadas no menu.
+
+Pendências do fluxo das pesquisas:
+
+- Quando a branch `feature/testes-cucumber` do backend entrar na `main` dele, rodar `npm run api:tipos` e usar `aceitaResposta` e `respostasAte` da pendência para desativar o formulário do parceiro e mostrar "Respostas até dd/mm/aaaa". O cálculo da tolerância fica na API
+- Ligar os botões "Acompanhamento completo", "Ver pendências" e "Lançar resposta" do cartão do painel às novas telas
+- Diárias médias digitadas pela equipe (`/api/campanhas/{id}/diarias`) na prévia
+- Esta branch duplicou de propósito algumas peças das branches `feat/senha-csv-metodologia` e `feat/cadastros` (download do CSV, tabela e confirmação). O que fazer com cada uma no merge está em [`docs/CONFLITOS.md`](docs/CONFLITOS.md)
 
 ## Decisões em aberto
 
