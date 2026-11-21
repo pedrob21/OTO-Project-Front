@@ -11,12 +11,20 @@ const MENSAGEM_PADRAO = 'O servidor não conseguiu atender ao pedido. Tente nova
 export class ErroRequisicao extends Error {
   readonly status: number
   readonly campos: Record<string, string>
+  /** corpo da resposta, para os erros que não seguem o Problem Details (como o da importação) */
+  readonly corpo: unknown
 
-  constructor(status: number, mensagem: string, campos: Record<string, string> = {}) {
+  constructor(
+    status: number,
+    mensagem: string,
+    campos: Record<string, string> = {},
+    corpo: unknown = null,
+  ) {
     super(mensagem)
     this.name = 'ErroRequisicao'
     this.status = status
     this.campos = campos
+    this.corpo = corpo
   }
 
   static semConexao(): ErroRequisicao {
@@ -35,6 +43,7 @@ export class ErroRequisicao extends Error {
       resposta.status,
       corpo.detail ?? corpo.title ?? MENSAGEM_PADRAO,
       corpo.campos,
+      corpo,
     )
   }
 }

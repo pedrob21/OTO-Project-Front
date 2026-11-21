@@ -1,0 +1,69 @@
+.rolagem {
+  overflow-x: auto;
+}
+
+.tabela {
+  width: 100%;
+  margin-top: var(--espaco-4);
+  border-collapse: collapse;
+}
+
+.tabela th,
+.tabela td {
+  padding: 14px var(--espaco-3);
+  border-bottom: 1px solid var(--cor-fundo);
+  color: var(--cor-texto-forte);
+  font: var(--tipo-usuario);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.tabela thead th {
+  padding-block: 12px;
+  border-bottom-color: var(--cor-borda);
+  color: var(--cor-texto);
+  font: var(--tipo-rotulo-campo);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tabela tbody th {
+  font-weight: 700;
+}
+
+.tabela tbody tr:last-child th,
+.tabela tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.tabela .numero {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tabela .acoes {
+  text-align: right;
+}
+
+.botoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--espaco-2);
+}
+
+.botoes button,
+.botoes a {
+  min-height: 36px;
+  padding: 0 var(--espaco-3);
+}
+
+.oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

@@ -42,3 +42,46 @@
 .item:disabled {
   cursor: not-allowed;
 }
+
+.item:not(:disabled) {
+  cursor: pointer;
+}
+
+.atual {
+  font: var(--tipo-nome);
+}
+
+.raiz {
+  position: relative;
+}
+
+.submenu {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 14px);
+  left: -12px;
+  display: grid;
+  min-width: 220px;
+  padding: var(--espaco-2);
+  background: var(--cor-superficie);
+  border: var(--borda-card);
+  border-radius: var(--raio-controle);
+}
+
+.itemSubmenu {
+  display: block;
+  padding: var(--espaco-2) var(--espaco-3);
+  border-radius: var(--raio-chip);
+  color: var(--cor-texto-titulo);
+  font: var(--tipo-menu);
+  white-space: nowrap;
+}
+
+.itemSubmenu:hover {
+  background: var(--cor-destaque);
+}
+
+.itemSubmenu[aria-current='page'] {
+  color: var(--cor-primaria-escura);
+  font: var(--tipo-nome);
+}

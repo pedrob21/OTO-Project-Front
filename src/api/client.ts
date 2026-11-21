@@ -7,6 +7,7 @@ type Parametros = Record<string, string | number | boolean | null | undefined>
 
 type Opcoes = {
   metodo?: 'GET' | 'POST' | 'PUT' | 'DELETE'
+  /** JSON, ou FormData para envio de arquivo */
   corpo?: unknown
   parametros?: Parametros
   signal?: AbortSignal
@@ -34,8 +35,10 @@ export async function requisicao<T>(caminho: string, opcoes: Opcoes = {}): Promi
   const { metodo = 'GET', corpo, parametros, signal, autenticada = true } = opcoes
   const token = autenticada ? lerToken() : null
 
+  // Com FormData, o navegador põe o Content-Type com o separador das partes.
+  const formulario = corpo instanceof FormData
   const cabecalhos: Record<string, string> = {}
-  if (corpo !== undefined) cabecalhos['Content-Type'] = 'application/json'
+  if (corpo !== undefined && !formulario) cabecalhos['Content-Type'] = 'application/json'
   if (token) cabecalhos.Authorization = `Bearer ${token}`
 
   let resposta: Response
@@ -43,7 +46,7 @@ export async function requisicao<T>(caminho: string, opcoes: Opcoes = {}): Promi
     resposta = await fetch(montarUrl(caminho, parametros), {
       method: metodo,
       headers: cabecalhos,
-      body: corpo === undefined ? undefined : JSON.stringify(corpo),
+      body: corpo === undefined || formulario ? corpo : JSON.stringify(corpo),
       signal,
     })
   } catch (erro) {

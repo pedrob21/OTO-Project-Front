@@ -1,7 +1,33 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { buscarFeriados, buscarResumo, buscarSerieMensal } from './dashboard'
 import { ErroRequisicao } from './erros'
-import { buscarParametrosVigentes } from './parametros'
+import {
+  alterarHistorico,
+  excluirHistorico,
+  gravarHistorico,
+  importarHistorico,
+  listarHistorico,
+} from './historico'
+import {
+  alterarEstabelecimento,
+  buscarEstabelecimento,
+  corrigirCapacidade,
+  criarEstabelecimento,
+  excluirCapacidade,
+  inativarEstabelecimento,
+  listarCapacidades,
+  listarEstabelecimentos,
+  reativarEstabelecimento,
+  registrarCapacidade,
+} from './estabelecimentos'
+import {
+  alterarParametros,
+  buscarParametrosVigentes,
+  criarParametros,
+  excluirParametros,
+  listarParametros,
+} from './parametros'
+import { alterarReferencia, criarReferencia, excluirReferencia } from './referencias'
 import { buscarHistoricoDaResposta, enviarResposta, listarRespostasDaCampanha } from './respostas'
 import {
   buscarPrevia,
@@ -10,7 +36,7 @@ import {
   listarPublicadas,
   publicarCampanha,
 } from './resultados'
-import { buscarRhcVigente } from './rhc'
+import { buscarRhcVigente, corrigirRhc, excluirRhc, listarRhc, registrarRhc } from './rhc'
 import {
   abrirRodada,
   buscarAcompanhamento,
@@ -22,6 +48,15 @@ import {
   prorrogarRodada,
   reabrirRodada,
 } from './rodadas'
+import {
+  alterarUsuario,
+  buscarUsuario,
+  criarUsuario,
+  gerarLinkDeSenha,
+  inativarUsuario,
+  listarUsuarios,
+  reativarUsuario,
+} from './usuarios'
 
 const fetchFalso = vi.fn<typeof fetch>()
 
@@ -101,10 +136,61 @@ describe('parâmetros e RHC', () => {
     expect(chamada().url).toBe('http://localhost:8080/api/parametros-calculo/vigente')
   })
 
+  it('parâmetros: lista, cria, corrige e exclui', async () => {
+    const parametros = {
+      vigenteDesde: '2027-01-01',
+      percentualDayUse: 15.15,
+      diasPermanenciaMedia: 4,
+      diasEmParques: 2,
+      gastoMedioDiario: 250,
+      gastoMedioIngresso: 105,
+      percentualMinimoLeitosPublicacao: 70,
+      fonte: 'Pesquisa de Demanda Turística 2026',
+    }
+    await listarParametros()
+    await criarParametros(parametros)
+    await alterarParametros(3, parametros)
+    await excluirParametros(3)
+
+    expect(
+      fetchFalso.mock.calls.map((_, indice) => [chamada(indice).metodo, chamada(indice).url]),
+    ).toEqual([
+      ['GET', 'http://localhost:8080/api/parametros-calculo'],
+      ['POST', 'http://localhost:8080/api/parametros-calculo'],
+      ['PUT', 'http://localhost:8080/api/parametros-calculo/3'],
+      ['DELETE', 'http://localhost:8080/api/parametros-calculo/3'],
+    ])
+    expect(chamada(1).corpo).toEqual(parametros)
+  })
+
   it('RHC vigente', async () => {
     await buscarRhcVigente('2026-01-01')
 
     expect(chamada().url).toBe('http://localhost:8080/api/rhc/vigente?data=2026-01-01')
+  })
+
+  it('RHC: lista, registra, corrige e exclui', async () => {
+    const rhc = {
+      vigenteDesde: '2026-01-01',
+      qtdRegistros: 310,
+      qtdUh: 420,
+      qtdLeitos: 1300,
+      maxLeitosPorUh: 5,
+    }
+    await listarRhc()
+    await registrarRhc(rhc)
+    await corrigirRhc(4, rhc)
+    await excluirRhc(4)
+
+    expect(
+      fetchFalso.mock.calls.map((_, indice) => [chamada(indice).metodo, chamada(indice).url]),
+    ).toEqual([
+      ['GET', 'http://localhost:8080/api/rhc'],
+      ['POST', 'http://localhost:8080/api/rhc'],
+      ['PUT', 'http://localhost:8080/api/rhc/4'],
+      ['DELETE', 'http://localhost:8080/api/rhc/4'],
+    ])
+    expect(chamada(2).corpo).toEqual(rhc)
   })
 
   it('PARCEIRO recebe 403 no RHC', async () => {
@@ -116,6 +202,26 @@ describe('parâmetros e RHC', () => {
 
     expect(erro).toBeInstanceOf(ErroRequisicao)
     expect(erro).toMatchObject({ status: 403, message: 'Acesso negado.' })
+  })
+})
+
+describe('referências', () => {
+  it('cria, altera e exclui pelo código de cada recurso', async () => {
+    await criarReferencia('tipos-hospedagem', { nome: 'Chalé', calculaReceita: false })
+    await alterarReferencia('feriados', 'FESTA_JUNINA', {
+      codigo: 'FESTA_JUNINA',
+      nome: 'Festa Junina',
+    })
+    await excluirReferencia('faixas', 'MEDIA')
+
+    expect(
+      fetchFalso.mock.calls.map((_, indice) => [chamada(indice).metodo, chamada(indice).url]),
+    ).toEqual([
+      ['POST', 'http://localhost:8080/api/referencias/tipos-hospedagem'],
+      ['PUT', 'http://localhost:8080/api/referencias/feriados/FESTA_JUNINA'],
+      ['DELETE', 'http://localhost:8080/api/referencias/faixas/MEDIA'],
+    ])
+    expect(chamada(0).corpo).toEqual({ nome: 'Chalé', calculaReceita: false })
   })
 })
 
@@ -251,6 +357,189 @@ describe('rodadas', () => {
       url: 'http://localhost:8080/api/rodadas/9/abrir',
       metodo: 'POST',
       corpo: { prazoResposta: '2026-11-30' },
+    })
+  })
+})
+
+describe('usuários', () => {
+  it('lista e busca', async () => {
+    await listarUsuarios()
+    await buscarUsuario(7)
+
+    expect(chamada(0)).toMatchObject({ url: 'http://localhost:8080/api/usuarios', metodo: 'GET' })
+    expect(chamada(1).url).toBe('http://localhost:8080/api/usuarios/7')
+  })
+
+  it('cria com POST e altera com PUT', async () => {
+    await criarUsuario({
+      nome: 'Ana',
+      email: 'ana@hotel.com',
+      perfil: 'PARCEIRO',
+      estabelecimentoIds: [12],
+    })
+    await alterarUsuario(7, { nome: 'Ana Souza', perfil: 'VISUALIZADOR', estabelecimentoIds: [] })
+
+    expect(chamada(0)).toMatchObject({
+      url: 'http://localhost:8080/api/usuarios',
+      metodo: 'POST',
+      corpo: { email: 'ana@hotel.com', estabelecimentoIds: [12] },
+    })
+    expect(chamada(1)).toMatchObject({
+      url: 'http://localhost:8080/api/usuarios/7',
+      metodo: 'PUT',
+      corpo: { nome: 'Ana Souza', perfil: 'VISUALIZADOR' },
+    })
+  })
+
+  it('inativa, reativa e gera link sem corpo', async () => {
+    await inativarUsuario(7)
+    await reativarUsuario(7)
+    await gerarLinkDeSenha(7)
+
+    expect(
+      fetchFalso.mock.calls.map((_, indice) => [chamada(indice).metodo, chamada(indice).url]),
+    ).toEqual([
+      ['POST', 'http://localhost:8080/api/usuarios/7/inativar'],
+      ['POST', 'http://localhost:8080/api/usuarios/7/reativar'],
+      ['POST', 'http://localhost:8080/api/usuarios/7/link-de-senha'],
+    ])
+    expect(chamada(0).corpo).toBeUndefined()
+  })
+})
+
+describe('capacidades', () => {
+  it('lista, inclui, corrige e exclui', async () => {
+    const capacidade = {
+      vigenteDesde: '2026-07-01',
+      qtdUh: 42,
+      qtdUhPcd: 2,
+      qtdLeitos: 126,
+      maxLeitosPorUh: 4,
+    }
+    await listarCapacidades(12)
+    await registrarCapacidade(12, capacidade)
+    await corrigirCapacidade(12, 5, capacidade)
+    await excluirCapacidade(12, 5)
+
+    expect(
+      fetchFalso.mock.calls.map((_, indice) => [chamada(indice).metodo, chamada(indice).url]),
+    ).toEqual([
+      ['GET', 'http://localhost:8080/api/estabelecimentos/12/capacidades'],
+      ['POST', 'http://localhost:8080/api/estabelecimentos/12/capacidades'],
+      ['PUT', 'http://localhost:8080/api/estabelecimentos/12/capacidades/5'],
+      ['DELETE', 'http://localhost:8080/api/estabelecimentos/12/capacidades/5'],
+    ])
+    expect(chamada(1).corpo).toEqual(capacidade)
+  })
+})
+
+describe('estabelecimentos', () => {
+  it('lista com os filtros', async () => {
+    await listarEstabelecimentos({ tipo: 'HOTEL', ativo: true })
+    await listarEstabelecimentos()
+
+    expect(chamada(0).url).toBe('http://localhost:8080/api/estabelecimentos?tipo=HOTEL&ativo=true')
+    expect(chamada(1).url).toBe('http://localhost:8080/api/estabelecimentos')
+  })
+
+  it('busca, cria, altera, inativa e reativa', async () => {
+    const dados = { nomeFantasia: 'Hotel Exemplo' }
+    const secretaria = { tipoHospedagemCodigo: 'HOTEL', situacao: 'REGULAR' as const }
+    await buscarEstabelecimento(12)
+    await criarEstabelecimento({
+      dados,
+      secretaria,
+      capacidade: {
+        vigenteDesde: '2026-01-01',
+        qtdUh: 40,
+        qtdUhPcd: 2,
+        qtdLeitos: 120,
+        maxLeitosPorUh: 4,
+      },
+    })
+    await alterarEstabelecimento(12, { dados, secretaria })
+    await inativarEstabelecimento(12)
+    await reativarEstabelecimento(12)
+
+    expect(
+      fetchFalso.mock.calls.map((_, indice) => [chamada(indice).metodo, chamada(indice).url]),
+    ).toEqual([
+      ['GET', 'http://localhost:8080/api/estabelecimentos/12'],
+      ['POST', 'http://localhost:8080/api/estabelecimentos'],
+      ['PUT', 'http://localhost:8080/api/estabelecimentos/12'],
+      ['POST', 'http://localhost:8080/api/estabelecimentos/12/inativar'],
+      ['POST', 'http://localhost:8080/api/estabelecimentos/12/reativar'],
+    ])
+    expect(chamada(1).corpo).toMatchObject({ capacidade: { qtdUh: 40 }, secretaria })
+  })
+})
+
+describe('série histórica', () => {
+  const valor = {
+    indicador: 'TAXA_OCUPACAO' as const,
+    modalidade: 'CONSOLIDADA' as const,
+    ano: 2024,
+    mes: 7,
+    valor: 68.4,
+    fonte: 'Indicadores do Turismo 2017-2025',
+  }
+
+  it('lista com os filtros, grava, corrige e exclui', async () => {
+    await listarHistorico({ indicador: 'FLUXO_TURISTAS', ano: 2024, tipo: 'HOTEL' })
+    await gravarHistorico(valor)
+    await alterarHistorico(8, valor)
+    await excluirHistorico(8)
+
+    expect(
+      fetchFalso.mock.calls.map((_, indice) => [chamada(indice).metodo, chamada(indice).url]),
+    ).toEqual([
+      ['GET', 'http://localhost:8080/api/historico?indicador=FLUXO_TURISTAS&ano=2024&tipo=HOTEL'],
+      ['POST', 'http://localhost:8080/api/historico'],
+      ['PUT', 'http://localhost:8080/api/historico/8'],
+      ['DELETE', 'http://localhost:8080/api/historico/8'],
+    ])
+    expect(chamada(1).corpo).toEqual(valor)
+  })
+
+  it('importa em multipart, com o arquivo e a fonte', async () => {
+    fetchFalso.mockResolvedValue(
+      new Response(JSON.stringify({ linhasLidas: 3, inseridos: 2, atualizados: 1, erros: [] })),
+    )
+    const arquivo = new File(['indicador;modalidade'], 'serie.csv', { type: 'text/csv' })
+
+    await expect(importarHistorico(arquivo, 'Planilha 2017-2025')).resolves.toMatchObject({
+      inseridos: 2,
+    })
+
+    const [url, init] = fetchFalso.mock.calls[0] ?? []
+    expect(url).toBe('http://localhost:8080/api/historico/importacao')
+    expect(init?.method).toBe('POST')
+    const corpo = init?.body as FormData
+    expect(corpo.get('fonte')).toBe('Planilha 2017-2025')
+    expect((corpo.get('arquivo') as File).name).toBe('serie.csv')
+  })
+
+  it('erros por linha (422) voltam como resultado', async () => {
+    const erros = [{ linha: 3, mensagem: 'feriado inválido: CARNAVALL (veja /api/referencias)' }]
+    fetchFalso.mockResolvedValue(
+      new Response(JSON.stringify({ linhasLidas: 3, inseridos: 0, atualizados: 0, erros }), {
+        status: 422,
+      }),
+    )
+
+    await expect(importarHistorico(new File([''], 'a.csv'), 'x')).resolves.toMatchObject({ erros })
+  })
+
+  it('outras recusas viram erro', async () => {
+    fetchFalso.mockResolvedValue(
+      new Response(JSON.stringify({ detail: 'Informe a fonte dos dados (até 200 caracteres).' }), {
+        status: 422,
+      }),
+    )
+
+    await expect(importarHistorico(new File([''], 'a.csv'), ' ')).rejects.toMatchObject({
+      status: 422,
+      message: 'Informe a fonte dos dados (até 200 caracteres).',
     })
   })
 })

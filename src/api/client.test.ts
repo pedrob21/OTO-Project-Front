@@ -52,6 +52,19 @@ describe('requisicao', () => {
     expect(cabecalhosDaChamada()['Content-Type']).toBe('application/json')
   })
 
+  it('FormData vai como está, sem Content-Type de JSON', async () => {
+    entrarComToken()
+    fetchFalso.mockResolvedValue(json(200, {}))
+    const formulario = new FormData()
+    formulario.append('fonte', 'planilha')
+
+    await requisicao('/api/x', { metodo: 'POST', corpo: formulario })
+
+    expect(fetchFalso.mock.calls[0]?.[1]?.body).toBe(formulario)
+    expect(cabecalhosDaChamada()['Content-Type']).toBeUndefined()
+    expect(cabecalhosDaChamada().Authorization).toBe('Bearer abc')
+  })
+
   it('204 não tenta ler corpo', async () => {
     fetchFalso.mockResolvedValue(new Response(null, { status: 204 }))
 
@@ -71,6 +84,7 @@ describe('requisicao', () => {
       message: 'Corrija os campos indicados.',
       campos: { email: 'inválido' },
     })
+    expect((erro as ErroRequisicao).corpo).toMatchObject({ campos: { email: 'inválido' } })
   })
 
   it('aguenta erro com corpo vazio', async () => {

@@ -56,6 +56,55 @@ export const rotas: RouteObject[] = [
                     .NovaPesquisaPage,
                 }),
               },
+              {
+                path: '/cadastros/usuarios',
+                lazy: async () => ({
+                  Component: (await import('@/features/cadastros/usuarios/UsuariosPage'))
+                    .UsuariosPage,
+                }),
+              },
+              {
+                path: '/cadastros/estabelecimentos',
+                lazy: async () => ({
+                  Component: (
+                    await import('@/features/cadastros/estabelecimentos/EstabelecimentosPage')
+                  ).EstabelecimentosPage,
+                }),
+              },
+              {
+                path: '/cadastros/estabelecimentos/:id/capacidades',
+                lazy: async () => ({
+                  Component: (await import('@/features/cadastros/capacidades/CapacidadesPage'))
+                    .CapacidadesPage,
+                }),
+              },
+              {
+                path: '/cadastros/parametros',
+                lazy: async () => ({
+                  Component: (await import('@/features/cadastros/parametros/ParametrosPage'))
+                    .ParametrosPage,
+                }),
+              },
+              {
+                path: '/cadastros/rhc',
+                lazy: async () => ({
+                  Component: (await import('@/features/cadastros/rhc/RhcPage')).RhcPage,
+                }),
+              },
+              {
+                path: '/cadastros/referencias',
+                lazy: async () => ({
+                  Component: (await import('@/features/cadastros/referencias/ReferenciasPage'))
+                    .ReferenciasPage,
+                }),
+              },
+              {
+                path: '/cadastros/historico',
+                lazy: async () => ({
+                  Component: (await import('@/features/cadastros/historico/HistoricoPage'))
+                    .HistoricoPage,
+                }),
+              },
             ],
           },
           {

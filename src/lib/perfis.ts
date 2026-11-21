@@ -1,5 +1,7 @@
 import type { Perfil } from '@/types/dominio'
 
+export type ItemSubmenu = { rotulo: string; para: string }
+
 export type ItemMenu = {
   rotulo: string
   /** sem destino, o item aparece desativado até a página existir */
@@ -9,7 +11,18 @@ export type ItemMenu = {
   /** destino conforme o perfil; perfil sem página vê o item desativado */
   paginaPorPerfil?: Partial<Record<Perfil, string>>
   temSubmenu?: boolean
+  /** com a lista, o item abre o submenu em vez de levar a uma página */
+  submenu?: ItemSubmenu[]
 }
+
+export const SUBMENU_CADASTROS: ItemSubmenu[] = [
+  { rotulo: 'Usuários', para: '/cadastros/usuarios' },
+  { rotulo: 'Estabelecimentos', para: '/cadastros/estabelecimentos' },
+  { rotulo: 'Parâmetros de cálculo', para: '/cadastros/parametros' },
+  { rotulo: 'Hospedagem caseira (RHC)', para: '/cadastros/rhc' },
+  { rotulo: 'Referências', para: '/cadastros/referencias' },
+  { rotulo: 'Série histórica', para: '/cadastros/historico' },
+]
 
 export const ITENS_MENU: ItemMenu[] = [
   { rotulo: 'Painel', para: '/' },
@@ -21,7 +34,7 @@ export const ITENS_MENU: ItemMenu[] = [
   },
   { rotulo: 'Indicadores', temSubmenu: true },
   { rotulo: 'Relatórios', temSubmenu: true },
-  { rotulo: 'Cadastros', temSubmenu: true },
+  { rotulo: 'Cadastros', perfis: ['ADMIN'], temSubmenu: true, submenu: SUBMENU_CADASTROS },
 ]
 
 export function itensDoPerfil(perfil: Perfil | undefined): ItemMenu[] {

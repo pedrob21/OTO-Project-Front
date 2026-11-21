@@ -5,7 +5,7 @@ Interface web do **Observatório de Turismo de Olímpia (OTO)**. Reúne, em um p
 A API fica no repositório [OTO-Project](https://github.com/pedrob21/OTO-Project) (Spring Boot e PostgreSQL).
 
 > [!IMPORTANT]
-> **Em desenvolvimento.** O login, o fluxo das pesquisas (da criação à publicação), o resultado de cada campanha e o cartão "Pesquisas com os parceiros" já usam a API. Os demais blocos do painel ainda mostram dados fixos ([`fixtures.ts`](src/features/painel/fixtures.ts)), e a integração deles é a [próxima etapa](#próximas-tasks).
+> **Em desenvolvimento.** O login, o fluxo das pesquisas (da criação à publicação), o resultado de cada campanha, os cadastros do ADMIN e o cartão "Pesquisas com os parceiros" já usam a API. Os demais blocos do painel ainda mostram dados fixos ([`fixtures.ts`](src/features/painel/fixtures.ts)), e a integração deles é a [próxima etapa](#próximas-tasks).
 
 ## Sumário
 
@@ -32,6 +32,12 @@ A API fica no repositório [OTO-Project](https://github.com/pedrob21/OTO-Project
   - lançamento da resposta pelo ADMIN: lança ou corrige a resposta de um estabelecimento a partir do acompanhamento, com a versão enviada e o histórico. Um erro da API não apaga o que foi digitado
   - prévia e publicação da campanha, com os impedimentos ligados ao botão "Publicar" e o cancelamento da publicação, em `/pesquisas/:id/campanhas/:campanhaId/previa`
 - Resultado publicado de cada campanha, para todos os perfis, com a ocultação por sigilo e o botão "Baixar CSV", em `/resultados/:campanhaId`
+- Cadastros, só para o ADMIN, no submenu "Cadastros" (os outros perfis não veem o item):
+  - usuários, com o link de convite ou de nova senha para enviar ao usuário
+  - estabelecimentos, com os dados da Secretaria, e o histórico de capacidade (UH e leitos) de cada um
+  - parâmetros de cálculo e totais da hospedagem caseira (RHC), por vigência
+  - referências: tipos de hospedagem, feriados e eventos, e faixas de ocupação
+  - série histórica, com importação de CSV que mostra os erros de cada linha
 - Painel de indicadores, com dados fixos, exceto as pesquisas:
   - filtros de campanha, comparação e tipo de hospedagem, guardados na URL
   - destaque da taxa de ocupação e indicadores de resumo
@@ -130,9 +136,10 @@ Se o navegador acusar erro de CORS, confira `CORS_ORIGENS` no `.env` do backend.
     ├── assets/          # Logos
     ├── components/
     │   ├── charts/      # Gráficos reutilizáveis
-    │   └── ui/          # Botão, cartão, select, selo, estados de vazio e de erro
+    │   └── ui/          # Botão, cartão, select, selo, tabela, diálogo, estados de vazio e de erro
     ├── features/
     │   ├── auth/        # Contexto de sessão, login e proteção de rotas
+    │   ├── cadastros/   # Telas de cadastro do ADMIN, com formulário em diálogo
     │   ├── painel/      # Página, cartões, regras de cálculo e dados fixos
     │   ├── pesquisas/   # Criação, lista, acompanhamento, resposta, prévia e publicação
     │   └── resultados/  # Resultado publicado de uma campanha e download do CSV
@@ -153,7 +160,8 @@ Com o servidor local no ar, os tokens e os componentes podem ser conferidos ao l
 - **Formatos:** números, moeda e datas seguem o padrão pt-BR e passam por [`formatos.ts`](src/lib/formatos.ts).
 - **Tipos da API:** `src/api/schema.d.ts` é gerado e não deve ser editado à mão.
 - **Sessão:** o token fica no `sessionStorage`. Uma resposta 401 a uma chamada autenticada encerra a sessão.
-- **Erros da API:** seguem o formato Problem Details (RFC 9457).
+- **Erros da API:** seguem o formato Problem Details (RFC 9457). Nos formulários, os `campos` da resposta marcam cada campo, e as regras recusadas com 422 que dizem respeito a um campo, como o e-mail repetido, também vão para ele.
+- **Cadastros:** lista em tabela e formulário em diálogo, que devolve o foco a quem o abriu. Números aceitam vírgula ou ponto decimal, e as regras de validação são as mesmas da API.
 - **Acessibilidade:** os gráficos têm alternativa em texto ou tabela, e a informação não depende só da cor.
 
 ## Próximas tasks
@@ -162,10 +170,10 @@ Com o servidor local no ar, os tokens e os componentes podem ser conferidos ao l
 |---|---|---|---|
 | **T15. Integração com a API** | Trocar os dados fixos pelas chamadas reais, com carregamento, vazio e erro independentes em cada bloco | A tela funciona com o backend local nos três perfis, inclusive com o banco sem publicações | D2, D3, D7 e D8 |
 | **T16. Exportação** | Baixar o `resultado.csv` com o token de acesso, mostrando progresso e erro | O arquivo abre no Excel com a acentuação correta | D5 |
-| **T17. Responsividade e acessibilidade** | Adaptar para tablet e celular, corrigir os ajustes pendentes em 1280 px e fazer a auditoria WCAG AA | Sem rolagem horizontal da página em 360 px e sem falhas AA abertas | T15 |
+| **T17. Responsividade e acessibilidade** | Adaptar para tablet e celular, inclusive as tabelas e os diálogos de Cadastros, corrigir os ajustes pendentes em 1280 px e fazer a auditoria WCAG AA | Sem rolagem horizontal da página em 360 px e sem falhas AA abertas | T15 |
 | **T18. Otimização e revisão final** | Dividir o código por rota, otimizar fontes e imagens, analisar o tamanho do pacote, adicionar favicon e comparar a tela inteira com o design | Lighthouse medido e registrado, sem pendências visuais abertas | T17 |
 
-Ainda sem task definida: a página de definição de senha do convite (`/definir-senha`) e as telas de Indicadores, Relatórios e Cadastros, que hoje aparecem desativadas no menu.
+Ainda sem task definida: a página de definição de senha (`/definir-senha`), que recebe o link gerado em Cadastros > Usuários e ainda não existe, o cadastro do catálogo do inventário (`/api/inventario`) e as telas de Indicadores e Relatórios, que hoje aparecem desativadas no menu.
 
 Pendências do fluxo das pesquisas:
 

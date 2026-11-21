@@ -3,6 +3,8 @@ import {
   capitalizar,
   formatarCompacto,
   formatarData,
+  formatarDataHora,
+  formatarDecimal,
   formatarInteiro,
   formatarMes,
   formatarMesAno,
@@ -20,6 +22,13 @@ describe('números', () => {
   it('inteiro com separador de milhar', () => {
     expect(formatarInteiro(4643)).toBe('4.643')
     expect(formatarInteiro(586)).toBe('586')
+  })
+
+  it('decimal sem zeros à direita', () => {
+    expect(formatarDecimal(100.5)).toBe('100,5')
+    expect(formatarDecimal(3600)).toBe('3.600')
+    expect(formatarDecimal(15.155)).toBe('15,16')
+    expect(formatarDecimal(null)).toBe('—')
   })
 
   it('percentual com uma casa por padrão', () => {
@@ -43,6 +52,7 @@ describe('números', () => {
   it('moeda', () => {
     expect(formatarMoeda(765)).toBe(`R$${nbsp}765`)
     expect(formatarMoeda(1234)).toBe(`R$${nbsp}1.234`)
+    expect(formatarMoeda(250, 2)).toBe(`R$${nbsp}250,00`)
     expect(formatarMoedaCompacta(89_000_000)).toBe(`R$${nbsp}89,0${nbsp}mi`)
     expect(formatarMoedaCompacta(5_100_000)).toBe(`R$${nbsp}5,1${nbsp}mi`)
   })
@@ -83,6 +93,12 @@ describe('datas', () => {
     expect(formatarData('2026-09-18')).toBe('18/09/2026')
     expect(formatarData('2026-03-01T00:30:00Z')).toBe('01/03/2026')
     expect(formatarData('ontem')).toBe('—')
+  })
+
+  it('data e hora no horário de Olímpia', () => {
+    expect(formatarDataHora('2026-10-28T14:00:00Z')).toBe('28/10/2026 às 11:00')
+    expect(formatarDataHora('ontem')).toBe('—')
+    expect(formatarDataHora(undefined)).toBe('—')
   })
 })
 

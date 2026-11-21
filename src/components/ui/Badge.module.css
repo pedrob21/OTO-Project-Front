@@ -19,6 +19,12 @@
   color: var(--cor-positivo);
 }
 
+.inativa {
+  background: var(--cor-superficie-suave);
+  border: 1px solid var(--cor-borda);
+  color: var(--cor-texto-suave);
+}
+
 .faixa {
   min-height: 27px;
   background: var(--cor-superficie);

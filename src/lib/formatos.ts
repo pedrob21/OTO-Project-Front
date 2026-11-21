@@ -51,6 +51,12 @@ export function formatarInteiro(valor: Valor): string {
   return semValor(valor) ? VAZIO : numero(valor, 0)
 }
 
+/** 100.5 → "100,5"; 3600 → "3.600". Até `casas` casas, sem zeros à direita. */
+export function formatarDecimal(valor: Valor, casas = 2): string {
+  if (semValor(valor)) return VAZIO
+  return new Intl.NumberFormat('pt-BR', { maximumFractionDigits: casas }).format(valor)
+}
+
 /** 62.8 → "62,8%" */
 export function formatarPercentual(valor: Valor, casas = 1): string {
   return semValor(valor) ? VAZIO : `${numero(valor, casas)}%`
@@ -66,9 +72,9 @@ export function formatarCompacto(valor: Valor): string {
   return numero(valor, 0)
 }
 
-/** 765 → "R$ 765" */
-export function formatarMoeda(valor: Valor): string {
-  return semValor(valor) ? VAZIO : `R$${ESPACO}${numero(valor, 0)}`
+/** 765 → "R$ 765"; com 2 casas, 250 → "R$ 250,00" */
+export function formatarMoeda(valor: Valor, casas = 0): string {
+  return semValor(valor) ? VAZIO : `R$${ESPACO}${numero(valor, casas)}`
 }
 
 /** 89000000 → "R$ 89,0 mi" */
@@ -110,19 +116,14 @@ export function formatarMesAno(mes: number, ano: number): string {
   return nome ? `${nome}./${ano}` : VAZIO
 }
 
-/** 72.5 → "72,5"; 410 → "410"; até duas casas, sem zeros sobrando. */
-export function formatarDecimal(valor: Valor): string {
-  return semValor(valor)
-    ? VAZIO
-    : new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 }).format(valor)
-}
+const FUSO = 'America/Sao_Paulo'
 
-/** Instante da API ("2026-11-12T17:30:00Z") no horário de quem usa: "12/11/2026 às 14:30". */
+/** Instante da API ("2026-11-12T17:30:00Z") no horário de Olímpia: "12/11/2026 às 14:30". */
 export function formatarDataHora(instante: string | null | undefined): string {
   const data = instante ? new Date(instante) : null
   if (!data || Number.isNaN(data.getTime())) return VAZIO
-  const dia = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short' }).format(data)
-  const hora = new Intl.DateTimeFormat('pt-BR', { timeStyle: 'short' }).format(data)
+  const dia = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeZone: FUSO }).format(data)
+  const hora = new Intl.DateTimeFormat('pt-BR', { timeStyle: 'short', timeZone: FUSO }).format(data)
   return `${dia} às ${hora}`
 }
 
