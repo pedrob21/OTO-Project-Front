@@ -27,9 +27,11 @@ import {
   excluirParametros,
   listarParametros,
 } from './parametros'
+import * as download from '@/lib/download'
 import { alterarReferencia, criarReferencia, excluirReferencia } from './referencias'
 import { buscarHistoricoDaResposta, enviarResposta, listarRespostasDaCampanha } from './respostas'
 import {
+  baixarResultadoCsv,
   buscarPrevia,
   buscarResultado,
   cancelarPublicacao,
@@ -48,6 +50,7 @@ import {
   prorrogarRodada,
   reabrirRodada,
 } from './rodadas'
+import { limparSessao, salvarSessao } from './sessao'
 import {
   alterarUsuario,
   buscarUsuario,
@@ -541,5 +544,51 @@ describe('série histórica', () => {
       status: 422,
       message: 'Informe a fonte dos dados (até 200 caracteres).',
     })
+  })
+})
+
+describe('resultado.csv', () => {
+  afterEach(() => vi.restoreAllMocks())
+
+  it('baixa com o token e salva com o nome do cabeçalho', async () => {
+    salvarSessao({ token: 'abc', expiraEm: new Date(Date.now() + 60_000).toISOString() })
+    fetchFalso.mockResolvedValue(
+      new Response('a;b', {
+        headers: { 'Content-Disposition': 'attachment; filename="resultado-campanha-42.csv"' },
+      }),
+    )
+    const salvar = vi.spyOn(download, 'salvarArquivo').mockImplementation(() => {})
+
+    await baixarResultadoCsv(42)
+
+    expect(chamada().url).toBe('http://localhost:8080/api/campanhas/42/resultado.csv')
+    expect(fetchFalso.mock.calls[0]?.[1]?.headers).toMatchObject({ Authorization: 'Bearer abc' })
+    expect(salvar).toHaveBeenCalledWith(expect.any(Blob), 'resultado-campanha-42.csv')
+    const [blob] = salvar.mock.calls[0] ?? []
+    expect(await blob?.text()).toBe('a;b')
+    limparSessao()
+  })
+
+  it('sem Content-Disposition, usa o nome padrão', async () => {
+    fetchFalso.mockResolvedValue(new Response('a'))
+    const salvar = vi.spyOn(download, 'salvarArquivo').mockImplementation(() => {})
+
+    await baixarResultadoCsv(7)
+
+    expect(salvar).toHaveBeenCalledWith(expect.any(Blob), 'resultado-campanha-7.csv')
+  })
+
+  it('erro da API não salva arquivo', async () => {
+    fetchFalso.mockResolvedValue(
+      new Response(JSON.stringify({ detail: 'Resultado não publicado.' }), { status: 403 }),
+    )
+    const salvar = vi.spyOn(download, 'salvarArquivo').mockImplementation(() => {})
+
+    await expect(baixarResultadoCsv(42)).rejects.toMatchObject({
+      status: 403,
+      message: 'Resultado não publicado.',
+    })
+
+    expect(salvar).not.toHaveBeenCalled()
   })
 })

@@ -1,5 +1,6 @@
 import type { Esquemas, Modalidade } from '@/types/dominio'
-import { requisicao } from './client'
+import { nomeDoArquivo, salvarArquivo } from '@/lib/download'
+import { requisicao, requisicaoArquivo } from './client'
 
 type FiltroPublicadas = {
   modalidade?: Modalidade
@@ -35,4 +36,12 @@ export function publicarCampanha(campanhaId: number) {
 /** Só ADMIN. Desfaz uma publicação feita por engano (204). */
 export function cancelarPublicacao(campanhaId: number) {
   return requisicao<void>(`/api/campanhas/${campanhaId}/publicacao`, { metodo: 'DELETE' })
+}
+
+export async function baixarResultadoCsv(campanhaId: number, signal?: AbortSignal) {
+  const { blob, contentDisposition } = await requisicaoArquivo(
+    `/api/campanhas/${campanhaId}/resultado.csv`,
+    { signal },
+  )
+  salvarArquivo(blob, nomeDoArquivo(contentDisposition, `resultado-campanha-${campanhaId}.csv`))
 }
