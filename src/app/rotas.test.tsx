@@ -262,6 +262,7 @@ const ROTAS_CADASTRO = [
   { caminho: '/cadastros/usuarios', titulo: 'Usuários' },
   { caminho: '/cadastros/estabelecimentos', titulo: 'Estabelecimentos' },
   { caminho: '/cadastros/estabelecimentos/12/capacidades', titulo: 'Capacidade de hospedagem' },
+  { caminho: '/cadastros/estabelecimentos/12/inventario', titulo: 'Inventário do estabelecimento' },
   { caminho: '/cadastros/parametros', titulo: 'Parâmetros de cálculo' },
   { caminho: '/cadastros/rhc', titulo: 'Hospedagem caseira (RHC)' },
   { caminho: '/cadastros/referencias', titulo: 'Referências' },
