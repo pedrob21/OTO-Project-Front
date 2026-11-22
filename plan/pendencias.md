@@ -8,8 +8,7 @@ Levantamento feito a partir do Documento de Requisitos e do Plano de Testes, com
 
 | # | Item | Requisito (prioridade) | Base nas páginas existentes |
 |---|---|---|---|
-| 8 | Responsividade das telas do ADMIN em 360 px e tablet, incluindo tabelas e diálogos de Cadastros (cabeçalho, telas do parceiro, Relatórios e Indicadores já feitos) | RNF-01 | Mesmos pontos de quebra (1180 e 600 px) e o teste `semRolagemHorizontal` |
-| 11 | Otimização: análise do tamanho do pacote e CLS do painel (0,17 no celular, causado pela troca da fonte web: preload ou fallback com `size-adjust`). O código já é dividido por rota, o favicon existe e o Lighthouse já roda no CI | T18 | Notas do Lighthouse no comentário do PR |
+| 11 | Otimização: TBT da página inicial (1154 ms no celular, acima do limite de 600 ms em `lighthouserc.cjs`), trabalho da thread principal | T18 | Lighthouse do CI |
 
 
 ### Depende do back
@@ -45,6 +44,8 @@ Levantamento feito a partir do Documento de Requisitos e do Plano de Testes, com
 | Favicon, `meta description` e tabelas de Indicadores roláveis por teclado | `test/e2e-suite` |
 | T18 (parte): Lighthouse no CI (celular e desktop, 5 páginas, com limites) e comentário do PR com badges de cobertura e Lighthouse | `test/e2e-suite` |
 | E2E-01, 04, 05, 08, 09 e 10 automatizados no Playwright; painel passa a consultar parâmetros e RHC pela data do fim do período | `test/e2e-suite` |
+| RNF-01: telas do ADMIN sem rolagem lateral em 360 px e tablet, incluindo diálogos de Cadastros, coberto em `e2e/acessibilidade.spec.ts` | #34 |
+| T18 (parte): CLS do painel no celular de 0,16 para 0,01 (fallback de fonte com `size-adjust`, preload e altura mínima no carregamento); pacote analisado, sem ganho óbvio (principal em 129 kB gzip, rotas até 19 kB) | #34 |
 
 ## Back
 
