@@ -134,6 +134,7 @@ Se o navegador acusar erro de CORS, confira `CORS_ORIGENS` no `.env` do backend.
 | `npm run test:e2e` | Roda os testes e2e (Playwright) com a API simulada, no desktop e, os marcados com `@celular`, também em celular (360 px) e tablet (768 px) |
 | `npm run test:e2e:headed` | Roda os testes e2e com o navegador visível, um teste por vez |
 | `npm run api:tipos` | Gera `src/api/schema.d.ts` de novo. Precisa da API no ar |
+| `npm run lighthouse` | Gera o build em `dist-lighthouse/` e roda o Lighthouse CI com a API simulada (ver [Lighthouse](#lighthouse)) |
 
 > [!NOTE]
 > Use `npm run typecheck` para verificar os tipos. O `tsc --noEmit` na raiz não verifica nada, porque o `tsconfig.json` principal só aponta para os outros.
@@ -153,6 +154,31 @@ npm run test:e2e -- --project=celular            # só as telas do parceiro no c
 Os testes das telas do parceiro levam a marca `@celular` e rodam também nos projetos `celular` e `tablet`. Para clicar no menu, use `irPeloMenu` (`e2e/navegacao.ts`), que abre o menu recolhido quando ele existe; `semRolagemHorizontal` confere que a página cabe na tela.
 
 Antes dos testes, o Playwright gera o build e sobe o `npm run preview` na porta 4173. Fora do CI, se já houver um servidor nessa porta, ele é reaproveitado e os testes rodam contra o build antigo; derrube esse servidor depois de mudar o código.
+
+### Lighthouse
+
+O Lighthouse CI (`@lhci/cli`, configurado em [`lighthouserc.cjs`](lighthouserc.cjs)) audita `/login`, `/definir-senha?token=x`, o painel (`/`), `/metodologia` e `/cadastros/usuarios`, duas execuções por página. O build é servido por [`lighthouse/servidor.mjs`](lighthouse/servidor.mjs) na porta 4179, que também responde a `/api` com dados simulados (os mesmos dos e2e) e, nas telas autenticadas, grava a sessão de um ADMIN no `sessionStorage` antes do app carregar. O texto é enviado com gzip, como na Vercel.
+
+```bash
+npm run lighthouse                        # celular (padrão do Lighthouse)
+LHCI_PERFIL=desktop npm run lighthouse    # desktop
+```
+
+Sem Chrome instalado, aponte `CHROME_PATH` para o Chromium do Playwright (`~/.cache/ms-playwright/chromium-*/chrome-linux64/chrome`). Os relatórios ficam em `.lighthouseci/relatorio-celular/` e `.lighthouseci/relatorio-desktop/`. No CI, o job `lighthouse` roda os dois perfis e publica os relatórios como artefato.
+
+Limites: acessibilidade e boas práticas abaixo de 0,95 reprovam o job. Desempenho (0,75 no celular e 0,90 no desktop), SEO (0,90), LCP (3,5 s no celular e 1,5 s no desktop), TBT (600 ms no celular e 200 ms no desktop) e CLS (0,1) só geram aviso.
+
+Medido em 22/11/2026 (melhor das duas execuções; desempenho, acessibilidade, boas práticas e SEO, de 0 a 100):
+
+| Página | Celular | Desktop |
+|---|---|---|
+| `/login` | 100, 100, 100, 91 | 100, 100, 100, 91 |
+| `/definir-senha` | 94, 100, 100, 91 | 100, 100, 100, 91 |
+| `/` (painel) | 80, 100, 100, 91 | 96, 100, 100, 91 |
+| `/metodologia` | 94, 100, 100, 91 | 100, 100, 100, 91 |
+| `/cadastros/usuarios` | 87, 100, 100, 91 | 100, 100, 100, 91 |
+
+O SEO perde pontos só pela falta de `<meta name="description">`. No painel, o CLS fica em 0,17 no celular e 0,11 no desktop, causado pela troca da fonte quando ela termina de carregar, e por isso o aviso de CLS aparece nessa página. O desempenho no celular varia bastante entre execuções (de 77 a 87 em `/cadastros/usuarios`).
 
 ## Estrutura do projeto
 

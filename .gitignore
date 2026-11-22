@@ -38,3 +38,7 @@ dist-ssr
 .vercel
 dist-e2e-*
 coverage
+
+# Lighthouse CI
+.lighthouseci
+dist-lighthouse
