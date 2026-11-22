@@ -65,3 +65,21 @@
   overflow-y: auto;
   padding: var(--espaco-5) var(--espaco-6) var(--espaco-6);
 }
+
+@media (max-width: 600px) {
+  .fundo {
+    padding: var(--espaco-3);
+  }
+
+  .painel {
+    max-height: calc(100vh - 2 * var(--espaco-3));
+  }
+
+  .cabecalho {
+    padding: var(--espaco-4) var(--espaco-4) var(--espaco-3);
+  }
+
+  .corpo {
+    padding: var(--espaco-4);
+  }
+}

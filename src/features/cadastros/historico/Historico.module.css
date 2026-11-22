@@ -1,5 +1,6 @@
 .importacao {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--espaco-4);
   margin-top: var(--espaco-4);
 }
@@ -54,5 +55,6 @@
 
 .cartoes {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--vao-cards);
 }
