@@ -224,6 +224,48 @@ describe('valores avulsos', () => {
     })
   })
 
+  it('grava um valor mensal de expectativa para um tipo de hospedagem', async () => {
+    preparar({ 'POST /api/historico': { corpo: { ...DIARIA, id: 10 } } })
+    abrirTela(<HistoricoPage />)
+    await userEvent.click(await screen.findByRole('button', { name: 'Novo valor' }))
+    const dialogo = screen.getByRole('dialog', { name: 'Novo valor' })
+
+    await userEvent.selectOptions(within(dialogo).getByLabelText('Modalidade'), 'EXPECTATIVA')
+    await within(dialogo).findByRole('option', { name: 'Hotel' })
+    await userEvent.selectOptions(within(dialogo).getByLabelText('Tipo de hospedagem'), 'HOTEL')
+    await userEvent.selectOptions(within(dialogo).getByLabelText('Mês'), '3')
+    await preencherCampo(within(dialogo).getByLabelText('Ano'), '2025')
+    await preencherCampo(within(dialogo).getByLabelText('Valor (%)'), '55')
+    await preencherCampo(within(dialogo).getByLabelText('Fonte'), 'Planilha')
+    await userEvent.click(within(dialogo).getByRole('button', { name: 'Gravar valor' }))
+
+    await waitFor(() => expect(api.envios()).toHaveLength(1))
+    expect(api.envios()[0]?.corpo).toEqual({
+      indicador: 'TAXA_OCUPACAO',
+      modalidade: 'EXPECTATIVA',
+      ano: 2025,
+      mes: 3,
+      tipoHospedagemCodigo: 'HOTEL',
+      valor: 55,
+      fonte: 'Planilha',
+    })
+  })
+
+  it('sem as referências, o formulário oferece só a opção de escolher', async () => {
+    preparar({ 'GET /api/referencias': { status: 500, corpo: {} } })
+    abrirTela(<HistoricoPage />)
+    await userEvent.click(await screen.findByRole('button', { name: 'Novo valor' }))
+    const dialogo = screen.getByRole('dialog', { name: 'Novo valor' })
+
+    await userEvent.click(within(dialogo).getByRole('radio', { name: 'Feriado ou evento' }))
+
+    const feriados = within(dialogo).getByLabelText('Feriado')
+    expect(within(feriados).getAllByRole('option')).toHaveLength(1)
+    const tipos = within(dialogo).getByLabelText('Tipo de hospedagem')
+    expect(within(tipos).getAllByRole('option')).toHaveLength(1)
+    expect(within(tipos).getByRole('option', { name: 'Geral da cidade' })).toBeInTheDocument()
+  })
+
   it('valida como a API: mês ou feriado, ano e taxa até 100%', async () => {
     abrirTela(<HistoricoPage />)
     await userEvent.click(await screen.findByRole('button', { name: 'Novo valor' }))

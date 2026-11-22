@@ -168,6 +168,28 @@ describe('novo estabelecimento', () => {
     })
   })
 
+  it('envia a exigência do Cadastur e o funcionamento 24 horas escolhidos', async () => {
+    preparar({
+      'POST /api/estabelecimentos': { status: 201, corpo: { id: 20, dados: {} } },
+    })
+    const dialogo = await abrirNovo()
+    await preencherObrigatorios(dialogo)
+    await userEvent.selectOptions(
+      within(dialogo).getByLabelText('Exigência do Cadastur'),
+      'OBRIGATORIO',
+    )
+    await userEvent.selectOptions(within(dialogo).getByLabelText('Funciona 24 horas'), 'SIM')
+
+    await userEvent.click(
+      within(dialogo).getByRole('button', { name: 'Cadastrar estabelecimento' }),
+    )
+
+    await waitFor(() => expect(api.envios()).toHaveLength(1))
+    expect(api.envios()[0]?.corpo).toMatchObject({
+      dados: { cadasturExigencia: 'OBRIGATORIO', funcionamento24h: true },
+    })
+  })
+
   it('valida antes de enviar, inclusive as UH PCD', async () => {
     const dialogo = await abrirNovo()
 
