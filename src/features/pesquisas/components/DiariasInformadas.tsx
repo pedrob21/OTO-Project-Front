@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
-import { useId, useRef, useState } from 'react'
+import { useQuery, type UseQueryResult } from '@tanstack/react-query'
+import { useId, useRef, useState, type RefObject } from 'react'
 import { listarDiariasInformadas, salvarDiariasInformadas } from '@/api/resultados'
 import { Button } from '@/components/ui/Button'
 import { CampoTexto } from '@/components/ui/CampoTexto'
@@ -10,6 +10,7 @@ import { Dialogo } from '@/components/ui/Dialogo'
 import { ErroApi } from '@/components/ui/ErroApi'
 import { Tabela, type ColunaTabela } from '@/components/ui/Tabela'
 import { Formulario } from '@/features/cadastros/Formulario'
+import type { FalhaDaApi } from '@/features/cadastros/falhaDaApi'
 import { useMutacaoCadastro } from '@/features/cadastros/useMutacaoCadastro'
 import { capitalizar, formatarDataHora } from '@/lib/formatos'
 import type { Esquemas } from '@/types/dominio'
@@ -27,12 +28,200 @@ import { lerNumero, paraCampo, textoDaDiaria } from '../respostas'
 import styles from './DiariasInformadas.module.css'
 
 type Edicao = { tipo: 'informar' | 'remover'; linha: LinhaDiaria }
+type Informadas = Esquemas['DiariaInformadaResponse'][]
 
-type DiariasInformadasProps = {
+type DiariasInformadasProps = Readonly<{
   campanhaId: number
   publicada: boolean
   resultado: Esquemas['ResultadoResponse'] | undefined
   tipos: Esquemas['TipoRef'][]
+}>
+
+const COLUNAS: ColunaTabela<LinhaDiaria>[] = [
+  {
+    titulo: 'Recorte',
+    celula: (linha) => (linha.codigo === GERAL ? 'Geral (todos os tipos)' : linha.nome),
+  },
+  {
+    titulo: 'Diária informada',
+    numerica: true,
+    celula: (linha) =>
+      linha.informada === null ? 'Não informada' : textoDaDiaria(linha.informada),
+  },
+  {
+    titulo: 'Usada na prévia',
+    numerica: true,
+    celula: (linha) => (
+      <>
+        {textoDaDiaria(linha.naPrevia)}
+        {linha.naPrevia !== null && (
+          <span className={comum.secundario}>
+            {linha.informada === null ? 'média das respostas' : 'informada pela equipe'}
+          </span>
+        )}
+      </>
+    ),
+  },
+]
+
+function rotuloDaAcao(linha: LinhaDiaria) {
+  return linha.informada === null ? 'Informar' : 'Corrigir'
+}
+
+function notaDaLista(informadas: Informadas) {
+  if (informadas.length === 0) {
+    return 'Nenhuma diária informada. O cálculo usa a média das respostas.'
+  }
+  const fonte = fonteAtual(informadas)
+  const origem = fonte ? `Fonte: ${fonte}. ` : ''
+  return `${origem}Última alteração em ${formatarDataHora(ultimaAlteracao(informadas))}.`
+}
+
+function ajudaDaDiaria(linha: LinhaDiaria) {
+  if (linha.informada === null && linha.naPrevia !== null) {
+    return `Média das respostas na prévia: ${textoDaDiaria(linha.naPrevia)}.`
+  }
+  return 'Use vírgula ou ponto, com até duas casas, como 410,50.'
+}
+
+type AcoesDaLinhaProps = Readonly<{
+  linha: LinhaDiaria
+  id: string
+  aoAbrir: (tipo: Edicao['tipo'], linha: LinhaDiaria) => void
+}>
+
+function AcoesDaLinha({ linha, id, aoAbrir }: AcoesDaLinhaProps) {
+  const rotulo = rotuloDaAcao(linha)
+  return (
+    <>
+      <Button
+        id={id}
+        variante="secundaria"
+        aria-haspopup="dialog"
+        aria-label={`${rotulo} ${linha.rotulo}`}
+        onClick={() => aoAbrir('informar', linha)}
+      >
+        {rotulo}
+      </Button>
+      {linha.informada !== null && (
+        <Button
+          variante="secundaria"
+          aria-haspopup="dialog"
+          aria-label={`Remover ${linha.rotulo}`}
+          onClick={() => aoAbrir('remover', linha)}
+        >
+          Remover
+        </Button>
+      )}
+    </>
+  )
+}
+
+type ListaDeDiariasProps = Readonly<{
+  consulta: UseQueryResult<Informadas>
+  linhas: (informadas: Informadas) => LinhaDiaria[]
+  publicada: boolean
+  idPrincipal: (linha: LinhaDiaria) => string
+  aoAbrir: (tipo: Edicao['tipo'], linha: LinhaDiaria) => void
+}>
+
+function ListaDeDiarias({
+  consulta,
+  linhas,
+  publicada,
+  idPrincipal,
+  aoAbrir,
+}: ListaDeDiariasProps) {
+  if (consulta.isError) {
+    return (
+      <ErroApi
+        mensagem="Não foi possível carregar as diárias informadas."
+        detalhe={consulta.error.message}
+        aoTentarNovamente={() => void consulta.refetch()}
+      />
+    )
+  }
+  if (consulta.isPending) return <Carregando texto="Carregando as diárias informadas" />
+
+  return (
+    <>
+      <p className={styles.nota}>{notaDaLista(consulta.data)}</p>
+      <Tabela
+        legenda="Diárias informadas pela equipe"
+        colunas={COLUNAS}
+        linhas={linhas(consulta.data)}
+        chave={(linha) => linha.codigo || 'geral'}
+        vazio={{ titulo: 'Nenhum tipo de hospedagem cadastrado' }}
+        acoes={
+          publicada
+            ? undefined
+            : (linha) => <AcoesDaLinha linha={linha} id={idPrincipal(linha)} aoAbrir={aoAbrir} />
+        }
+      />
+    </>
+  )
+}
+
+type DialogoDeDiariaProps = Readonly<{
+  linha: LinhaDiaria
+  diaria: string
+  fonte: string
+  erro: string | undefined
+  campo: RefObject<HTMLInputElement | null>
+  enviando: boolean
+  falha: FalhaDaApi | null
+  aoMudarDiaria: (valor: string) => void
+  aoMudarFonte: (valor: string) => void
+  aoEnviar: () => void
+  aoFechar: () => void
+}>
+
+function DialogoDeDiaria({
+  linha,
+  diaria,
+  fonte,
+  erro,
+  campo,
+  enviando,
+  falha,
+  aoMudarDiaria,
+  aoMudarFonte,
+  aoEnviar,
+  aoFechar,
+}: DialogoDeDiariaProps) {
+  return (
+    <Dialogo
+      titulo={`${rotuloDaAcao(linha)} ${linha.rotulo}`}
+      descricao="Vale no cálculo no lugar da média das respostas até ser removida."
+      aoFechar={aoFechar}
+    >
+      <Formulario
+        aoEnviar={aoEnviar}
+        aoCancelar={aoFechar}
+        enviando={enviando}
+        rotuloEnviar="Salvar"
+        falha={falha?.mensagem}
+      >
+        <CampoTexto
+          ref={campo}
+          rotulo="Diária média (R$)"
+          inputMode="decimal"
+          autoComplete="off"
+          value={diaria}
+          onChange={(evento) => aoMudarDiaria(evento.target.value)}
+          erro={erro}
+          ajuda={ajudaDaDiaria(linha)}
+        />
+        <CampoTexto
+          rotulo="Fonte (opcional)"
+          maxLength={200}
+          value={fonte}
+          onChange={(evento) => aoMudarFonte(evento.target.value)}
+          ajuda="Vale para todas as diárias informadas desta campanha."
+        />
+      </Formulario>
+    </Dialogo>
+  )
 }
 
 /** RF-18 a RF-21: a diária digitada pela equipe substitui a média das respostas no cálculo. */
@@ -93,37 +282,6 @@ export function DiariasInformadas({
     salvar.mutate({ linha, valor: lerNumero(diaria) })
   }
 
-  const colunas: ColunaTabela<LinhaDiaria>[] = [
-    {
-      titulo: 'Recorte',
-      celula: (linha) => (linha.codigo === GERAL ? 'Geral (todos os tipos)' : linha.nome),
-    },
-    {
-      titulo: 'Diária informada',
-      numerica: true,
-      celula: (linha) =>
-        linha.informada === null ? 'Não informada' : textoDaDiaria(linha.informada),
-    },
-    {
-      titulo: 'Usada na prévia',
-      numerica: true,
-      celula: (linha) => (
-        <>
-          {textoDaDiaria(linha.naPrevia)}
-          {linha.naPrevia !== null && (
-            <span className={comum.secundario}>
-              {linha.informada === null ? 'média das respostas' : 'informada pela equipe'}
-            </span>
-          )}
-        </>
-      ),
-    },
-  ]
-
-  const erroDaDiaria = tentouEnviar ? validarDiaria(diaria) : undefined
-  const alteradaEm = ultimaAlteracao(informadas)
-  const fonteDaLista = fonteAtual(informadas)
-
   return (
     <Card
       titulo="Diárias informadas pela equipe"
@@ -134,101 +292,31 @@ export function DiariasInformadas({
       }
     >
       <div className={styles.bloco}>
-        {consulta.isError ? (
-          <ErroApi
-            mensagem="Não foi possível carregar as diárias informadas."
-            detalhe={consulta.error.message}
-            aoTentarNovamente={() => void consulta.refetch()}
-          />
-        ) : consulta.isPending ? (
-          <Carregando texto="Carregando as diárias informadas" />
-        ) : (
-          <>
-            <p className={styles.nota}>
-              {informadas.length === 0
-                ? 'Nenhuma diária informada. O cálculo usa a média das respostas.'
-                : `${fonteDaLista ? `Fonte: ${fonteDaLista}. ` : ''}Última alteração em ${formatarDataHora(alteradaEm)}.`}
-            </p>
-            <Tabela
-              legenda="Diárias informadas pela equipe"
-              colunas={colunas}
-              linhas={linhasDeDiarias(tipos, informadas, resultado)}
-              chave={(linha) => linha.codigo || 'geral'}
-              vazio={{ titulo: 'Nenhum tipo de hospedagem cadastrado' }}
-              acoes={
-                publicada
-                  ? undefined
-                  : (linha) => (
-                      <>
-                        <Button
-                          id={idPrincipal(linha)}
-                          variante="secundaria"
-                          aria-haspopup="dialog"
-                          aria-label={`${linha.informada === null ? 'Informar' : 'Corrigir'} ${linha.rotulo}`}
-                          onClick={() => abrir('informar', linha)}
-                        >
-                          {linha.informada === null ? 'Informar' : 'Corrigir'}
-                        </Button>
-                        {linha.informada !== null && (
-                          <Button
-                            variante="secundaria"
-                            aria-haspopup="dialog"
-                            aria-label={`Remover ${linha.rotulo}`}
-                            onClick={() => abrir('remover', linha)}
-                          >
-                            Remover
-                          </Button>
-                        )}
-                      </>
-                    )
-              }
-            />
-          </>
-        )}
+        <ListaDeDiarias
+          consulta={consulta}
+          linhas={(lista) => linhasDeDiarias(tipos, lista, resultado)}
+          publicada={publicada}
+          idPrincipal={idPrincipal}
+          aoAbrir={abrir}
+        />
 
-        {aviso && (
-          <p role="status" className={comum.sucesso}>
-            {aviso}
-          </p>
-        )}
+        {aviso && <output className={comum.sucesso}>{aviso}</output>}
       </div>
 
       {!publicada && edicao?.tipo === 'informar' && (
-        <Dialogo
-          titulo={`${edicao.linha.informada === null ? 'Informar' : 'Corrigir'} ${edicao.linha.rotulo}`}
-          descricao="Vale no cálculo no lugar da média das respostas até ser removida."
+        <DialogoDeDiaria
+          linha={edicao.linha}
+          diaria={diaria}
+          fonte={fonte}
+          erro={tentouEnviar ? validarDiaria(diaria) : undefined}
+          campo={campo}
+          enviando={salvar.isPending}
+          falha={salvar.falha}
+          aoMudarDiaria={setDiaria}
+          aoMudarFonte={setFonte}
+          aoEnviar={() => enviar(edicao.linha)}
           aoFechar={fechar}
-        >
-          <Formulario
-            aoEnviar={() => enviar(edicao.linha)}
-            aoCancelar={fechar}
-            enviando={salvar.isPending}
-            rotuloEnviar="Salvar"
-            falha={salvar.falha?.mensagem}
-          >
-            <CampoTexto
-              ref={campo}
-              rotulo="Diária média (R$)"
-              inputMode="decimal"
-              autoComplete="off"
-              value={diaria}
-              onChange={(evento) => setDiaria(evento.target.value)}
-              erro={erroDaDiaria}
-              ajuda={
-                edicao.linha.informada === null && edicao.linha.naPrevia !== null
-                  ? `Média das respostas na prévia: ${textoDaDiaria(edicao.linha.naPrevia)}.`
-                  : 'Use vírgula ou ponto, com até duas casas, como 410,50.'
-              }
-            />
-            <CampoTexto
-              rotulo="Fonte (opcional)"
-              maxLength={200}
-              value={fonte}
-              onChange={(evento) => setFonte(evento.target.value)}
-              ajuda="Vale para todas as diárias informadas desta campanha."
-            />
-          </Formulario>
-        </Dialogo>
+        />
       )}
 
       {!publicada && edicao?.tipo === 'remover' && (
