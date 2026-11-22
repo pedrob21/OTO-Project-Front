@@ -1,13 +1,20 @@
 import { defineConfig, devices } from '@playwright/test'
 
+const porta = process.env.E2E_PORT ?? '4173'
+const comPortaPropria = porta !== '4173'
+const pasta = `artifacts/e2e/build-${porta}`
+
 export default defineConfig({
   testDir: './e2e',
+  outputDir: 'artifacts/e2e/results',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'list',
+  reporter: process.env.CI
+    ? [['github'], ['html', { open: 'never', outputFolder: 'artifacts/e2e/report' }]]
+    : 'list',
   use: {
-    baseURL: 'http://localhost:4173',
+    baseURL: `http://localhost:${porta}`,
     trace: 'on-first-retry',
   },
   projects: [
@@ -37,8 +44,10 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run build && npm run preview -- --port 4173 --strictPort',
-    url: 'http://localhost:4173',
+    command: comPortaPropria
+      ? `npx vite build --outDir ${pasta} --emptyOutDir && npx vite preview --outDir ${pasta} --port ${porta} --strictPort`
+      : 'npm run build && npm run preview -- --port 4173 --strictPort',
+    url: `http://localhost:${porta}`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },

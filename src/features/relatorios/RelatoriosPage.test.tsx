@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react'
+import { createEvent, fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { limparSessao, salvarSessao } from '@/api/sessao'
@@ -184,6 +184,40 @@ describe('RelatoriosPage', () => {
     expect(await screen.findByRole('rowheader', { name: /Agosto de 2026/ })).toBeInTheDocument()
     expect(router.state.location.search).toBe('')
     expect(screen.queryByRole('button', { name: 'Limpar filtros' })).not.toBeInTheDocument()
+  })
+
+  it('voltar a Todos em cada filtro tira o filtro da URL', async () => {
+    const router = abrir('/relatorios?modalidade=EXPECTATIVA&periodo=FERIADO&ano=2026')
+    await tabela()
+
+    await userEvent.selectOptions(screen.getByLabelText('Modalidade'), '')
+    expect(router.state.location.search).toBe('?periodo=FERIADO&ano=2026')
+    await userEvent.selectOptions(screen.getByLabelText('Período'), '')
+    expect(router.state.location.search).toBe('?ano=2026')
+    await userEvent.selectOptions(screen.getByLabelText('Ano'), '')
+    expect(router.state.location.search).toBe('')
+    expect(screen.queryByRole('button', { name: 'Limpar filtros' })).not.toBeInTheDocument()
+  })
+
+  it('enviar o formulário de filtros não recarrega a página nem muda a URL', async () => {
+    const router = abrir('/relatorios?ano=2026')
+    await tabela()
+
+    const evento = createEvent.submit(screen.getByRole('form', { name: 'Filtros dos relatórios' }))
+    fireEvent(screen.getByRole('form', { name: 'Filtros dos relatórios' }), evento)
+
+    expect(evento.defaultPrevented).toBe(true)
+    expect(router.state.location.search).toBe('?ano=2026')
+  })
+
+  it('campanha sem identificador ainda aparece na lista', async () => {
+    api.rotas['GET /api/campanhas/publicadas'] = {
+      corpo: [{ ...AGOSTO, campanhaId: undefined, nome: 'Sem id' }],
+    }
+    abrir()
+
+    expect(await screen.findByRole('rowheader', { name: /Sem id/ })).toBeInTheDocument()
+    expect(screen.getByText('1 campanha publicada')).toBeInTheDocument()
   })
 
   it('filtro sem resultado sugere mudar os filtros', async () => {

@@ -15,5 +15,20 @@ export default defineConfig({
     setupFiles: './src/test/setup.ts',
     include: ['src/**/*.test.{ts,tsx}'],
     css: { modules: { classNameStrategy: 'non-scoped' } },
+    coverage: {
+      provider: 'v8',
+      reporter: ['text-summary', 'html', 'json-summary'],
+      reportsDirectory: 'artifacts/coverage',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        'src/**/*.test.{ts,tsx}',
+        'src/api/schema.d.ts',
+        'src/test/**',
+        'src/main.tsx',
+        'src/env.d.ts',
+        '**/*.d.ts',
+      ],
+      thresholds: { lines: 98, functions: 97, statements: 98, branches: 92 },
+    },
   },
 })

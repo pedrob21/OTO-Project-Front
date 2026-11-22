@@ -27,7 +27,16 @@ jobs:
         run: npm run typecheck
 
       - name: Testes unitários
-        run: npm test
+        run: npm run test:coverage
+
+      - name: Publicar resumo da cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura
+          path: artifacts/coverage/coverage-summary.json
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Build
         run: npm run build
@@ -56,5 +65,85 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: relatorio-e2e
-          path: playwright-report
+          path: artifacts/e2e/report
           retention-days: 7
+
+  lighthouse:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        perfil: [celular, desktop]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci --ignore-scripts
+
+      - name: Build e Lighthouse
+        run: npm run lighthouse
+        env:
+          LHCI_PERFIL: ${{ matrix.perfil }}
+
+      - name: Publicar relatório do Lighthouse
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-lighthouse-${{ matrix.perfil }}
+          path: artifacts/lighthouse/reports
+          retention-days: 7
+
+  resumo:
+    if: ${{ !cancelled() && github.event_name == 'pull_request' }}
+    needs: [verificacoes, lighthouse]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Baixar a cobertura
+        uses: actions/download-artifact@v4
+        with:
+          name: cobertura
+          path: artifacts/coverage
+        continue-on-error: true
+
+      - name: Baixar os relatórios do Lighthouse
+        uses: actions/download-artifact@v4
+        with:
+          pattern: relatorio-lighthouse-*
+          path: artifacts/lighthouse/reports
+          merge-multiple: true
+        continue-on-error: true
+
+      - name: Montar o resumo
+        env:
+          COMMIT_DO_PR: ${{ github.event.pull_request.head.sha }}
+        run: |
+          node scripts/resumo-pr.mjs > resumo.md
+          cat resumo.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comentar no PR
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORIO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          id=$(gh api "repos/$REPOSITORIO/issues/$PR/comments" --paginate \
+            --jq '.[] | select(.body | contains("<!-- resumo-qualidade -->")) | .id' | head -1)
+          if [ -n "$id" ]; then
+            gh api --method PATCH "repos/$REPOSITORIO/issues/comments/$id" -F body=@resumo.md
+          else
+            gh api --method POST "repos/$REPOSITORIO/issues/$PR/comments" -F body=@resumo.md
+          fi

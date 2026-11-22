@@ -31,36 +31,43 @@ function RespostasEncerradas({ abertas }: { abertas: Set<number | undefined> }) 
       titulo="Respostas de pesquisas encerradas"
       subtitulo="Compare a sua ocupação com a da cidade depois que o OTO publica o resultado."
     >
-      <table className={styles.tabela}>
-        <thead>
-          <tr>
-            <th scope="col">Campanha</th>
-            <th scope="col">Estabelecimento</th>
-            <th scope="col" className={styles.numero}>
-              Sua taxa
-            </th>
-            <th scope="col" className={styles.numero}>
-              Taxa da cidade
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {encerradas.map((resposta) => (
-            <tr key={resposta.respostaId}>
-              <td>{resposta.campanhaNome}</td>
-              <td>{resposta.nomeFantasia}</td>
-              <td className={styles.numero}>{formatarDecimal(resposta.taxaOcupacao)}%</td>
-              <td className={styles.numero}>
-                {ausente(resposta.taxaOcupacaoCidade) ? (
-                  <span className={styles.semValor}>Ainda não publicada</span>
-                ) : (
-                  `${formatarDecimal(resposta.taxaOcupacaoCidade)}%`
-                )}
-              </td>
+      <div
+        className={styles.rolagem}
+        role="region"
+        aria-label="Respostas de pesquisas encerradas"
+        tabIndex={0}
+      >
+        <table className={styles.tabela}>
+          <thead>
+            <tr>
+              <th scope="col">Campanha</th>
+              <th scope="col">Estabelecimento</th>
+              <th scope="col" className={styles.numero}>
+                Sua taxa
+              </th>
+              <th scope="col" className={styles.numero}>
+                Taxa da cidade
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {encerradas.map((resposta) => (
+              <tr key={resposta.respostaId}>
+                <td>{resposta.campanhaNome}</td>
+                <td>{resposta.nomeFantasia}</td>
+                <td className={styles.numero}>{formatarDecimal(resposta.taxaOcupacao)}%</td>
+                <td className={styles.numero}>
+                  {ausente(resposta.taxaOcupacaoCidade) ? (
+                    <span className={styles.semValor}>Ainda não publicada</span>
+                  ) : (
+                    `${formatarDecimal(resposta.taxaOcupacaoCidade)}%`
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </Card>
   )
 }

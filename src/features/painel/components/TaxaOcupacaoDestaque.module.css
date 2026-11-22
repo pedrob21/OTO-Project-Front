@@ -54,3 +54,19 @@
   font: var(--tipo-rotulo-campo);
   text-transform: uppercase;
 }
+
+@media (max-width: 900px) {
+  .destaque {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .destaque {
+    padding: 23px 20px 0 20px;
+  }
+
+  .valores {
+    flex-wrap: wrap;
+  }
+}

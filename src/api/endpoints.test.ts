@@ -51,8 +51,10 @@ import {
   buscarPrevia,
   buscarResultado,
   cancelarPublicacao,
+  listarDiariasInformadas,
   listarPublicadas,
   publicarCampanha,
+  salvarDiariasInformadas,
 } from './resultados'
 import { buscarRhcVigente, corrigirRhc, excluirRhc, listarRhc, registrarRhc } from './rhc'
 import {
@@ -285,6 +287,27 @@ describe('resultados', () => {
     expect(chamada(2)).toMatchObject({
       url: 'http://localhost:8080/api/campanhas/42/publicacao',
       metodo: 'DELETE',
+    })
+  })
+
+  it('diárias informadas: lista e substitui com PUT', async () => {
+    await listarDiariasInformadas(42)
+    await salvarDiariasInformadas(42, {
+      diarias: [{ diariaMedia: 800 }, { tipoHospedagemCodigo: 'HOTEL', diariaMedia: 700 }],
+      fonte: 'Planilha',
+    })
+
+    expect(chamada(0)).toMatchObject({
+      url: 'http://localhost:8080/api/campanhas/42/diarias',
+      metodo: 'GET',
+    })
+    expect(chamada(1)).toMatchObject({
+      url: 'http://localhost:8080/api/campanhas/42/diarias',
+      metodo: 'PUT',
+      corpo: {
+        diarias: [{ diariaMedia: 800 }, { tipoHospedagemCodigo: 'HOTEL', diariaMedia: 700 }],
+        fonte: 'Planilha',
+      },
     })
   })
 })

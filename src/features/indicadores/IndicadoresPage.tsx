@@ -74,7 +74,7 @@ function TabelaPorAno({
   formatar: Definicao['formatar']
 }) {
   return (
-    <div className={styles.rolagem}>
+    <div className={styles.rolagem} role="region" aria-label={legenda} tabIndex={0}>
       <table className={styles.tabela}>
         <caption className={comum.oculto}>{legenda}</caption>
         <thead>

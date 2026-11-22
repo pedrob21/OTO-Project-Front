@@ -1,5 +1,7 @@
 import { expect, test, type Page, type Route } from '@playwright/test'
 import { irPeloMenu } from './navegacao.ts'
+import { injetarSessao } from './sessao.ts'
+import { PUBLICADA_AGOSTO, PUBLICADA_CARNAVAL, RESULTADO_AGOSTO } from './fixtures/resultado.ts'
 
 const TIPOS = [
   { codigo: 'HOTEL', nome: 'Hotel', calculaReceita: true },
@@ -7,30 +9,8 @@ const TIPOS = [
 ]
 
 const PUBLICADAS = [
-  {
-    campanhaId: 15,
-    nome: 'Agosto de 2026',
-    modalidade: 'CONSOLIDADA',
-    tipoPeriodo: 'MENSAL',
-    periodoInicio: '2026-08-01',
-    periodoFim: '2026-08-31',
-    publicadaEm: '2026-09-18T12:00:00Z',
-    taxaOcupacao: 62.8,
-    faixa: { codigo: 'OTIMA', nome: 'Ótima' },
-    fluxoTotal: 496_660,
-  },
-  {
-    campanhaId: 9,
-    nome: 'Carnaval 2026',
-    modalidade: 'EXPECTATIVA',
-    tipoPeriodo: 'FERIADO',
-    periodoInicio: '2026-02-14',
-    periodoFim: '2026-02-17',
-    publicadaEm: '2026-02-10T12:00:00Z',
-    taxaOcupacao: 71.5,
-    faixa: { codigo: 'OTIMA', nome: 'Ótima' },
-    fluxoTotal: 60_210,
-  },
+  PUBLICADA_AGOSTO,
+  PUBLICADA_CARNAVAL,
   {
     campanhaId: 3,
     nome: 'Julho de 2025',
@@ -45,63 +25,11 @@ const PUBLICADAS = [
   },
 ]
 
-const RESULTADO_AGOSTO = {
-  campanha: { id: 15, ...PUBLICADAS[0], qtdDiarias: 31, publicada: true },
-  publicado: true,
-  taxaOcupacao: 62.8,
-  faixa: { codigo: 'OTIMA', nome: 'Ótima' },
-  qtdMh: 72,
-  qtdMhRespondentes: 58,
-  percentualMhRespondentes: 80.6,
-  leitosTotal: 13_508,
-  leitosRespondentes: 12_346,
-  percentualLeitosRespondentes: 91.4,
-  fluxoMh: 365_620,
-  fluxoRhc: 55_795,
-  fluxoDayUse: 75_245,
-  fluxoTotal: 496_660,
-  fluxoMedioDiario: 16_021,
-  diariaMedia: 765,
-  receitaHospedagem: 89_000_000,
-  receitaSemHospedagem: 21_000_000,
-  porTipo: [
-    {
-      tipoHospedagemCodigo: 'RESORT',
-      nome: 'Resort',
-      qtdMh: 9,
-      qtdUh: 4_643,
-      taxaOcupacao: 66,
-      diariaMedia: 836,
-      revpar: 552,
-      receitaEstimada: 79_400_000,
-    },
-    {
-      tipoHospedagemCodigo: 'HOTEL',
-      nome: 'Hotel',
-      qtdMh: 2,
-      qtdUh: 120,
-      taxaOcupacao: null,
-      diariaMedia: null,
-      revpar: null,
-      receitaEstimada: null,
-      omitido: true,
-    },
-  ],
-}
-
 /** Sessão já salva, como depois do login, e a API simulada. Guarda as buscas feitas à lista. */
 async function abrir(page: Page, caminho = '/relatorios') {
   const buscas: string[] = []
 
-  await page.addInitScript(() => {
-    sessionStorage.setItem(
-      'oto.sessao',
-      JSON.stringify({
-        token: 'token-e2e',
-        expiraEm: new Date(Date.now() + 3_600_000).toISOString(),
-      }),
-    )
-  })
+  await injetarSessao(page)
 
   await page.route('**/api/**', (rota: Route) => {
     const url = new URL(rota.request().url())

@@ -261,4 +261,192 @@ describe('meu estabelecimento', () => {
       corpo: { itens: [{ itemId: 10 }, { itemId: 11 }] },
     })
   })
+
+  it('mostra números formatados, Cadastur, situação irregular e o selo de inativo', async () => {
+    preparar({
+      'GET /api/estabelecimentos': { corpo: [{ ...RESUMO, ativo: false }] },
+      'GET /api/estabelecimentos/7': {
+        corpo: {
+          ...CADASTRO,
+          dados: {
+            ...CADASTRO.dados,
+            cadasturExigencia: 'OBRIGATORIO',
+            funcionariosFixos: 1200,
+          },
+          secretaria: { tipoHospedagemCodigo: 'POUSADA', situacao: 'IRREGULAR' },
+        },
+      },
+    })
+    abrir()
+
+    const cadastur = await screen.findByRole('region', { name: 'Cadastur' })
+    expect(within(cadastur).getByText('Obrigatório')).toBeVisible()
+    const funcionamento = screen.getByRole('region', { name: 'Funcionamento' })
+    expect(within(funcionamento).getByText('1.200')).toBeVisible()
+    expect(within(funcionamento).getByText('Não')).toBeVisible()
+    const secretaria = screen.getByRole('region', { name: 'Dados da Secretaria' })
+    expect(within(secretaria).getByText('Irregular')).toBeVisible()
+    expect(screen.getByText('Inativo')).toBeVisible()
+  })
+
+  it('sem dados da Secretaria nem referências, mostra traço e o código do tipo', async () => {
+    preparar({
+      'GET /api/referencias': { status: 500, corpo: { detail: 'falhou' } },
+      'GET /api/estabelecimentos/7': { corpo: { id: 7, ativo: true } },
+    })
+    abrir()
+
+    const secretaria = await screen.findByRole('region', { name: 'Dados da Secretaria' })
+    expect(within(secretaria).getByText('Regular')).toBeVisible()
+    expect(within(secretaria).getAllByText('—').length).toBeGreaterThan(0)
+    expect(screen.getByRole('heading', { name: 'Pousada do Sol' })).toBeVisible()
+    expect(screen.getByText('POUSADA')).toBeVisible()
+  })
+
+  it('cancelar a edição fecha o diálogo sem enviar nada', async () => {
+    const api = preparar()
+    abrir()
+    await screen.findByText('12345678000190')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Editar dados de Pousada do Sol' }))
+    await userEvent.click(
+      within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancelar' }),
+    )
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(api.envios()).toHaveLength(0)
+  })
+
+  it('cancelar a nova capacidade fecha o diálogo sem enviar nada', async () => {
+    const api = preparar()
+    abrir()
+    await screen.findByRole('table', { name: 'Capacidade de Pousada do Sol' })
+
+    await userEvent.click(screen.getByRole('button', { name: /Informar nova capacidade/ }))
+    await userEvent.click(
+      within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancelar' }),
+    )
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(api.envios()).toHaveLength(0)
+  })
+
+  it('Esc fecha os diálogos de edição e de capacidade', async () => {
+    preparar()
+    abrir()
+    await screen.findByRole('table', { name: 'Capacidade de Pousada do Sol' })
+
+    await userEvent.click(screen.getByRole('button', { name: 'Editar dados de Pousada do Sol' }))
+    await userEvent.keyboard('{Escape}')
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: /Informar nova capacidade/ }))
+    await userEvent.keyboard('{Escape}')
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('sem nome fantasia, usa textos genéricos na capacidade', async () => {
+    preparar({
+      'GET /api/estabelecimentos': { corpo: [{ ...RESUMO, nomeFantasia: undefined }] },
+    })
+    abrir()
+
+    expect(
+      await screen.findByRole('button', { name: 'Informar nova capacidade de o estabelecimento' }),
+    ).toBeVisible()
+    expect(await screen.findByRole('table', { name: 'Capacidade' })).toBeVisible()
+  })
+
+  it('mostra o erro da API ao informar a capacidade e mantém o diálogo aberto', async () => {
+    preparar({
+      'POST /api/estabelecimentos/7/capacidades': {
+        status: 422,
+        corpo: { detail: 'Vigência duplicada.' },
+      },
+    })
+    abrir()
+    await screen.findByRole('table', { name: 'Capacidade de Pousada do Sol' })
+
+    await userEvent.click(screen.getByRole('button', { name: /Informar nova capacidade/ }))
+    const dialogo = screen.getByRole('dialog', { name: 'Informar nova capacidade' })
+    await preencherCampo(within(dialogo).getByLabelText('UH'), '35')
+    await preencherCampo(within(dialogo).getByLabelText('UH PCD'), '2')
+    await preencherCampo(within(dialogo).getByLabelText('Leitos'), '90')
+    await preencherCampo(within(dialogo).getByLabelText('Máximo de pessoas por UH'), '4')
+    await userEvent.click(within(dialogo).getByRole('button', { name: 'Incluir vigência' }))
+
+    expect(await within(dialogo).findByText(/Vigência duplicada/)).toBeVisible()
+    expect(screen.getByRole('dialog')).toBeVisible()
+  })
+
+  it('sem capacidade cadastrada, orienta a informar a primeira', async () => {
+    preparar({ 'GET /api/estabelecimentos/7/capacidades': { corpo: [] } })
+    abrir()
+
+    expect(await screen.findByText('Nenhuma capacidade cadastrada')).toBeVisible()
+  })
+
+  it('com falha na capacidade, tenta de novo e mostra a tabela', async () => {
+    preparar({
+      'GET /api/estabelecimentos/7/capacidades': [
+        { status: 500, corpo: { detail: 'falhou' } },
+        { corpo: [ATUAL] },
+      ],
+    })
+    abrir()
+
+    expect(await screen.findByText('Não foi possível carregar a capacidade.')).toBeVisible()
+    await userEvent.click(
+      within(screen.getByRole('region', { name: 'Capacidade' })).getByRole('button', {
+        name: 'Tentar novamente',
+      }),
+    )
+
+    expect(await screen.findByRole('table', { name: 'Capacidade de Pousada do Sol' })).toBeVisible()
+  })
+
+  it('com falha no cadastro, tenta de novo e mostra os dados', async () => {
+    preparar({
+      'GET /api/estabelecimentos/7': [
+        { status: 500, corpo: { detail: 'falhou' } },
+        { corpo: CADASTRO },
+      ],
+    })
+    abrir()
+
+    expect(await screen.findByText('Não foi possível carregar o cadastro.')).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Editar dados de Pousada do Sol' })).toBeDisabled()
+    await userEvent.click(screen.getByRole('button', { name: 'Tentar novamente' }))
+
+    expect(await screen.findByText('12345678000190')).toBeVisible()
+  })
+
+  it('tenta de novo a lista de estabelecimentos', async () => {
+    preparar({
+      'GET /api/estabelecimentos': [
+        { status: 500, corpo: { detail: 'falhou' } },
+        { corpo: [RESUMO] },
+      ],
+    })
+    abrir()
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Tentar novamente' }))
+
+    expect(await screen.findByRole('heading', { name: 'Pousada do Sol' })).toBeVisible()
+  })
+
+  it('sem a data fixa, usa o dia de hoje como vigência padrão', async () => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date(2027, 0, 5, 12) })
+    try {
+      preparar()
+      abrirTela(<MeuEstabelecimentoPage />, { usuario: PARCEIRO })
+      await screen.findByRole('table', { name: 'Capacidade de Pousada do Sol' })
+
+      await userEvent.click(screen.getByRole('button', { name: /Informar nova capacidade/ }))
+
+      expect(screen.getByLabelText('Vigente desde')).toHaveValue('2027-01-05')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
 })

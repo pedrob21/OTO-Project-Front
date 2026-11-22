@@ -59,3 +59,21 @@
 .larguraTotal {
   grid-column: 1 / -1;
 }
+
+@media (max-width: 900px) {
+  .indicadores {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .linhaMensal,
+  .linhaFluxo {
+    grid-template-columns: 1fr;
+    row-gap: var(--vao-cards);
+  }
+}
+
+@media (max-width: 600px) {
+  .indicadores {
+    grid-template-columns: 1fr;
+  }
+}

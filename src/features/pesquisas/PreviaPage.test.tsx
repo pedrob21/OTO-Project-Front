@@ -1,7 +1,10 @@
-import { screen, within } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { createMemoryRouter, RouterProvider } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { abrirTela, simularApi } from './apiDeTeste'
+import { RESULTADO } from './dadosDeTestePrevia'
 import { PreviaPage } from './PreviaPage'
 
 const RODADA = {
@@ -9,38 +12,6 @@ const RODADA = {
   codigo: '005/26',
   status: 'ENCERRADA',
   campanhas: [{ id: 50, nome: 'Consolidada de outubro de 2026', publicada: false }],
-}
-const RESULTADO = {
-  campanha: { id: 50, nome: 'Consolidada de outubro de 2026', qtdDiarias: 31 },
-  taxaOcupacao: 64.73,
-  faixa: { codigo: 'OTIMA', nome: 'Ótima' },
-  qtdMh: 74,
-  qtdMhRespondentes: 41,
-  percentualMhRespondentes: 55.41,
-  leitosTotal: 13508,
-  leitosRespondentes: 9237,
-  percentualLeitosRespondentes: 68.38,
-  fluxoMh: 58931.79,
-  fluxoRhc: 9282.65,
-  fluxoDayUse: 12179.71,
-  fluxoTotal: 80394.15,
-  fluxoMedioDiario: 2593.36,
-  diariaMedia: 812.4,
-  receitaHospedagem: 17137719.18,
-  receitaSemHospedagem: 97276924.77,
-  porTipo: [
-    {
-      tipoHospedagemCodigo: 'HOTEL',
-      nome: 'Hotel',
-      qtdMh: 20,
-      qtdUh: 980,
-      taxaOcupacao: 40.35,
-      diariaMedia: 657.13,
-      revpar: 265.12,
-      receitaEstimada: 776805.3,
-      omitido: false,
-    },
-  ],
 }
 const COM_IMPEDIMENTO = {
   campanhaId: 50,
@@ -70,6 +41,7 @@ beforeEach(() => {
   api = simularApi({
     'GET /api/campanhas/50/previa': { corpo: COM_IMPEDIMENTO },
     'GET /api/rodadas/5': { corpo: RODADA },
+    'GET /api/campanhas/50/diarias': { corpo: [] },
     'GET /api/referencias': {
       corpo: { tiposHospedagem: [{ codigo: 'HOTEL', nome: 'Hotel', calculaReceita: true }] },
     },
@@ -217,6 +189,47 @@ describe('PreviaPage, publicação (FE-07)', () => {
     expect(api.escritas()).toEqual([
       expect.objectContaining({ metodo: 'DELETE', caminho: '/api/campanhas/50/publicacao' }),
     ])
+  })
+
+  describe('a lista de campanhas publicadas do painel', () => {
+    const CHAVE_PUBLICADAS = ['campanhas', 'publicadas']
+
+    function abrirComCache() {
+      const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+      queryClient.setQueryData(CHAVE_PUBLICADAS, [{ campanhaId: 50 }])
+      const router = createMemoryRouter(
+        [{ path: '/pesquisas/:id/campanhas/:campanhaId/previa', element: <PreviaPage /> }],
+        { initialEntries: ['/pesquisas/5/campanhas/50/previa'] },
+      )
+      render(
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>,
+      )
+      return queryClient
+    }
+
+    it('fica desatualizada depois de cancelar a publicação', async () => {
+      publicada()
+      const queryClient = abrirComCache()
+      await userEvent.click(await screen.findByRole('button', { name: 'Cancelar publicação' }))
+      api.rotas['GET /api/rodadas/5'] = { corpo: RODADA }
+      expect(queryClient.getQueryState(CHAVE_PUBLICADAS)?.isInvalidated).toBe(false)
+
+      await userEvent.click(screen.getByRole('button', { name: 'Confirmar cancelamento' }))
+
+      expect(await screen.findByText('Publicação cancelada.')).toBeInTheDocument()
+      expect(queryClient.getQueryState(CHAVE_PUBLICADAS)?.isInvalidated).toBe(true)
+    })
+
+    it('fica desatualizada depois de publicar', async () => {
+      api.rotas['GET /api/campanhas/50/previa'] = { corpo: LIVRE }
+      const queryClient = abrirComCache()
+      await userEvent.click(await screen.findByRole('button', { name: 'Publicar' }))
+
+      expect(await screen.findByText('Campanha publicada.')).toBeInTheDocument()
+      expect(queryClient.getQueryState(CHAVE_PUBLICADAS)?.isInvalidated).toBe(true)
+    })
   })
 
   it('recusa da API aparece', async () => {

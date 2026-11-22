@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MetodologiaPage } from './MetodologiaPage'
 
@@ -94,5 +95,17 @@ describe('MetodologiaPage', () => {
       'Não foi possível carregar os parâmetros em vigor.',
     )
     expect(screen.getByRole('heading', { name: 'Leito útil' })).toBeInTheDocument()
+  })
+
+  it('tenta de novo os parâmetros depois de uma falha', async () => {
+    fetchFalso
+      .mockResolvedValueOnce(new Response(null, { status: 500 }))
+      .mockResolvedValue(new Response(JSON.stringify({ percentualDayUse: 15.15 })))
+    abrir()
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Tentar novamente' }))
+
+    expect(await screen.findByText('15,15%')).toBeInTheDocument()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 })

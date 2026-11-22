@@ -3,52 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { criarApiFalsa, type RotasFalsas } from '@/test/apiFalsa'
 import { abrirTela, preencherCampo } from '@/test/telas'
+import { CATALOGO } from './dadosDeTeste'
 import { InventarioPage } from './InventarioPage'
-
-const CATALOGO = [
-  {
-    id: 1,
-    categoria: 'SERVICOS_EQUIPAMENTOS',
-    codigo: 'LAZER',
-    nome: 'Lazer',
-    exclusivoSecretaria: false,
-    ordem: 1,
-    ativo: true,
-    itens: [
-      {
-        id: 10,
-        codigo: 'PISCINA',
-        nome: 'Piscina',
-        permiteComplemento: true,
-        ordem: 1,
-        ativo: true,
-      },
-      { id: 11, codigo: 'SAUNA', nome: 'Sauna', permiteComplemento: false, ordem: 2, ativo: false },
-    ],
-  },
-  {
-    id: 2,
-    categoria: 'SERVICOS_EQUIPAMENTOS',
-    codigo: 'ANTIGOS',
-    nome: 'Antigos',
-    exclusivoSecretaria: true,
-    ordem: 2,
-    ativo: false,
-    itens: [],
-  },
-  {
-    id: 3,
-    categoria: 'ACESSIBILIDADE',
-    codigo: 'ESTRUTURA',
-    nome: 'Estrutura',
-    exclusivoSecretaria: false,
-    ordem: 1,
-    ativo: true,
-    itens: [
-      { id: 20, codigo: 'RAMPA', nome: 'Rampa', permiteComplemento: false, ordem: 1, ativo: true },
-    ],
-  },
-]
 
 let api: ReturnType<typeof criarApiFalsa>
 
@@ -128,7 +84,7 @@ describe('catálogo do inventário', () => {
     preparar({ 'PUT /api/inventario/grupos/1': { corpo: { id: 1, nome: 'Lazer e esporte' } } })
     await abrir()
 
-    await userEvent.click(botao('Editar o grupo Lazer'))
+    await userEvent.click(botao('Editar grupo Lazer'))
     const dialogo = screen.getByRole('dialog', { name: 'Editar Lazer' })
     expect(within(dialogo).getByLabelText('Código')).toBeDisabled()
     await preencherCampo(within(dialogo).getByLabelText('Nome'), 'Lazer e esporte')
@@ -210,9 +166,9 @@ describe('catálogo do inventário', () => {
     })
     await abrir()
 
-    await userEvent.click(botao('Inativar o grupo Lazer'))
+    await userEvent.click(botao('Inativar grupo Lazer'))
     expect(await screen.findByText('Grupo Lazer inativado.')).toBeInTheDocument()
-    await userEvent.click(botao('Reativar o grupo Antigos'))
+    await userEvent.click(botao('Reativar grupo Antigos'))
     expect(await screen.findByText('Grupo Antigos reativado.')).toBeInTheDocument()
     await userEvent.click(botao('Inativar Piscina'))
     expect(await screen.findByText('Item Piscina inativado.')).toBeInTheDocument()
@@ -241,7 +197,7 @@ describe('catálogo do inventário', () => {
     )
     expect(await screen.findByText('Item Sauna excluído.')).toBeInTheDocument()
 
-    await userEvent.click(botao('Excluir o grupo Antigos'))
+    await userEvent.click(botao('Excluir grupo Antigos'))
     await userEvent.click(
       within(screen.getByRole('dialog')).getByRole('button', { name: 'Excluir' }),
     )

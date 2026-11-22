@@ -17,8 +17,15 @@ export async function irPeloMenu(page: Page, item: string) {
 
 /** A página cabe na largura da tela: nada obriga a rolar para o lado (o celular de 360 px). */
 export async function semRolagemHorizontal(page: Page) {
-  const { conteudo, tela } = (await page.evaluate(
-    '({ conteudo: document.documentElement.scrollWidth, tela: window.innerWidth })',
-  )) as { conteudo: number; tela: number }
+  const conteudo = (await page.evaluate('document.documentElement.scrollWidth')) as number
+  const tela = page.viewportSize()?.width ?? 0
   expect(conteudo, 'a página não deveria rolar para o lado').toBeLessThanOrEqual(tela)
+}
+
+/** Abre o submenu de Cadastros e segue para a tela. */
+export async function abrirCadastro(page: Page, tela: string) {
+  const cadastros = page.getByRole('button', { name: 'Cadastros' })
+  await cadastros.click()
+  await expect(cadastros).toHaveAttribute('aria-expanded', 'true')
+  await page.getByRole('link', { name: tela }).click()
 }

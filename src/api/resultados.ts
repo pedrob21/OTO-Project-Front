@@ -38,6 +38,21 @@ export function cancelarPublicacao(campanhaId: number) {
   return requisicao<void>(`/api/campanhas/${campanhaId}/publicacao`, { metodo: 'DELETE' })
 }
 
+/** Só ADMIN. Diárias médias digitadas pela equipe; a geral vem com `tipoHospedagemCodigo` nulo. */
+export function listarDiariasInformadas(campanhaId: number, signal?: AbortSignal) {
+  return requisicao<Esquemas['DiariaInformadaResponse'][]>(`/api/campanhas/${campanhaId}/diarias`, {
+    signal,
+  })
+}
+
+/** Só ADMIN e antes da publicação. Substitui a lista inteira: o recorte que não vier volta à média das respostas. */
+export function salvarDiariasInformadas(campanhaId: number, dados: Esquemas['DiariasRequest']) {
+  return requisicao<Esquemas['DiariaInformadaResponse'][]>(`/api/campanhas/${campanhaId}/diarias`, {
+    metodo: 'PUT',
+    corpo: dados,
+  })
+}
+
 export async function baixarResultadoCsv(campanhaId: number, signal?: AbortSignal) {
   const { blob, contentDisposition } = await requisicaoArquivo(
     `/api/campanhas/${campanhaId}/resultado.csv`,
