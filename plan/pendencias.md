@@ -1,6 +1,6 @@
 # O que falta no front e no back
 
-Levantamento feito a partir do Documento de Requisitos e do Plano de Testes, comparando com a `main` dos dois repositórios em 21/11/2026 (front depois do #27, back em `02587e9`). Não há telas no Figma: tudo segue a estrutura das páginas que já existem.
+Levantamento feito a partir do Documento de Requisitos e do Plano de Testes, comparando com a `main` dos dois repositórios em 21/11/2026 (front depois do #27, back em `692e28b`). Não há telas no Figma: tudo segue a estrutura das páginas que já existem.
 
 ## Front
 
@@ -50,8 +50,4 @@ Levantamento feito a partir do Documento de Requisitos e do Plano de Testes, com
 | 2 | Indicadores semestrais de ocupação e fluxo | RF-40 (Must) | `TipoPeriodo` só tem MENSAL e FERIADO |
 | 3 | "Comparar com" mês anterior e média histórica do mês | RF-26 (Must) | Só existe o mesmo mês do ano anterior |
 | 4 | Link de resposta por parceiro e campanha, para WhatsApp e e-mail | RF-11 (Must) | O link existente é só o de convite e senha do usuário |
-| 5 | Merge do PR #3: Cucumber com REST Assured e Testcontainers (F01 a F13) e `aceitaResposta`/`respostasAte` na pendência | Plano de Testes e RF-12 | PR aberto |
-| 6 | Merge do PR #4: prazos das rodadas validados e 422 para campanha não publicada | RF-14 e RF-21 | PR aberto, empilhado sobre o #3 |
-| 8 | Exportar Excel (.xlsx) com indicadores e segmentos por categoria | RF-38 (Should) | Não existe |
-
-A confirmar com o cliente: não existe "esqueci minha senha" para o próprio usuário. Só o ADMIN gera o link de redefinição, e a E2E-11 assume esse fluxo.
+| 5 | Exportar Excel (.xlsx) com indicadores e segmentos por categoria | RF-38 (Should) | Não existe |
