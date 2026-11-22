@@ -248,5 +248,15 @@ Não há decisões em aberto.
 Arquivos `.env` e `.env.*` ficam fora do Git, exceto o `.env.example`. Não envie segredos ao repositório.
 
 ---
+## Equipe
 
-Protótipo acadêmico da Equipe 4.
+Projeto acadêmico desenvolvido em 2026 por estudantes do curso de Bacharelado em Sistemas de
+Informação do Instituto de Ciências Matemáticas e de Computação (ICMC) da Universidade de São
+Paulo (USP), campus de São Carlos, para o Observatório de Turismo de Olímpia (OTO).
+
+**Desenvolvedores**
+
+- Daniele Gallego
+- Davi Moreira de Santana
+- Diego Soares da Paz
+- Pedro Bernardo Rodrigues Pinto
