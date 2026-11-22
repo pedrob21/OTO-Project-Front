@@ -41,13 +41,3 @@ Levantamento feito a partir do Documento de Requisitos e do Plano de Testes, com
 | E2E-01, 04, 05, 08, 09 e 10 automatizados no Playwright; painel passa a consultar parâmetros e RHC pela data do fim do período | `test/e2e-suite` |
 | RNF-01: telas do ADMIN sem rolagem lateral em 360 px e tablet, incluindo diálogos de Cadastros, coberto em `e2e/acessibilidade.spec.ts` | #34 |
 | T18 (parte): CLS do painel no celular de 0,16 para 0,01 (fallback de fonte com `size-adjust`, preload e altura mínima no carregamento); pacote analisado, sem ganho óbvio (principal em 129 kB gzip, rotas até 19 kB) | #34 |
-
-## Back
-
-| # | Item | Requisito (prioridade) | Situação |
-|---|---|---|---|
-| 1 | Boletim em PDF no formato dos boletins da Secretaria | RF-37 (Must) | Não existe |
-| 2 | Indicadores semestrais de ocupação e fluxo | RF-40 (Must) | `TipoPeriodo` só tem MENSAL e FERIADO |
-| 3 | "Comparar com" mês anterior e média histórica do mês | RF-26 (Must) | Só existe o mesmo mês do ano anterior |
-| 4 | Link de resposta por parceiro e campanha, para WhatsApp e e-mail | RF-11 (Must) | O link existente é só o de convite e senha do usuário |
-| 5 | Exportar Excel (.xlsx) com indicadores e segmentos por categoria | RF-38 (Should) | Não existe |
