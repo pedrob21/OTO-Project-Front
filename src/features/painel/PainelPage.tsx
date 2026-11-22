@@ -41,8 +41,8 @@ export function PainelPage() {
   const anoDaCampanha = partesDoPeriodo(selecionada?.periodoInicio)?.ano
   const expectativa = useFeriadosDoPainel('EXPECTATIVA', anoDaCampanha)
   const realizado = useFeriadosDoPainel('CONSOLIDADA', anoDaCampanha)
-  const parametros = useParametrosDoPainel(selecionada?.periodoInicio)
-  const rhc = useRhcDoPainel(selecionada?.periodoInicio, perfil)
+  const parametros = useParametrosDoPainel(selecionada?.periodoFim)
+  const rhc = useRhcDoPainel(selecionada?.periodoFim, perfil)
   const [busca] = useSearchParams()
   const tipoEscolhido = valorDoFiltro(
     busca,

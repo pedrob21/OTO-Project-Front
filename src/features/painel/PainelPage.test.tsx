@@ -22,6 +22,7 @@ const PUBLICADAS = [
     modalidade: 'CONSOLIDADA',
     tipoPeriodo: 'MENSAL',
     periodoInicio: '2026-08-01',
+    periodoFim: '2026-08-31',
   },
   {
     campanhaId: 13,
@@ -29,6 +30,7 @@ const PUBLICADAS = [
     modalidade: 'CONSOLIDADA',
     tipoPeriodo: 'MENSAL',
     periodoInicio: '2026-07-01',
+    periodoFim: '2026-07-31',
   },
 ]
 
@@ -239,7 +241,7 @@ describe('RHC e parâmetros vigentes no fluxo de turistas', () => {
     ).toBeInTheDocument()
     for (const caminho of ['/api/rhc/vigente', '/api/parametros-calculo/vigente']) {
       const busca = api.chamadas.find((chamada) => chamada.caminho === caminho)?.busca
-      expect(new URLSearchParams(busca).get('data')).toBe('2026-08-01')
+      expect(new URLSearchParams(busca).get('data')).toBe('2026-08-31')
     }
   })
 

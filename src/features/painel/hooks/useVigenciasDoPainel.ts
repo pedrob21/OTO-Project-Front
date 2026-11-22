@@ -14,7 +14,7 @@ async function naoExistirEhNulo<T>(busca: Promise<T>): Promise<T | null> {
   }
 }
 
-/** Os parâmetros de cálculo vigentes no início do período da campanha. */
+/** Os parâmetros de cálculo vigentes no fim do período da campanha. */
 export function useParametrosDoPainel(data: string | undefined) {
   return useQuery({
     queryKey: ['parametros-calculo', 'vigente', data],
@@ -27,7 +27,7 @@ export function podeVerRhc(perfil: Perfil | undefined): boolean {
   return perfil === 'ADMIN' || perfil === 'VISUALIZADOR'
 }
 
-/** O RHC vigente no início do período da campanha. O PARCEIRO não tem acesso (D7). */
+/** O RHC vigente no fim do período da campanha. O PARCEIRO não tem acesso (D7). */
 export function useRhcDoPainel(data: string | undefined, perfil: Perfil | undefined) {
   return useQuery({
     queryKey: ['rhc', 'vigente', data],
