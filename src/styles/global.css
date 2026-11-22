@@ -3,6 +3,33 @@
 @import '@fontsource-variable/open-sans/wght.css';
 @import './tokens.css';
 
+@font-face {
+  font-family: 'Public Sans Fallback';
+  src: local('Arial'), local('Liberation Sans'), local('Helvetica');
+  size-adjust: 101.57%;
+  ascent-override: 93.53%;
+  descent-override: 22.15%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Bricolage Grotesque Fallback';
+  src: local('Arial'), local('Liberation Sans'), local('Helvetica');
+  size-adjust: 98.94%;
+  ascent-override: 93.99%;
+  descent-override: 27.29%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Open Sans Fallback';
+  src: local('Arial'), local('Liberation Sans'), local('Helvetica');
+  size-adjust: 101.61%;
+  ascent-override: 105.19%;
+  descent-override: 28.83%;
+  line-gap-override: 0%;
+}
+
 *,
 *::before,
 *::after {
