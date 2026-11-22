@@ -29,16 +29,11 @@ dist-ssr
 *.sw?
 
 # Playwright
-/test-results/
-/playwright-report/
 /blob-report/
 /playwright/.cache/
 
 # Vercel
 .vercel
-dist-e2e-*
-coverage
 
-# Lighthouse CI
-.lighthouseci
-dist-lighthouse
+# Tudo o que os testes, a cobertura e o Lighthouse geram
+/artefatos/

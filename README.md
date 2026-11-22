@@ -134,7 +134,7 @@ Se o navegador acusar erro de CORS, confira `CORS_ORIGENS` no `.env` do backend.
 | `npm run test:e2e` | Roda os testes e2e (Playwright) com a API simulada, no desktop e, os marcados com `@celular`, também em celular (360 px) e tablet (768 px) |
 | `npm run test:e2e:headed` | Roda os testes e2e com o navegador visível, um teste por vez |
 | `npm run api:tipos` | Gera `src/api/schema.d.ts` de novo. Precisa da API no ar |
-| `npm run lighthouse` | Gera o build em `dist-lighthouse/` e roda o Lighthouse CI com a API simulada (ver [Lighthouse](#lighthouse)) |
+| `npm run lighthouse` | Gera o build em `artefatos/lighthouse/build/` e roda o Lighthouse CI com a API simulada (ver [Lighthouse](#lighthouse)) |
 
 > [!NOTE]
 > Use `npm run typecheck` para verificar os tipos. O `tsc --noEmit` na raiz não verifica nada, porque o `tsconfig.json` principal só aponta para os outros.
@@ -164,7 +164,7 @@ npm run lighthouse                        # celular (padrão do Lighthouse)
 LHCI_PERFIL=desktop npm run lighthouse    # desktop
 ```
 
-Sem Chrome instalado, aponte `CHROME_PATH` para o Chromium do Playwright (`~/.cache/ms-playwright/chromium-*/chrome-linux64/chrome`). Os relatórios ficam em `.lighthouseci/relatorio-celular/` e `.lighthouseci/relatorio-desktop/`. No CI, o job `lighthouse` roda os dois perfis e publica os relatórios como artefato.
+Sem Chrome instalado, aponte `CHROME_PATH` para o Chromium do Playwright (`~/.cache/ms-playwright/chromium-*/chrome-linux64/chrome`). Os relatórios ficam em `artefatos/lighthouse/relatorios/celular/` e `artefatos/lighthouse/relatorios/desktop/`. No CI, o job `lighthouse` roda os dois perfis e publica os relatórios como artefato.
 
 Limites: acessibilidade e boas práticas abaixo de 0,95 reprovam o job. Desempenho (0,75 no celular e 0,90 no desktop), SEO (0,90), LCP (3,5 s no celular e 1,5 s no desktop), TBT (600 ms no celular e 200 ms no desktop) e CLS (0,1) só geram aviso.
 

@@ -1,4 +1,4 @@
-// Serve o build do Lighthouse (dist-lighthouse) e simula a API em /api, no mesmo endereço.
+// Serve o build do Lighthouse (artefatos/lighthouse/build) e simula a API em /api, no mesmo endereço.
 // As telas autenticadas recebem a sessão no index.html, como o addInitScript dos e2e.
 
 import { createServer } from 'node:http'
@@ -7,7 +7,7 @@ import { extname, join, normalize } from 'node:path'
 import { gzipSync } from 'node:zlib'
 
 const PORTA = 4179
-const PASTA = join(import.meta.dirname, '..', 'dist-lighthouse')
+const PASTA = join(import.meta.dirname, '..', 'artefatos', 'lighthouse', 'build')
 const PUBLICAS = new Set(['/login', '/definir-senha'])
 
 const TIPOS = {

@@ -1,13 +1,13 @@
 // Monta o resumo de qualidade do PR (cobertura do vitest e Lighthouse) em Markdown, com badges.
 // Uso: node scripts/resumo-pr.mjs > resumo.md
-// Lê coverage/coverage-summary.json e .lighthouseci/relatorio-<perfil>/*.report.json.
+// Lê artefatos/cobertura/coverage-summary.json e artefatos/lighthouse/relatorios/<perfil>/*.report.json.
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 const MARCADOR = '<!-- resumo-qualidade -->'
-const PASTA_LIGHTHOUSE = '.lighthouseci'
-const ARQUIVO_COBERTURA = 'coverage/coverage-summary.json'
+const PASTA_LIGHTHOUSE = 'artefatos/lighthouse/relatorios'
+const ARQUIVO_COBERTURA = 'artefatos/cobertura/coverage-summary.json'
 
 const PERFIS = { celular: 'Celular', desktop: 'Desktop' }
 const CATEGORIAS = [
@@ -78,7 +78,7 @@ function coberturaEmMarkdown() {
 }
 
 function relatoriosDoPerfil(perfil) {
-  const pasta = join(PASTA_LIGHTHOUSE, `relatorio-${perfil}`)
+  const pasta = join(PASTA_LIGHTHOUSE, perfil)
   if (!existsSync(pasta)) return []
   return readdirSync(pasta)
     .filter((arquivo) => arquivo.endsWith('.report.json'))

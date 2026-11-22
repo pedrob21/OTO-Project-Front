@@ -1,6 +1,8 @@
 // Lighthouse CI: `npm run lighthouse` (celular) ou `LHCI_PERFIL=desktop npm run lighthouse`.
 // O servidor de lighthouse/servidor.mjs serve o build e simula a API.
 
+const path = require('node:path')
+
 const perfil = process.env.LHCI_PERFIL === 'desktop' ? 'desktop' : 'celular'
 const base = 'http://localhost:4179'
 
@@ -15,7 +17,7 @@ const paginas = ['/login', '/definir-senha?token=x', '/', '/metodologia', '/cada
 module.exports = {
   ci: {
     collect: {
-      startServerCommand: 'node lighthouse/servidor.mjs',
+      startServerCommand: `node ${path.join(__dirname, 'lighthouse/servidor.mjs')}`,
       startServerReadyPattern: 'pronto',
       url: paginas.map((pagina) => `${base}${pagina}`),
       numberOfRuns: 2,
@@ -38,7 +40,7 @@ module.exports = {
     },
     upload: {
       target: 'filesystem',
-      outputDir: `.lighthouseci/relatorio-${perfil}`,
+      outputDir: path.join(__dirname, 'artefatos/lighthouse/relatorios', perfil),
     },
   },
 }

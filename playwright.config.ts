@@ -2,14 +2,17 @@ import { defineConfig, devices } from '@playwright/test'
 
 const porta = process.env.E2E_PORT ?? '4173'
 const comPortaPropria = porta !== '4173'
-const pasta = `dist-e2e-${porta}`
+const pasta = `artefatos/e2e/build-${porta}`
 
 export default defineConfig({
   testDir: './e2e',
+  outputDir: 'artefatos/e2e/resultados',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'list',
+  reporter: process.env.CI
+    ? [['github'], ['html', { open: 'never', outputFolder: 'artefatos/e2e/relatorio' }]]
+    : 'list',
   use: {
     baseURL: `http://localhost:${porta}`,
     trace: 'on-first-retry',
