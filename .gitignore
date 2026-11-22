@@ -36,3 +36,5 @@ dist-ssr
 
 # Vercel
 .vercel
+dist-e2e-*
+coverage
