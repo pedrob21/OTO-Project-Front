@@ -149,7 +149,7 @@ export function UsuariosPage() {
         acao={<Button onClick={() => abrir({ tipo: 'novo' })}>Novo usuário</Button>}
       >
         {usuarios.isPending ? (
-          <Carregando texto="Carregando usuários" />
+          <Carregando texto="Carregando usuários" reservarAltura />
         ) : usuarios.isError ? (
           <ErroApi
             mensagem="Não foi possível carregar os usuários."
