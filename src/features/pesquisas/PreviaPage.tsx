@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { buscarReferencias } from '@/api/referencias'
 import { buscarPrevia, cancelarPublicacao, publicarCampanha } from '@/api/resultados'
+import { CHAVE_PUBLICADAS } from '@/features/painel/hooks/useCampanhasPublicadas'
 import { buscarRodada } from '@/api/rodadas'
 import { Button } from '@/components/ui/Button'
 import { Confirmacao } from '@/components/ui/Confirmacao'
@@ -14,6 +15,7 @@ import { DesempenhoPorTipoCard } from '@/features/painel/components/DesempenhoPo
 import { formatarData, formatarInteiro, formatarPercentual } from '@/lib/formatos'
 import type { Esquemas } from '@/types/dominio'
 import comum from './comum.module.css'
+import { DiariasInformadas } from './components/DiariasInformadas'
 import { IndicadoresDaCampanha } from './components/IndicadoresDaCampanha'
 import { ProgressoComMinimo } from './components/ProgressoComMinimo'
 import styles from './PreviaPage.module.css'
@@ -48,6 +50,7 @@ function Publicacao({
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['rodadas'] }),
         queryClient.invalidateQueries({ queryKey: ['campanhas', campanhaId] }),
+        queryClient.invalidateQueries({ queryKey: CHAVE_PUBLICADAS }),
       ])
     },
   })
@@ -223,6 +226,13 @@ export function PreviaPage() {
               />
             )}
           </Card>
+
+          <DiariasInformadas
+            campanhaId={campanhaId}
+            publicada={campanha?.publicada === true}
+            resultado={resultado}
+            tipos={referencias.data?.tiposHospedagem ?? []}
+          />
 
           {resultado && (
             <DesempenhoPorTipoCard
