@@ -17,8 +17,7 @@ export async function irPeloMenu(page: Page, item: string) {
 
 /** A página cabe na largura da tela: nada obriga a rolar para o lado (o celular de 360 px). */
 export async function semRolagemHorizontal(page: Page) {
-  const { conteudo, tela } = (await page.evaluate(
-    '({ conteudo: document.documentElement.scrollWidth, tela: window.innerWidth })',
-  )) as { conteudo: number; tela: number }
+  const conteudo = (await page.evaluate('document.documentElement.scrollWidth')) as number
+  const tela = page.viewportSize()?.width ?? 0
   expect(conteudo, 'a página não deveria rolar para o lado').toBeLessThanOrEqual(tela)
 }
