@@ -11,10 +11,6 @@ Levantamento feito a partir do Documento de Requisitos e do Plano de Testes, com
 | 8 | Responsividade das telas do ADMIN em 360 px e tablet, incluindo tabelas e diálogos de Cadastros (cabeçalho, telas do parceiro, Relatórios e Indicadores já feitos) | RNF-01 | Mesmos pontos de quebra (1180 e 600 px) e o teste `semRolagemHorizontal` |
 | 11 | Otimização: análise do tamanho do pacote e CLS do painel (0,17 no celular, causado pela troca da fonte web: preload ou fallback com `size-adjust`). O código já é dividido por rota, o favicon existe e o Lighthouse já roda no CI | T18 | Notas do Lighthouse no comentário do PR |
 
-Todas as telas do menu já existem. O que sobra do front sem depender do back:
-
-- Análise do tamanho do pacote e correção do CLS do painel (T18). O Lighthouse já está no pipeline.
-- Decidir se as contagens de estabelecimentos e UH de um tipo oculto por sigilo ficam visíveis no painel e no resultado.
 
 ### Depende do back
 
@@ -63,7 +59,3 @@ Todas as telas do menu já existem. O que sobra do front sem depender do back:
 | 8 | Exportar Excel (.xlsx) com indicadores e segmentos por categoria | RF-38 (Should) | Não existe |
 
 A confirmar com o cliente: não existe "esqueci minha senha" para o próprio usuário. Só o ADMIN gera o link de redefinição, e a E2E-11 assume esse fluxo.
-
-## Divergências do Plano de Testes com o código
-
-O Plano de Testes e o RNF-02 falam em React Native com Jest, RNTL, MSW e Maestro. O front é React web com Vite, Vitest, Testing Library, `fetch` simulado e Playwright, e a sessão fica no `sessionStorage` em vez do armazenamento seguro do aparelho (FE-04). O documento precisa ser atualizado para a stack atual.
