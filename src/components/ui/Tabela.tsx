@@ -26,7 +26,7 @@ export function Tabela<T>({ legenda, colunas, linhas, chave, vazio, acoes }: Tab
   const classe = (coluna: ColunaTabela<T>) => (coluna.numerica ? styles.numero : undefined)
 
   return (
-    <div className={styles.rolagem}>
+    <div className={styles.rolagem} role="region" aria-label={legenda} tabIndex={0}>
       <table className={styles.tabela}>
         <caption className={styles.oculto}>{legenda}</caption>
         <thead>

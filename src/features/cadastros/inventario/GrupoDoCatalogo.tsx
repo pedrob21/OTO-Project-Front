@@ -59,21 +59,21 @@ export function GrupoDoCatalogo({
           </Button>
           <Button
             variante="secundaria"
-            aria-label={`Editar o grupo ${grupo.nome}`}
+            aria-label={`Editar grupo ${grupo.nome}`}
             onClick={aoEditarGrupo}
           >
             Editar grupo
           </Button>
           <Button
             variante="secundaria"
-            aria-label={`${grupo.ativo ? 'Inativar' : 'Reativar'} o grupo ${grupo.nome}`}
+            aria-label={`${grupo.ativo ? 'Inativar' : 'Reativar'} grupo ${grupo.nome}`}
             onClick={aoAlternarGrupo}
           >
             {grupo.ativo ? 'Inativar grupo' : 'Reativar grupo'}
           </Button>
           <Button
             variante="secundaria"
-            aria-label={`Excluir o grupo ${grupo.nome}`}
+            aria-label={`Excluir grupo ${grupo.nome}`}
             onClick={aoExcluirGrupo}
           >
             Excluir grupo
