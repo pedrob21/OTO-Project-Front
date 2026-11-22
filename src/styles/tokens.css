@@ -68,9 +68,11 @@
   --cor-aberta-texto: #7a4e00;
 
   /* Famílias */
-  --fonte-titulo: 'Bricolage Grotesque Variable', 'Public Sans Variable', sans-serif;
-  --fonte-texto: 'Public Sans Variable', system-ui, sans-serif;
-  --fonte-select: 'Open Sans Variable', 'Public Sans Variable', sans-serif;
+  --fonte-titulo:
+    'Bricolage Grotesque Variable', 'Bricolage Grotesque Fallback', 'Public Sans Variable',
+    sans-serif;
+  --fonte-texto: 'Public Sans Variable', 'Public Sans Fallback', system-ui, sans-serif;
+  --fonte-select: 'Open Sans Variable', 'Open Sans Fallback', 'Public Sans Variable', sans-serif;
 
   /* Tipografia: use com a propriedade `font` */
   --tipo-titulo-pagina: 700 54px/44px var(--fonte-titulo);

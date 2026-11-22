@@ -1,16 +1,10 @@
 # O que falta no front e no back
 
-Levantamento feito a partir do Documento de Requisitos e do Plano de Testes, comparando com a `main` dos dois repositórios em 21/11/2026 (front depois do #27, back em `02587e9`). Não há telas no Figma: tudo segue a estrutura das páginas que já existem.
+Levantamento feito a partir do Documento de Requisitos e do Plano de Testes, comparando com a `main` dos dois repositórios em 21/11/2026 (front depois do #27, back em `692e28b`). Não há telas no Figma: tudo segue a estrutura das páginas que já existem.
 
 ## Front
 
-### Pode ser feito já
-
-| # | Item | Requisito (prioridade) | Base nas páginas existentes |
-|---|---|---|---|
-| 8 | Responsividade das telas do ADMIN em 360 px e tablet, incluindo tabelas e diálogos de Cadastros (cabeçalho, telas do parceiro, Relatórios e Indicadores já feitos) | RNF-01 | Mesmos pontos de quebra (1180 e 600 px) e o teste `semRolagemHorizontal` |
-| 11 | Otimização: análise do tamanho do pacote e CLS do painel (0,17 no celular, causado pela troca da fonte web: preload ou fallback com `size-adjust`). O código já é dividido por rota, o favicon existe e o Lighthouse já roda no CI | T18 | Notas do Lighthouse no comentário do PR |
-
+-
 
 ### Depende do back
 
@@ -45,17 +39,5 @@ Levantamento feito a partir do Documento de Requisitos e do Plano de Testes, com
 | Favicon, `meta description` e tabelas de Indicadores roláveis por teclado | `test/e2e-suite` |
 | T18 (parte): Lighthouse no CI (celular e desktop, 5 páginas, com limites) e comentário do PR com badges de cobertura e Lighthouse | `test/e2e-suite` |
 | E2E-01, 04, 05, 08, 09 e 10 automatizados no Playwright; painel passa a consultar parâmetros e RHC pela data do fim do período | `test/e2e-suite` |
-
-## Back
-
-| # | Item | Requisito (prioridade) | Situação |
-|---|---|---|---|
-| 1 | Boletim em PDF no formato dos boletins da Secretaria | RF-37 (Must) | Não existe |
-| 2 | Indicadores semestrais de ocupação e fluxo | RF-40 (Must) | `TipoPeriodo` só tem MENSAL e FERIADO |
-| 3 | "Comparar com" mês anterior e média histórica do mês | RF-26 (Must) | Só existe o mesmo mês do ano anterior |
-| 4 | Link de resposta por parceiro e campanha, para WhatsApp e e-mail | RF-11 (Must) | O link existente é só o de convite e senha do usuário |
-| 5 | Merge do PR #3: Cucumber com REST Assured e Testcontainers (F01 a F13) e `aceitaResposta`/`respostasAte` na pendência | Plano de Testes e RF-12 | PR aberto |
-| 6 | Merge do PR #4: prazos das rodadas validados e 422 para campanha não publicada | RF-14 e RF-21 | PR aberto, empilhado sobre o #3 |
-| 8 | Exportar Excel (.xlsx) com indicadores e segmentos por categoria | RF-38 (Should) | Não existe |
-
-A confirmar com o cliente: não existe "esqueci minha senha" para o próprio usuário. Só o ADMIN gera o link de redefinição, e a E2E-11 assume esse fluxo.
+| RNF-01: telas do ADMIN sem rolagem lateral em 360 px e tablet, incluindo diálogos de Cadastros, coberto em `e2e/acessibilidade.spec.ts` | #34 |
+| T18 (parte): CLS do painel no celular de 0,16 para 0,01 (fallback de fonte com `size-adjust`, preload e altura mínima no carregamento); pacote analisado, sem ganho óbvio (principal em 129 kB gzip, rotas até 19 kB) | #34 |

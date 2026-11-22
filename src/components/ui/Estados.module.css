@@ -15,3 +15,8 @@
 .acao {
   margin-top: var(--espaco-1);
 }
+
+.reservarAltura {
+  min-height: 50vh;
+  align-content: start;
+}

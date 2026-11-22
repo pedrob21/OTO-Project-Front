@@ -377,6 +377,7 @@ const COM_VIGENCIA = {
   perfil: 'ADMIN' as const,
   pronta: (page: Page) => page.getByRole('row', { name: /01\/01\/2025/ }),
   dialogo: botao('Nova vigência'),
+  celular: true,
 }
 
 const TELAS: Tela[] = [
@@ -425,24 +426,28 @@ const TELAS: Tela[] = [
     caminho: '/pesquisas',
     perfil: 'ADMIN',
     pronta: (page) => page.getByRole('row', { name: /005\/26/ }),
+    celular: true,
   },
   {
     nome: 'acompanhamento',
     caminho: '/pesquisas/5',
     perfil: 'ADMIN',
     pronta: (page) => page.getByRole('link', { name: 'Lançar resposta de Hotel Thermas' }),
+    celular: true,
   },
   {
     nome: 'nova pesquisa',
     caminho: '/pesquisas/nova',
     perfil: 'ADMIN',
     pronta: titulo('Nova pesquisa'),
+    celular: true,
   },
   {
     nome: 'lançar resposta',
     caminho: '/pesquisas/5/campanhas/50/respostas/7',
     perfil: 'ADMIN',
     pronta: (page) => page.getByLabel('Taxa de ocupação (%)'),
+    celular: true,
   },
   {
     nome: 'prévia',
@@ -450,6 +455,7 @@ const TELAS: Tela[] = [
     perfil: 'ADMIN',
     pronta: (page) => page.getByRole('table', { name: 'Diárias informadas pela equipe' }),
     dialogo: botao(/^Corrigir /),
+    celular: true,
   },
   {
     nome: 'responder pesquisa',
@@ -472,6 +478,7 @@ const TELAS: Tela[] = [
     perfil: 'ADMIN',
     pronta: (page) => page.getByRole('row', { name: /Paula Reis/ }),
     dialogo: botao('Novo usuário'),
+    celular: true,
   },
   {
     nome: 'estabelecimentos',
@@ -479,6 +486,7 @@ const TELAS: Tela[] = [
     perfil: 'ADMIN',
     pronta: (page) => page.getByRole('row', { name: /Hotel Exemplo/ }),
     dialogo: botao('Novo estabelecimento'),
+    celular: true,
   },
   { nome: 'capacidades', caminho: '/cadastros/estabelecimentos/12/capacidades', ...COM_VIGENCIA },
   { nome: 'parâmetros', caminho: '/cadastros/parametros', ...COM_VIGENCIA },
@@ -489,6 +497,7 @@ const TELAS: Tela[] = [
     perfil: 'ADMIN',
     pronta: (page) => page.getByRole('row', { name: /Pousada/ }),
     dialogo: botao('Novo tipo de hospedagem'),
+    celular: true,
   },
   {
     nome: 'inventário',
@@ -496,12 +505,14 @@ const TELAS: Tela[] = [
     perfil: 'ADMIN',
     pronta: (page) => page.getByText('Piscina').first(),
     dialogo: botao('Novo grupo'),
+    celular: true,
   },
   {
     nome: 'inventário do estabelecimento',
     caminho: '/cadastros/estabelecimentos/12/inventario',
     perfil: 'ADMIN',
     pronta: (page) => page.getByText('Piscina').first(),
+    celular: true,
   },
   {
     nome: 'série histórica',
@@ -509,6 +520,7 @@ const TELAS: Tela[] = [
     perfil: 'ADMIN',
     pronta: (page) => page.getByRole('row', { name: /Carnaval/ }),
     dialogo: botao('Novo valor'),
+    celular: true,
   },
 ]
 
@@ -539,6 +551,18 @@ for (const tela of TELAS.filter(({ celular }) => celular)) {
       await abrir(page, tela.perfil, tela.caminho)
       await expect(tela.pronta(page)).toBeVisible()
       await cabeNaLargura(page)
+
+      if (tela.dialogo) {
+        await tela.dialogo(page).click()
+        const dialogo = page.getByRole('dialog')
+        await expect(dialogo).toBeVisible()
+        const [conteudo, visivel] = (await dialogo.evaluate((el) => [
+          el.scrollWidth,
+          el.clientWidth,
+        ])) as number[]
+        expect(conteudo, 'o diálogo não deveria rolar para o lado').toBeLessThanOrEqual(visivel)
+        await cabeNaLargura(page)
+      }
     },
   )
 }

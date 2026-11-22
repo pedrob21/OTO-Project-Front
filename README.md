@@ -5,7 +5,7 @@ Interface web do **Observatório de Turismo de Olímpia (OTO)**. Reúne, em um p
 A API fica no repositório [OTO-Project](https://github.com/pedrob21/OTO-Project) (Spring Boot e PostgreSQL).
 
 > [!IMPORTANT]
-> **Em desenvolvimento.** O login, a definição de senha, o fluxo das pesquisas (da criação à publicação), o resultado de cada campanha, os relatórios, os indicadores, os cadastros do ADMIN e o painel já usam a API. As telas do parceiro funcionam em celular e tablet. Faltam a adaptação das telas do ADMIN ao celular, a auditoria WCAG AA completa e a revisão final, nas [próximas tasks](#próximas-tasks).
+> **Projeto concluído.** Todas as telas previstas estão prontas e usam a API: login, definição de senha, fluxo das pesquisas (da criação à publicação), resultado de cada campanha, relatórios, indicadores, cadastros do ADMIN, Meu estabelecimento e painel. Funcionam em celular (360 px), tablet e desktop, com axe-core, testes e2e e Lighthouse no CI. Não há mais tasks planejadas. O que ficou como melhoria, e o que depende do back, está em [Pendências técnicas](#pendências-técnicas).
 
 ## Sumário
 
@@ -15,7 +15,7 @@ A API fica no repositório [OTO-Project](https://github.com/pedrob21/OTO-Project
 - [Scripts](#scripts)
 - [Estrutura do projeto](#estrutura-do-projeto)
 - [Arquitetura e convenções](#arquitetura-e-convenções)
-- [Próximas tasks](#próximas-tasks)
+- [Pendências técnicas](#pendências-técnicas)
 - [Decisões](#decisões)
 - [Como contribuir](#como-contribuir)
 
@@ -26,8 +26,9 @@ A API fica no repositório [OTO-Project](https://github.com/pedrob21/OTO-Project
 - Login com JWT, expiração de sessão e controle de acesso por perfil
 - Definição de senha por link (`/definir-senha?token=...`), usada no convite e na redefinição, e troca da própria senha pelo menu do usuário (`/minha-senha`)
 - Página "Como calculamos a taxa de ocupação e o fluxo de turistas" (`/metodologia`), para todos os perfis
+- Código dividido por rota (as páginas fora do painel, do login e da metodologia carregam sob demanda), favicon e `meta description`
 - Cabeçalho, menu, rodapé, e cabeçalho e filtros fixos durante a rolagem. Abaixo de 1180 px, o menu fica recolhido no botão "Menu" (fecha com Esc ou ao trocar de página), e no celular o usuário aparece só pelas iniciais
-- Telas do parceiro em celular (360 px) e tablet: login, definição de senha, resposta às pesquisas e Meu estabelecimento, sem rolagem horizontal
+- Todas as telas em celular (360 px) e tablet, sem rolagem horizontal: as do parceiro (login, definição de senha, resposta às pesquisas e Meu estabelecimento) e as do ADMIN (pesquisas, prévia e Cadastros, com tabelas roláveis dentro do próprio container e diálogos ajustados abaixo de 600 px)
 - Criação de pesquisa com campanhas (modalidade, período, diárias e prazo), só para o ADMIN, em `/pesquisas/nova`
 - Fluxo das pesquisas com os parceiros:
   - lista das rodadas com filtro por situação (rascunho, aberta, encerrada e publicada), em `/pesquisas`
@@ -82,9 +83,12 @@ A referência visual é a [tela exportada do Figma](docs/referencia/painel-oto-d
 | Dados do servidor | TanStack Query 5 |
 | Gráficos | `d3-shape` com SVG próprio |
 | Estilos | CSS Modules e tokens em variáveis CSS |
-| Fontes | Bricolage Grotesque, Public Sans e Open Sans, via Fontsource |
-| Testes | Vitest e Testing Library |
+| Fontes | Bricolage Grotesque, Public Sans e Open Sans, via Fontsource, com fallbacks de `size-adjust` |
+| Testes | Vitest e Testing Library, com cobertura em V8 |
+| Testes e2e | Playwright, com a API simulada, e axe-core |
+| Desempenho | Lighthouse CI |
 | Qualidade | oxlint e Prettier |
+| CI | GitHub Actions: formatação, lint, tipos, testes, build, e2e e Lighthouse, com resumo no pull request |
 | Tipos da API | `openapi-typescript`, gerados a partir do OpenAPI do backend |
 
 ## Como rodar
@@ -127,12 +131,14 @@ Se o navegador acusar erro de CORS, confira `CORS_ORIGENS` no `.env` do backend.
 | `npm run preview` | Serve localmente a versão de produção |
 | `npm run typecheck` | Verifica os tipos |
 | `npm run lint` | Roda o oxlint |
-| `npm run format` | Formata `src` e `dev` |
+| `npm run format` | Formata `src`, `dev` e `e2e` |
 | `npm run format:check` | Confere a formatação sem alterar arquivos |
-| `npm test` | Roda os testes uma vez |
+| `npm test` | Roda os testes unitários uma vez |
+| `npm run test:coverage` | Roda os testes unitários com relatório de cobertura |
 | `npm run test:watch` | Roda os testes em modo de observação |
 | `npm run test:e2e` | Roda os testes e2e (Playwright) com a API simulada, no desktop e, os marcados com `@celular`, também em celular (360 px) e tablet (768 px) |
 | `npm run test:e2e:headed` | Roda os testes e2e com o navegador visível, um teste por vez |
+| `npm run test:e2e:ui` | Abre a interface do Playwright, com timeline e passo a passo |
 | `npm run api:tipos` | Gera `src/api/schema.d.ts` de novo. Precisa da API no ar |
 | `npm run lighthouse` | Gera o build em `artifacts/lighthouse/build/` e roda o Lighthouse CI com a API simulada (ver [Lighthouse](#lighthouse)) |
 
@@ -145,13 +151,13 @@ Por padrão o Playwright roda sem abrir o navegador (headless). Outras formas de
 
 ```bash
 npm run test:e2e:headed                          # navegador visível, um teste por vez
-npm run test:e2e -- --ui                         # interface do Playwright, com timeline e passo a passo
+npm run test:e2e:ui                              # interface do Playwright, com timeline e passo a passo
 npm run test:e2e -- --debug                      # inspector, pausando em cada ação
 npm run test:e2e -- e2e/login.spec.ts --headed   # só um arquivo
 npm run test:e2e -- --project=celular            # só as telas do parceiro no celular
 ```
 
-Os testes das telas do parceiro levam a marca `@celular` e rodam também nos projetos `celular` e `tablet`. Para clicar no menu, use `irPeloMenu` (`e2e/navegacao.ts`), que abre o menu recolhido quando ele existe; `semRolagemHorizontal` confere que a página cabe na tela.
+Os testes das telas do parceiro levam a marca `@celular` e rodam também nos projetos `celular` e `tablet`. As telas do ADMIN são cobertas por `e2e/acessibilidade.spec.ts`, que confere a largura (e a dos diálogos, abertos pelo teste) em 360 px e 768 px. Para clicar no menu, use `irPeloMenu` (`e2e/navegacao.ts`), que abre o menu recolhido quando ele existe; `semRolagemHorizontal` confere que a página cabe na tela.
 
 Antes dos testes, o Playwright gera o build e sobe o `npm run preview` na porta 4173. Fora do CI, se já houver um servidor nessa porta, ele é reaproveitado e os testes rodam contra o build antigo; derrube esse servidor depois de mudar o código.
 
@@ -172,19 +178,22 @@ Medido em 22/11/2026 (melhor das duas execuções; desempenho, acessibilidade, b
 
 | Página | Celular | Desktop |
 |---|---|---|
-| `/login` | 100, 100, 100, 91 | 100, 100, 100, 91 |
-| `/definir-senha` | 94, 100, 100, 91 | 100, 100, 100, 91 |
-| `/` (painel) | 80, 100, 100, 91 | 96, 100, 100, 91 |
-| `/metodologia` | 94, 100, 100, 91 | 100, 100, 100, 91 |
-| `/cadastros/usuarios` | 87, 100, 100, 91 | 100, 100, 100, 91 |
+| `/login` | 96, 100, 100, 100 | 100, 100, 100, 100 |
+| `/definir-senha` | 93, 100, 100, 100 | 100, 100, 100, 100 |
+| `/` (painel) | 83, 100, 100, 100 | 97, 100, 100, 100 |
+| `/metodologia` | 92, 100, 100, 100 | 100, 100, 100, 100 |
+| `/cadastros/usuarios` | 95, 100, 100, 100 | 100, 100, 100, 100 |
 
-O SEO perde pontos só pela falta de `<meta name="description">`. No painel, o CLS fica em 0,17 no celular e 0,11 no desktop, causado pela troca da fonte quando ela termina de carregar, e por isso o aviso de CLS aparece nessa página. O desempenho no celular varia bastante entre execuções (de 77 a 87 em `/cadastros/usuarios`).
+O CLS do painel ainda fica em 0,15 a 0,17 no celular e 0,11 no desktop, por isso o aviso de CLS aparece nessa página. Nas demais, o CLS ficou abaixo de 0,02. Os fallbacks de fonte com `size-adjust` (em `global.css`) e o preload da Public Sans (em `index.html`) reduzem o deslocamento da troca da fonte web. O desempenho no celular varia entre execuções.
 
 ## Estrutura do projeto
 
 ```text
 ├── dev/                     # Páginas de comparação visual, fora do build de produção
 ├── docs/referencia/         # Tela exportada do Figma
+├── e2e/                     # Testes de ponta a ponta (Playwright)
+├── lighthouse/              # Servidor com API simulada para o Lighthouse CI
+├── plan/                    # Plano de implementação, de testes e pendências
 ├── public/
 └── src/
     ├── api/                 # Cliente HTTP, sessão, chamadas por recurso (como `inventario.ts`) e tipos gerados
@@ -192,30 +201,22 @@ O SEO perde pontos só pela falta de `<meta name="description">`. No painel, o C
     ├── assets/              # Logos
     ├── components/
     │   ├── charts/          # Gráficos reutilizáveis
-    │   └── ui/              # Botão, cartão, select, selo, tabela, diálogo, estados de vazio e de erro
+    │   └── ui/              # Botão, cartão, campos, selo, tabela, diálogo, confirmação, barra de progresso, estados de carregamento, vazio e erro
     ├── features/
     │   ├── auth/            # Contexto de sessão, login, definição e troca de senha e proteção de rotas
     │   ├── cadastros/       # Telas de cadastro do ADMIN, com formulário em diálogo (inclui o catálogo do inventário em `inventario/`)
     │   ├── estabelecimento/ # Meu estabelecimento do PARCEIRO: dados, capacidade e inventário
     │   ├── inventario/      # Editor de inventário de um estabelecimento (`EditorDeInventario`), reaproveitável por outros perfis
+    │   ├── indicadores/     # Indicadores mês a mês e por feriado, em gráfico e tabela
     │   ├── metodologia/     # Página estática do cálculo dos indicadores
     │   ├── painel/          # Página, cartões, regras de cálculo e dados fixos
     │   ├── pesquisas/       # Criação, lista, acompanhamento, resposta, prévia e publicação
+    │   ├── relatorios/      # Relatórios das campanhas publicadas, com filtros e CSV
     │   └── resultados/      # Resultado publicado de uma campanha e download do CSV
     ├── lib/                 # Formatadores pt-BR, leitura de decimais, download e regras de perfil
     ├── styles/              # Tokens do design e estilos globais
     ├── test/                # Configuração dos testes
     └── types/               # Tipos de domínio derivados da API
-    │   ├── auth/        # Contexto de sessão, login, definição e troca de senha e proteção de rotas
-    │   ├── cadastros/   # Telas de cadastro do ADMIN, com formulário em diálogo
-    │   ├── metodologia/ # Página estática do cálculo dos indicadores
-    │   ├── painel/      # Página, cartões, consultas à API e regras de cálculo
-    │   ├── pesquisas/   # Criação, lista, acompanhamento, resposta, prévia e publicação
-    │   └── resultados/  # Resultado publicado de uma campanha e download do CSV
-    ├── lib/             # Formatadores pt-BR, leitura de decimais, download e regras de perfil
-    ├── styles/          # Tokens do design e estilos globais
-    ├── test/            # Configuração dos testes
-    └── types/           # Tipos de domínio derivados da API
 ```
 
 Com o servidor local no ar, os tokens e os componentes podem ser conferidos ao lado da referência em `/dev/tokens.html` e `/dev/componentes.html`.
@@ -233,17 +234,11 @@ Com o servidor local no ar, os tokens e os componentes podem ser conferidos ao l
 - **Cadastros:** lista em tabela e formulário em diálogo, que devolve o foco a quem o abriu. Números aceitam vírgula ou ponto decimal, e as regras de validação são as mesmas da API.
 - **Acessibilidade:** os gráficos têm alternativa em texto ou tabela, e a informação não depende só da cor. Os testes das telas do parceiro, de Relatórios, Indicadores, resultado, login e cabeçalho rodam o axe-core (`violacoesDeAcessibilidade`, em `src/test/acessibilidade.ts`); o contraste fica de fora no jsdom.
 
-## Próximas tasks
+## Pendências técnicas
 
-| Task | Entrega | Pronto quando | Depende de |
-|---|---|---|---|
-| **T17. Responsividade e acessibilidade (restante)** | O cabeçalho, as telas do parceiro, Relatórios e Indicadores já se adaptam. Falta adaptar as telas do ADMIN (pesquisas, prévia e Cadastros, com tabelas e diálogos), corrigir os ajustes pendentes em 1280 px e fazer a auditoria WCAG AA com contraste no navegador | Sem rolagem horizontal da página em 360 px e sem falhas AA abertas | — |
-| **T18. Otimização e revisão final** | Dividir o código por rota, otimizar fontes e imagens, analisar o tamanho do pacote, adicionar favicon e comparar a tela inteira com o design | Lighthouse medido e registrado, sem pendências visuais abertas | T17 |
-
-Pendências do fluxo das pesquisas:
-
-- Diárias médias digitadas pela equipe (`/api/campanhas/{id}/diarias`) na prévia
-- Há dois leitores de número digitado: `lerNumero` (`features/pesquisas/respostas.ts`, aceita ponto de milhar e deixa a contagem de casas para a validação) e `lerDecimal` (`lib/numeros.ts`, limita as casas e aceita sinal). Juntar num só quando a tela do parceiro for revista
+- Há dois leitores de número digitado: `lerNumero` (`features/pesquisas/respostas.ts`, aceita ponto de milhar e deixa a contagem de casas para a validação) e `lerDecimal` (`lib/numeros.ts`, limita as casas e aceita sinal). Juntar num só
+- O CLS do painel no celular (0,15 a 0,17) vem dos blocos que trocam o carregamento pelo conteúdo. O estado de carregamento só reserva altura na lista de usuários (`reservarAltura` em `Carregando`)
+- O que depende do back está em [`plan/pendencias.md`](plan/pendencias.md)
 
 ## Decisões
 
@@ -266,10 +261,10 @@ Não há decisões em aberto.
 3. Antes de abrir o pull request, confira se tudo passa:
 
    ```bash
-   npm run format:check && npm run lint && npm test && npm run build && npm run test:e2e
+   npm run format:check && npm run lint && npm run typecheck && npm test && npm run build && npm run test:e2e
    ```
 
-4. Abra o pull request para a `main`, descrevendo a mudança e como testá-la. Em mudanças visuais, compare com a tela de referência.
+4. Abra o pull request para a `main`, descrevendo a mudança e como testá-la. Em mudanças visuais, compare com a tela de referência. O CI roda as mesmas verificações e comenta no pull request o resumo de cobertura e do Lighthouse.
 
 Arquivos `.env` e `.env.*` ficam fora do Git, exceto o `.env.example`. Não envie segredos ao repositório.
 
