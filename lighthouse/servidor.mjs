@@ -171,7 +171,8 @@ createServer(async (pedido, resposta) => {
     if (pathname in API) {
       return enviar(pedido, resposta, 200, semCache(TIPOS['.json']), JSON.stringify(API[pathname]))
     }
-    console.error(`sem rota simulada: ${pedido.method} ${pathname}`)
+    const rota = `${pedido.method} ${pathname}`.replaceAll(/[\r\n]/g, '')
+    console.error(`sem rota simulada: ${rota}`)
     return enviar(
       pedido,
       resposta,
