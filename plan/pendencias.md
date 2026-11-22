@@ -4,12 +4,7 @@ Levantamento feito a partir do Documento de Requisitos e do Plano de Testes, com
 
 ## Front
 
-### Pode ser feito já
-
-| # | Item | Requisito (prioridade) | Base nas páginas existentes |
-|---|---|---|---|
-| 11 | Otimização: TBT da página inicial (1154 ms no celular, acima do limite de 600 ms em `lighthouserc.cjs`), trabalho da thread principal | T18 | Lighthouse do CI |
-
+-
 
 ### Depende do back
 
