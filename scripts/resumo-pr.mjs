@@ -145,10 +145,11 @@ function lighthouseEmMarkdown() {
 }
 
 function rodape() {
-  const { GITHUB_SERVER_URL, GITHUB_REPOSITORY, GITHUB_RUN_ID, GITHUB_SHA } = process.env
+  const { GITHUB_SERVER_URL, GITHUB_REPOSITORY, GITHUB_RUN_ID, COMMIT_DO_PR, GITHUB_SHA } =
+    process.env
   if (!GITHUB_RUN_ID) return ''
   const execucao = `${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}`
-  return `\n_Commit \`${GITHUB_SHA?.slice(0, 7)}\`. [Relatórios completos nos artefatos da execução](${execucao})._`
+  return `\n_Commit \`${(COMMIT_DO_PR || GITHUB_SHA)?.slice(0, 7)}\`. [Relatórios completos nos artefatos da execução](${execucao})._`
 }
 
 const cobertura = coberturaEmMarkdown()
