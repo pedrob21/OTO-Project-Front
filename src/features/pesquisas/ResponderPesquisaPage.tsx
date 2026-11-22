@@ -11,7 +11,7 @@ import { hojeLocal } from '@/lib/datas'
 import { formatarDecimal } from '@/lib/formatos'
 import { RespostaEstabelecimento } from './components/RespostaEstabelecimento'
 import styles from './ResponderPesquisaPage.module.css'
-import { ausente, campanhasParaResponder, resumoDasPendencias } from './respostas'
+import { ausente, avisoDoPrazo, campanhasParaResponder, resumoDasPendencias } from './respostas'
 
 type ResponderPesquisaPageProps = {
   /** "2026-11-20". Fixa a data nos testes. */
@@ -121,29 +121,35 @@ export function ResponderPesquisaPage({ hoje: hojeFixo }: ResponderPesquisaPageP
           <p role="status" className={styles.resumo}>
             {resumoDasPendencias(pendencias.data)}
           </p>
-          {campanhas.map((campanha) => (
-            <Card
-              key={campanha.campanhaId}
-              titulo={campanha.nome}
-              subtitulo={`Pesquisa ${campanha.rodadaCodigo ?? ''}, período de ${campanha.periodo}. ${campanha.prazo}.`}
-            >
-              {campanha.prazoVencido && (
-                <p className={styles.avisoPrazo}>
-                  O prazo terminou, mas a pesquisa ainda aceita respostas até o OTO encerrá-la.
-                </p>
-              )}
-              <ul className={styles.estabelecimentos}>
-                {campanha.estabelecimentos.map((pendencia) => (
-                  <RespostaEstabelecimento
-                    key={pendencia.estabelecimentoId}
-                    pendencia={pendencia}
-                    faixas={faixas}
-                    usuarioId={usuarioId}
-                  />
-                ))}
-              </ul>
-            </Card>
-          ))}
+          {campanhas.map((campanha) => {
+            const aviso = avisoDoPrazo(campanha)
+            return (
+              <Card
+                key={campanha.campanhaId}
+                titulo={campanha.nome}
+                subtitulo={`Pesquisa ${campanha.rodadaCodigo ?? ''}, período de ${campanha.periodo}. ${campanha.prazo}.`}
+              >
+                {aviso && (
+                  <p
+                    className={campanha.aceitaResposta ? styles.avisoPrazo : styles.prazoEncerrado}
+                    role={campanha.aceitaResposta ? undefined : 'alert'}
+                  >
+                    {aviso}
+                  </p>
+                )}
+                <ul className={styles.estabelecimentos}>
+                  {campanha.estabelecimentos.map((pendencia) => (
+                    <RespostaEstabelecimento
+                      key={pendencia.estabelecimentoId}
+                      pendencia={pendencia}
+                      faixas={faixas}
+                      usuarioId={usuarioId}
+                    />
+                  ))}
+                </ul>
+              </Card>
+            )
+          })}
         </div>
       )}
 

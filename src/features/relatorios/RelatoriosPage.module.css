@@ -1,0 +1,32 @@
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--espaco-4);
+  margin-top: var(--espaco-2);
+}
+
+.filtros > div {
+  width: 200px;
+}
+
+.limpar {
+  min-height: 44px;
+}
+
+.contagem {
+  margin-top: var(--espaco-5);
+  color: var(--cor-texto-suave);
+  font: var(--tipo-pequeno);
+}
+
+.faixa {
+  display: block;
+  margin-top: var(--espaco-1);
+}
+
+@media (max-width: 600px) {
+  .filtros > div {
+    width: 100%;
+  }
+}

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { semRolagemHorizontal } from './navegacao.ts'
 
 async function mockarApi(page: Page) {
   await page.route('**/api/**', (rota) => {
@@ -19,7 +20,7 @@ test.beforeEach(async ({ page }) => {
   await mockarApi(page)
 })
 
-test('link válido define a senha e leva ao login', async ({ page }) => {
+test('link válido define a senha e leva ao login', { tag: '@celular' }, async ({ page }) => {
   await page.goto('/definir-senha?token=link-valido')
   await page.getByLabel('Nova senha').fill('senha-nova-123')
   await page.getByLabel('Confirmar senha').fill('senha-nova-123')
@@ -29,8 +30,10 @@ test('link válido define a senha e leva ao login', async ({ page }) => {
   await expect(page.getByRole('status')).toHaveText(/Senha definida/)
 })
 
-test('link usado ou expirado mostra o erro da API', async ({ page }) => {
+test('link usado ou expirado mostra o erro da API', { tag: '@celular' }, async ({ page }) => {
   await page.goto('/definir-senha?token=link-usado')
+  await expect(page.getByRole('button')).not.toHaveCount(0)
+  await semRolagemHorizontal(page)
   await page.getByLabel('Nova senha').fill('senha-nova-123')
   await page.getByLabel('Confirmar senha').fill('senha-nova-123')
   await page.getByRole('button', { name: 'Definir senha' }).click()
@@ -39,7 +42,7 @@ test('link usado ou expirado mostra o erro da API', async ({ page }) => {
   await expect(page).toHaveURL(/\/definir-senha\?token=link-usado$/)
 })
 
-test('senha curta é barrada com aviso no campo', async ({ page }) => {
+test('senha curta é barrada com aviso no campo', { tag: '@celular' }, async ({ page }) => {
   await page.goto('/definir-senha?token=link-valido')
   await page.getByLabel('Nova senha').fill('curta')
   await page.getByLabel('Confirmar senha').fill('curta')

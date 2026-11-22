@@ -20,6 +20,18 @@ export const rotas: RouteObject[] = [
           { path: '/metodologia', element: <MetodologiaPage /> },
           { path: '/minha-senha', element: <MinhaSenhaPage /> },
           {
+            path: '/indicadores',
+            lazy: async () => ({
+              Component: (await import('@/features/indicadores/IndicadoresPage')).IndicadoresPage,
+            }),
+          },
+          {
+            path: '/relatorios',
+            lazy: async () => ({
+              Component: (await import('@/features/relatorios/RelatoriosPage')).RelatoriosPage,
+            }),
+          },
+          {
             path: '/resultados/:campanhaId',
             lazy: async () => ({
               Component: (await import('@/features/resultados/ResultadoCampanhaPage'))

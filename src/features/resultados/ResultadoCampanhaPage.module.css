@@ -1,5 +1,94 @@
 .acoes {
-  display: grid;
-  justify-items: end;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: flex-start;
   gap: var(--espaco-2);
+}
+
+/* o erro do download ocupa a linha toda, abaixo dos botões */
+.acoes > [role='alert'] {
+  flex-basis: 100%;
+}
+
+/* Só aparece no relatório impresso (ou salvo em PDF). */
+.cabecalhoImpressao {
+  display: none;
+}
+
+.notaMetodologica {
+  display: grid;
+  gap: var(--espaco-2);
+  padding: var(--espaco-5) var(--espaco-6);
+  border: 1px solid var(--cor-borda-suave);
+  border-radius: var(--raio-card);
+  background: var(--cor-superficie-suave);
+  color: var(--cor-texto-suave);
+  font: var(--tipo-pequeno);
+}
+
+.notaMetodologica h2 {
+  color: var(--cor-texto-forte);
+  font: var(--tipo-rotulo);
+}
+
+.notaMetodologica p {
+  max-width: 90ch;
+}
+
+.emissao {
+  display: none;
+}
+
+@media print {
+  .pagina {
+    color: #000;
+  }
+
+  .cabecalhoImpressao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #9aa9a8;
+    font: var(--tipo-pequeno);
+    text-align: right;
+  }
+
+  .logos {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .pagina h1 {
+    margin-top: 6px;
+    font-size: 24pt;
+    line-height: 1.1;
+  }
+
+  .acoes,
+  .naoImprimir {
+    display: none;
+  }
+
+  .emissao {
+    display: block;
+  }
+
+  .notaMetodologica {
+    break-inside: avoid;
+    background: none;
+    color: #000;
+  }
+
+  .pagina section,
+  .pagina tr {
+    break-inside: avoid;
+  }
+
+  .pagina h2 {
+    break-after: avoid;
+  }
 }

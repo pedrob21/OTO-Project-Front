@@ -5,6 +5,7 @@ import { MemoryRouter } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext, type Auth } from '@/features/auth/AuthContext'
 import { ResponderPesquisaPage } from './ResponderPesquisaPage'
+import { violacoesDeAcessibilidade } from '@/test/acessibilidade'
 
 type Resposta = { status?: number; corpo?: unknown }
 let rotas: Record<string, Resposta | Resposta[]>
@@ -153,6 +154,13 @@ describe('ResponderPesquisaPage', () => {
     ).toHaveValue('72,5')
   })
 
+  it('não tem violações de acessibilidade', async () => {
+    abrir()
+    await screen.findByText('Falta 1 de 2 respostas.')
+
+    expect(await violacoesDeAcessibilidade()).toEqual([])
+  })
+
   it('resposta ainda não enviada começa com os campos vazios, e não com "—"', async () => {
     abrir()
     const pousada = await screen.findByRole('listitem', { name: 'Pousada do Sol' })
@@ -272,6 +280,58 @@ describe('ResponderPesquisaPage', () => {
     await within(pousada).findByRole('alert')
     expect(within(pousada).getByLabelText('Taxa de ocupação (%)')).toHaveValue('68,5')
     expect(within(pousada).getByLabelText(/Diária média/)).toHaveValue('380,90')
+  })
+
+  it('depois do limite da API, o formulário fica só em leitura e orienta o parceiro', async () => {
+    rotas['GET /api/respostas/pendencias'] = {
+      corpo: [
+        {
+          ...PENDENTE,
+          prazoResposta: '2026-10-01',
+          respostasAte: '2026-10-31',
+          aceitaResposta: false,
+        },
+        {
+          ...RESPONDIDA,
+          prazoResposta: '2026-10-01',
+          respostasAte: '2026-10-31',
+          aceitaResposta: false,
+        },
+      ],
+    }
+    abrir()
+    const pousada = await screen.findByRole('listitem', { name: 'Pousada do Sol' })
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'O prazo para responder terminou em 31/10/2026. Para enviar ou corrigir a resposta, fale com a equipe do OTO.',
+    )
+    expect(within(pousada).getByLabelText('Taxa de ocupação (%)')).toBeDisabled()
+    expect(within(pousada).getByLabelText(/Diária média/)).toBeDisabled()
+    expect(within(pousada).getByRole('button', { name: 'Enviar resposta' })).toBeDisabled()
+    expect(within(pousada).getByText('Sem resposta')).toBeInTheDocument()
+    const hotel = estabelecimento('Hotel das Águas')
+    expect(within(hotel).queryByText(/Você pode corrigir/)).not.toBeInTheDocument()
+    expect(puts()).toHaveLength(0)
+  })
+
+  it('depois do prazo e dentro do limite, avisa até quando ainda dá para responder', async () => {
+    rotas['GET /api/respostas/pendencias'] = {
+      corpo: [
+        {
+          ...PENDENTE,
+          prazoResposta: '2026-11-10',
+          respostasAte: '2026-12-10',
+          aceitaResposta: true,
+        },
+      ],
+    }
+    abrir()
+    const pousada = await screen.findByRole('listitem', { name: 'Pousada do Sol' })
+
+    expect(
+      screen.getByText('O prazo terminou, mas você ainda pode responder até 10/12/2026.'),
+    ).toBeInTheDocument()
+    expect(within(pousada).getByLabelText('Taxa de ocupação (%)')).toBeEnabled()
   })
 
   it('erro de campo da API aparece no campo', async () => {

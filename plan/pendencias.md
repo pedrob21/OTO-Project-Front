@@ -11,16 +11,14 @@ Levantamento feito a partir do Documento de Requisitos e do Plano de Testes, com
 | 1 | Ligar os botões "Acompanhamento completo", "Ver pendências" e "Lançar resposta" do cartão de pesquisas do painel | RF-35 (Should) | Links para o acompanhamento e o lançamento, que já existem |
 | 2 | Painel com dados reais (T15): seletor de campanha, filtro por tipo, destaque, resumo, ocupação mensal, faixas, fluxo, expectativa x realizado e desempenho por tipo | RF-25, RF-27 a RF-34 (Must e Should) | Os componentes já existem; trocar `fixtures.ts` pelas chamadas, como no cartão de pesquisas |
 | 3 | Inventário do ADMIN: catálogo de grupos e itens e o inventário de cada estabelecimento | RF-06 (Must) | Catálogo como "Referências" (abas, tabela e diálogo); inventário do estabelecimento como "Capacidades" |
-| 4 | Área Relatórios: campanhas publicadas com link para o resultado e "Baixar CSV" | RF-24 (Must) e RF-39 (Should) | Lista igual à de rodadas, com o `BaixarCsvButton` |
-| 5 | Área Indicadores: série por indicador e tipo, em gráfico e tabela | RF-24 (Must) | `OcupacaoMensalCard` e filtros do painel |
 | 6 | Meu estabelecimento do PARCEIRO: dados, nova capacidade e inventário | RF-07 (Should) | Formulários de Cadastros, um card por estabelecimento como em "Responder pesquisa" |
 | 7 | Diárias informadas pela equipe na prévia (`/api/campanhas/{id}/diarias`) | RF-18 a RF-21 | Um bloco a mais na `PreviaPage` |
-| 8 | Responsividade em 360 px e tablet, incluindo tabelas e diálogos | RNF-01 | Ajustes de CSS |
-| 9 | Acessibilidade: `vitest-axe` nas páginas e correções AA | RNF-06 e FE-10 | Um teste por página |
+| 8 | Responsividade das telas do ADMIN em 360 px e tablet, incluindo tabelas e diálogos de Cadastros (cabeçalho, telas do parceiro, Relatórios e Indicadores já feitos) | RNF-01 | Mesmos pontos de quebra (1180 e 600 px) e o teste `semRolagemHorizontal` |
+| 9 | Acessibilidade: estender a checagem do axe-core às telas do ADMIN e auditar o contraste no navegador | RNF-06 e FE-10 | `violacoesDeAcessibilidade` em `src/test/acessibilidade.ts` |
 | 10 | E2E-08 (sessão expirada e botão voltar) e checagem do `schema.d.ts` na CI | E2E-08 e FE-09 | Padrão dos specs atuais |
 | 11 | Otimização: código dividido por rota, favicon e Lighthouse | T18 | |
 
-Telas inteiras que ainda não existem: Inventário (ADMIN), Meu estabelecimento (PARCEIRO), Indicadores e Relatórios.
+Todas as telas do menu já existem.
 
 Decisões em aberto do README que o front pode fechar sozinho, sem Figma:
 
@@ -34,11 +32,9 @@ Decisões em aberto do README que o front pode fechar sozinho, sem Figma:
 
 | Item | Requisito (prioridade) | O que falta no back |
 |---|---|---|
-| Boletim em PDF | RF-37 (Must) | Endpoint de geração |
+| Boletim em PDF no formato da Secretaria | RF-37 (Must) | Endpoint de geração. Enquanto isso, o resultado tem "Gerar relatório (PDF)" pela impressão do navegador |
 | Indicadores semestrais | RF-40 (Must) | Período semestral |
 | "Comparar com" mês anterior e média histórica do mês | RF-26 (Must) | As duas comparações |
-| Prazo do parceiro com `aceitaResposta` e `respostasAte` | RF-12 (Must) | Merge do PR #3 do back, depois `npm run api:tipos` |
-| Resultado com 422 para campanha não publicada e 404 para inexistente | RF-23 | Merge do PR #4 do back |
 | Exportar Excel | RF-38 (Should) | Endpoint `.xlsx` |
 | Inventário em lote | RF-08 (Could) | Endpoint de importação |
 | Link de resposta por parceiro e campanha | RF-11 (Must) | Endpoint e regra do link |
@@ -54,6 +50,11 @@ Decisões em aberto do README que o front pode fechar sozinho, sem Figma:
 | RF-23 e RF-39: resultado da campanha com sigilo e CSV | #26 e #23 |
 | RF-36: metodologia | #23 |
 | Remoção das duplicações entre pesquisas e cadastros | #27 |
+| RF-12: bloqueio do parceiro depois do limite de resposta (`aceitaResposta` e `respostasAte`) | `feat/plano-essencial` |
+| RF-23: resultado com 422 (não publicada) e 404 (inexistente) | `feat/plano-essencial` |
+| RF-24 e RF-39: Relatórios com filtros, CSV e versão para impressão em PDF | `feat/plano-essencial` |
+| RF-24: Indicadores mês a mês e por feriado, em gráfico e tabela | `feat/plano-essencial` |
+| RNF-01 e RNF-06 (parte): menu recolhível, telas do parceiro em 360 px e tablet, axe-core nos testes | `feat/plano-essencial` |
 
 ## Back
 

@@ -2,6 +2,7 @@ import { act, fireEvent, render, renderHook, screen } from '@testing-library/rea
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { GraficoLinhasMensal, type SerieMensal } from './GraficoLinhasMensal'
+import { escalaAutomatica } from './escala'
 import { useLargura } from './useLargura'
 
 const ATUAL: SerieMensal = {
@@ -153,6 +154,30 @@ describe('GraficoLinhasMensal', () => {
     act(() => observadores[0]?.callback([{ contentRect: { width: 400 } }]))
 
     expect(container.querySelector('svg')).toHaveAttribute('width', '400')
+  })
+})
+
+describe('GraficoLinhasMensal com outra escala', () => {
+  it('usa as marcas e o formato do indicador', () => {
+    const { container } = render(
+      <GraficoLinhasMensal
+        series={[
+          {
+            nome: '2026',
+            cor: 'red',
+            valores: [400, 500, null, null, null, null, null, null, null, null, null, 812.4],
+          },
+        ]}
+        rotulo="Diária"
+        escala={escalaAutomatica(812.4, (valor) => `R$ ${valor}`, 56)}
+        formatarValor={(valor) => `R$ ${valor}`}
+      />,
+    )
+
+    const marcas = [...container.querySelectorAll('text')].map((texto) => texto.textContent)
+    expect(marcas).toEqual(expect.arrayContaining(['R$ 0', 'R$ 500', 'R$ 1000']))
+    expect(marcas.some((marca) => marca?.endsWith('%'))).toBe(false)
+    expect(container.textContent).toContain('R$ 812.4')
   })
 })
 

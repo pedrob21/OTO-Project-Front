@@ -1356,8 +1356,6 @@ export interface components {
             telefonePesquisas?: string;
             /** Format: email */
             emailPesquisas?: string;
-            destinoInteligente?: boolean;
-            dadosPddt?: boolean;
         };
         CapacidadeResponse: {
             /** Format: int64 */
@@ -1644,6 +1642,9 @@ export interface components {
             rodadaCodigo?: string;
             /** Format: date */
             prazoResposta?: string;
+            /** Format: date */
+            respostasAte?: string;
+            aceitaResposta?: boolean;
             /** Format: int64 */
             estabelecimentoId?: number;
             nomeFantasia?: string;

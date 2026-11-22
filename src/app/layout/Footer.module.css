@@ -39,3 +39,33 @@
   padding-left: 43px;
   line-height: 19.5px;
 }
+
+@media print {
+  .rodape {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .conteudo {
+    grid-template-columns: 1fr auto;
+    gap: var(--espaco-4);
+    padding-block: var(--espaco-5);
+  }
+
+  .instituicao,
+  .nota {
+    padding-top: 0;
+  }
+
+  .nota {
+    grid-column: 1 / -1;
+    padding-left: 0;
+  }
+
+  .selo {
+    width: 72px;
+    height: auto;
+    margin-top: 0;
+  }
+}

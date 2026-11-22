@@ -79,3 +79,17 @@ a {
     scroll-behavior: auto !important;
   }
 }
+
+/* Relatório impresso ou salvo em PDF: fundo branco e cores das barras e faixas preservadas. */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 12mm;
+  }
+
+  body {
+    background: #fff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

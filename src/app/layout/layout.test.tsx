@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext, type Auth } from '@/features/auth/AuthContext'
+import { violacoesDeAcessibilidade } from '@/test/acessibilidade'
 import { AppLayout } from './AppLayout'
 
 function abrir(sobrescrever: Partial<Auth> = {}) {
@@ -82,19 +83,81 @@ describe('menu principal', () => {
     expect(screen.queryByText('Meu estabelecimento')).not.toBeInTheDocument()
   })
 
-  it('páginas que ainda não existem aparecem desativadas', () => {
+  it('Relatórios é link para todos os perfis', () => {
+    abrir({ usuario: { nome: 'Vera', perfil: 'VISUALIZADOR' } })
+
+    expect(screen.getByRole('link', { name: 'Relatórios' })).toHaveAttribute('href', '/relatorios')
+  })
+
+  it('Indicadores é link para todos os perfis', () => {
+    abrir({ usuario: { nome: 'Paula', perfil: 'PARCEIRO' } })
+
+    expect(screen.getByRole('link', { name: 'Indicadores' })).toHaveAttribute(
+      'href',
+      '/indicadores',
+    )
+  })
+
+  it('nenhum item do menu fica desativado', () => {
     abrir()
 
-    for (const nome of ['Indicadores', 'Relatórios']) {
-      expect(screen.getByRole('button', { name: nome })).toBeDisabled()
-    }
+    for (const botao of screen.queryAllByRole('button')) expect(botao).toBeEnabled()
   })
 
   it('filtra pelo perfil', () => {
     abrir({ usuario: { nome: 'Vera', perfil: 'VISUALIZADOR' } })
 
-    expect(screen.queryByRole('button', { name: 'Pesquisas' })).not.toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Indicadores' })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Pesquisas' })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Indicadores' })).toBeInTheDocument()
+  })
+})
+
+describe('menu recolhido (celular e tablet)', () => {
+  const botaoMenu = () => screen.getByRole('button', { name: 'Menu' })
+
+  it('o botão abre e fecha o painel com a navegação', async () => {
+    abrir()
+    const painel = document.getElementById(botaoMenu().getAttribute('aria-controls')!)!
+    expect(botaoMenu()).toHaveAttribute('aria-expanded', 'false')
+    expect(painel).toContainElement(screen.getByRole('navigation', { name: 'Principal' }))
+    expect(painel).toHaveAttribute('data-aberto', 'false')
+
+    await userEvent.click(botaoMenu())
+
+    expect(botaoMenu()).toHaveAttribute('aria-expanded', 'true')
+    expect(painel).toHaveAttribute('data-aberto', 'true')
+
+    await userEvent.click(botaoMenu())
+    expect(botaoMenu()).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('Esc fecha e devolve o foco ao botão', async () => {
+    abrir()
+    await userEvent.click(botaoMenu())
+    screen.getByRole('link', { name: 'Painel' }).focus()
+
+    await userEvent.keyboard('{Escape}')
+
+    expect(botaoMenu()).toHaveAttribute('aria-expanded', 'false')
+    expect(botaoMenu()).toHaveFocus()
+  })
+
+  it('fecha ao trocar de página', async () => {
+    abrir()
+    await userEvent.click(botaoMenu())
+    await userEvent.click(screen.getByRole('button', { name: 'Cadastros' }))
+
+    await userEvent.click(screen.getByRole('link', { name: 'Usuários' }))
+
+    expect(await screen.findByText('tela de usuários')).toBeInTheDocument()
+    expect(botaoMenu()).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('o cabeçalho, com o menu aberto, não tem violações de acessibilidade', async () => {
+    abrir({ usuario: { nome: 'Paula', perfil: 'PARCEIRO' } })
+    await userEvent.click(botaoMenu())
+
+    expect(await violacoesDeAcessibilidade(document.body, { verificarRegioes: true })).toEqual([])
   })
 })
 

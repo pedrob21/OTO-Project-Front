@@ -34,8 +34,8 @@ export const ITENS_MENU: ItemMenu[] = [
     temSubmenu: true,
   },
   { rotulo: 'Meu estabelecimento', para: '/meu-estabelecimento', perfis: ['PARCEIRO'] },
-  { rotulo: 'Indicadores', temSubmenu: true },
-  { rotulo: 'Relatórios', temSubmenu: true },
+  { rotulo: 'Indicadores', para: '/indicadores' },
+  { rotulo: 'Relatórios', para: '/relatorios' },
   { rotulo: 'Cadastros', perfis: ['ADMIN'], temSubmenu: true, submenu: SUBMENU_CADASTROS },
 ]
 

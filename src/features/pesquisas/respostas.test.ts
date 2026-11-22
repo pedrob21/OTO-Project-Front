@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { formatarDataHora } from '@/lib/formatos'
 import {
   autorDaVersao,
+  avisoDoPrazo,
   campanhasParaResponder,
   errosDaResposta,
   faixaDaTaxa,
@@ -10,6 +11,7 @@ import {
   paraRespostaRequest,
   resumoDasPendencias,
   textoDaDiaria,
+  textoDoLimite,
 } from './respostas'
 
 const FAIXAS = [
@@ -133,12 +135,71 @@ describe('campanhasParaResponder', () => {
     expect(campanha?.prazoVencido).toBe(true)
   })
 
+  it('traz o limite de resposta calculado pela API', () => {
+    const [campanha] = campanhasParaResponder(
+      [
+        {
+          ...pendencia(1, 'Hotel A', '2026-10-01'),
+          respostasAte: '2026-10-31',
+          aceitaResposta: false,
+        },
+      ],
+      '2026-11-20',
+    )
+    expect(campanha).toMatchObject({ respostasAte: '2026-10-31', aceitaResposta: false })
+  })
+
+  it('sem o campo da API, continua aceitando resposta', () => {
+    const [campanha] = campanhasParaResponder([pendencia(1, 'Hotel A', '2026-11-19')], '2026-11-20')
+    expect(campanha?.aceitaResposta).toBe(true)
+  })
+
   it('resume o que falta', () => {
     expect(resumoDasPendencias([pendencia(1, 'A', 'x'), pendencia(1, 'B', 'x', true)])).toBe(
       'Falta 1 de 2 respostas.',
     )
     expect(resumoDasPendencias([pendencia(1, 'A', 'x', true)])).toMatch(/^Todas as respostas/)
     expect(resumoDasPendencias([])).toBe('')
+  })
+})
+
+describe('avisoDoPrazo', () => {
+  it('dentro do prazo, não avisa nada', () => {
+    expect(
+      avisoDoPrazo({ prazoVencido: false, aceitaResposta: true, respostasAte: '2026-12-30' }),
+    ).toBeNull()
+  })
+
+  it('depois do prazo, mostra até quando ainda dá para responder', () => {
+    expect(
+      avisoDoPrazo({ prazoVencido: true, aceitaResposta: true, respostasAte: '2026-12-30' }),
+    ).toBe('O prazo terminou, mas você ainda pode responder até 30/12/2026.')
+  })
+
+  it('depois do limite, orienta a falar com a equipe do OTO', () => {
+    expect(
+      avisoDoPrazo({ prazoVencido: true, aceitaResposta: false, respostasAte: '2026-10-31' }),
+    ).toBe(
+      'O prazo para responder terminou em 31/10/2026. Para enviar ou corrigir a resposta, fale com a equipe do OTO.',
+    )
+  })
+})
+
+describe('textoDoLimite', () => {
+  const base = { prazoResposta: '2026-11-30', respostasAte: '2026-12-30', aceitaResposta: true }
+
+  it('antes do prazo, mostra o prazo oficial', () => {
+    expect(textoDoLimite(base, '2026-11-20')).toBe('Prazo de resposta: 30/11/2026 · faltam 10 dias')
+  })
+
+  it('depois do prazo, mostra o limite de resposta', () => {
+    expect(textoDoLimite(base, '2026-12-05')).toBe('Prazo encerrado · respostas até 30/12/2026')
+  })
+
+  it('depois do limite, avisa que encerrou', () => {
+    expect(textoDoLimite({ ...base, aceitaResposta: false }, '2027-01-05')).toBe(
+      'Prazo para responder encerrado',
+    )
   })
 })
 

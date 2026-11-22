@@ -2,6 +2,7 @@ import { area, line } from 'd3-shape'
 import { useState, type KeyboardEvent, type PointerEvent } from 'react'
 import { formatarMes, formatarMesCurto, formatarPercentual } from '@/lib/formatos'
 import styles from './GraficoLinhasMensal.module.css'
+import { ESCALA_PERCENTUAL, type EscalaY } from './escala'
 import { useLargura } from './useLargura'
 
 export type SerieMensal = {
@@ -17,30 +18,38 @@ type GraficoLinhasMensalProps = {
   /** a primeira série é a principal: leva a área e o rótulo no último ponto */
   series: SerieMensal[]
   rotulo: string
+  /** sem escala, de 0% a 100%, como a taxa de ocupação */
+  escala?: EscalaY
+  /** o valor no rótulo do último ponto e na leitura do mês; sem ele, percentual */
+  formatarValor?: (valor: number | null | undefined) => string
 }
 
 const ALTURA = 275
 const LARGURA_INICIAL = 747
-const INICIO_GRADE = 48
-const PRIMEIRO_MES = 77.5
+const LARGURA_MARCAS = 36
 const FOLGA_DIREITA = 29
 const TOPO = 14.25
 const BASE = 248.5
-const MARCAS_Y = [0, 25, 50, 75, 100]
 const MESES = Array.from({ length: 12 }, (_, indice) => indice)
 const LARGURA_LEITURA = 150
-
-function posicaoY(valor: number): number {
-  return BASE - (valor / 100) * (BASE - TOPO)
-}
 
 function temValor(valor: number | null | undefined): valor is number {
   return valor !== null && valor !== undefined
 }
 
-export function GraficoLinhasMensal({ series, rotulo }: GraficoLinhasMensalProps) {
+export function GraficoLinhasMensal({
+  series,
+  rotulo,
+  escala = ESCALA_PERCENTUAL,
+  formatarValor = formatarPercentual,
+}: GraficoLinhasMensalProps) {
   const { ref, largura } = useLargura<HTMLDivElement>(LARGURA_INICIAL)
   const [mesAtivo, setMesAtivo] = useState<number | null>(null)
+
+  const larguraMarcas = escala.larguraMarcas ?? LARGURA_MARCAS
+  const INICIO_GRADE = larguraMarcas + 12
+  const PRIMEIRO_MES = larguraMarcas + 41.5
+  const posicaoY = (valor: number) => BASE - (valor / escala.maximo) * (BASE - TOPO)
 
   const passo = (largura - FOLGA_DIREITA - PRIMEIRO_MES) / 11
   const posicaoX = (mes: number) => PRIMEIRO_MES + mes * passo
@@ -96,7 +105,7 @@ export function GraficoLinhasMensal({ series, rotulo }: GraficoLinhasMensalProps
           <path className={styles.area} d={desenharArea(principal.valores) ?? undefined} />
         )}
 
-        {MARCAS_Y.map((marca) => (
+        {escala.marcas.map((marca) => (
           <g key={marca}>
             <line
               className={marca === 0 ? styles.base : styles.grade}
@@ -105,8 +114,13 @@ export function GraficoLinhasMensal({ series, rotulo }: GraficoLinhasMensalProps
               y1={posicaoY(marca)}
               y2={posicaoY(marca)}
             />
-            <text className={styles.marcaY} x={36} y={posicaoY(marca) + 3} textAnchor="end">
-              {marca}%
+            <text
+              className={styles.marcaY}
+              x={larguraMarcas}
+              y={posicaoY(marca) + 3}
+              textAnchor="end"
+            >
+              {escala.formatarMarca(marca)}
             </text>
           </g>
         ))}
@@ -146,7 +160,7 @@ export function GraficoLinhasMensal({ series, rotulo }: GraficoLinhasMensalProps
               y={posicaoY(ultimoValor) - 10}
               textAnchor={rotuloNaEsquerda ? 'end' : 'start'}
             >
-              <tspan className={styles.rotuloValor}>{formatarPercentual(ultimoValor)}</tspan>{' '}
+              <tspan className={styles.rotuloValor}>{formatarValor(ultimoValor)}</tspan>{' '}
               <tspan>{formatarMesCurto(ultimoMes + 1).toLowerCase()}.</tspan>
             </text>
           </g>
@@ -196,7 +210,7 @@ export function GraficoLinhasMensal({ series, rotulo }: GraficoLinhasMensalProps
             {series.map((serie) => (
               <li key={serie.nome} className={styles.leituraLinha}>
                 <span className={styles.leituraTraco} style={{ background: serie.cor }} />
-                <strong>{formatarPercentual(serie.valores[mesAtivo])}</strong>
+                <strong>{formatarValor(serie.valores[mesAtivo])}</strong>
                 <span className={styles.leituraNome}>{serie.nome}</span>
               </li>
             ))}

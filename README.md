@@ -5,7 +5,7 @@ Interface web do **Observatório de Turismo de Olímpia (OTO)**. Reúne, em um p
 A API fica no repositório [OTO-Project](https://github.com/pedrob21/OTO-Project) (Spring Boot e PostgreSQL).
 
 > [!IMPORTANT]
-> **Em desenvolvimento.** O login, a definição de senha, o fluxo das pesquisas (da criação à publicação), o resultado de cada campanha, os cadastros do ADMIN e o painel de indicadores já usam a API. Faltam a responsividade, a acessibilidade e a revisão final, nas [próximas tasks](#próximas-tasks).
+> **Em desenvolvimento.** O login, a definição de senha, o fluxo das pesquisas (da criação à publicação), o resultado de cada campanha, os relatórios, os indicadores, os cadastros do ADMIN e o painel já usam a API. As telas do parceiro funcionam em celular e tablet. Faltam a adaptação das telas do ADMIN ao celular, a auditoria WCAG AA completa e a revisão final, nas [próximas tasks](#próximas-tasks).
 
 ## Sumário
 
@@ -26,14 +26,18 @@ A API fica no repositório [OTO-Project](https://github.com/pedrob21/OTO-Project
 - Login com JWT, expiração de sessão e controle de acesso por perfil
 - Definição de senha por link (`/definir-senha?token=...`), usada no convite e na redefinição, e troca da própria senha pelo menu do usuário (`/minha-senha`)
 - Página "Como calculamos a taxa de ocupação e o fluxo de turistas" (`/metodologia`), para todos os perfis
-- Cabeçalho, menu, rodapé, e cabeçalho e filtros fixos durante a rolagem
+- Cabeçalho, menu, rodapé, e cabeçalho e filtros fixos durante a rolagem. Abaixo de 1180 px, o menu fica recolhido no botão "Menu" (fecha com Esc ou ao trocar de página), e no celular o usuário aparece só pelas iniciais
+- Telas do parceiro em celular (360 px) e tablet: login, definição de senha, resposta às pesquisas e Meu estabelecimento, sem rolagem horizontal
 - Criação de pesquisa com campanhas (modalidade, período, diárias e prazo), só para o ADMIN, em `/pesquisas/nova`
 - Fluxo das pesquisas com os parceiros:
   - lista das rodadas com filtro por situação (rascunho, aberta, encerrada e publicada), em `/pesquisas`
   - acompanhamento da rodada, com a taxa de resposta por estabelecimentos e por leitos, o mínimo de 70% para publicar e as ações de abrir, prorrogar, encerrar (com confirmação) e reabrir, em `/pesquisas/:id`
   - lançamento da resposta pelo ADMIN: lança ou corrige a resposta de um estabelecimento a partir do acompanhamento, com a versão enviada e o histórico. Um erro da API não apaga o que foi digitado
   - prévia e publicação da campanha, com os impedimentos ligados ao botão "Publicar" e o cancelamento da publicação, em `/pesquisas/:id/campanhas/:campanhaId/previa`
-- Resultado publicado de cada campanha, para todos os perfis, com a ocultação por sigilo e o botão "Baixar CSV", em `/resultados/:campanhaId`
+- Resposta do parceiro com o limite da API: depois do prazo, o aviso mostra até quando ainda dá para responder (`respostasAte`); passado esse limite (`aceitaResposta: false`), o formulário fica bloqueado e o aviso manda falar com a equipe do OTO. O ADMIN continua lançando pelo acompanhamento
+- Resultado publicado de cada campanha, para todos os perfis, com a ocultação por sigilo e os botões "Gerar relatório (PDF)" e "Baixar CSV", em `/resultados/:campanhaId`. Campanha ainda não publicada (422) e campanha inexistente (404) têm avisos diferentes
+- Relatórios, para todos os perfis, em `/relatorios`: as campanhas publicadas com filtros de modalidade, período e ano (guardados na URL), a taxa com a faixa e o fluxo de cada uma, e os botões "Ver relatório" e "Baixar CSV". O PDF sai da impressão do navegador ("Gerar relatório (PDF)" no resultado): a versão impressa tem cabeçalho com os logos, os indicadores, o desempenho por tipo e a nota metodológica, sem menu nem botões
+- Indicadores, para todos os perfis, em `/indicadores`: taxa de ocupação, fluxo de turistas ou diária média mês a mês (gráfico dos três anos mais recentes do intervalo, ou tabela com todos) e nos feriados ano a ano, por modalidade e intervalo de até 20 anos. Os valores da série histórica importada levam a marca "H"
 - Meu estabelecimento, só para o PARCEIRO, no item "Meu estabelecimento" do menu, em `/meu-estabelecimento`. Um cartão por estabelecimento dele:
   - dados cadastrais e da Secretaria em leitura; "Editar dados" abre o formulário só com os dados cadastrais, porque o bloco da Secretaria é só do ADMIN
   - capacidade vigente e histórico em leitura, com "Informar nova capacidade" para uma nova vigência; corrigir e excluir continuam só do ADMIN
@@ -127,7 +131,7 @@ Se o navegador acusar erro de CORS, confira `CORS_ORIGENS` no `.env` do backend.
 | `npm run format:check` | Confere a formatação sem alterar arquivos |
 | `npm test` | Roda os testes uma vez |
 | `npm run test:watch` | Roda os testes em modo de observação |
-| `npm run test:e2e` | Roda os testes e2e (Playwright) com a API simulada |
+| `npm run test:e2e` | Roda os testes e2e (Playwright) com a API simulada, no desktop e, os marcados com `@celular`, também em celular (360 px) e tablet (768 px) |
 | `npm run test:e2e:headed` | Roda os testes e2e com o navegador visível, um teste por vez |
 | `npm run api:tipos` | Gera `src/api/schema.d.ts` de novo. Precisa da API no ar |
 
@@ -143,7 +147,10 @@ npm run test:e2e:headed                          # navegador visível, um teste 
 npm run test:e2e -- --ui                         # interface do Playwright, com timeline e passo a passo
 npm run test:e2e -- --debug                      # inspector, pausando em cada ação
 npm run test:e2e -- e2e/login.spec.ts --headed   # só um arquivo
+npm run test:e2e -- --project=celular            # só as telas do parceiro no celular
 ```
+
+Os testes das telas do parceiro levam a marca `@celular` e rodam também nos projetos `celular` e `tablet`. Para clicar no menu, use `irPeloMenu` (`e2e/navegacao.ts`), que abre o menu recolhido quando ele existe; `semRolagemHorizontal` confere que a página cabe na tela.
 
 Antes dos testes, o Playwright gera o build e sobe o `npm run preview` na porta 4173. Fora do CI, se já houver um servidor nessa porta, ele é reaproveitado e os testes rodam contra o build antigo; derrube esse servidor depois de mudar o código.
 
@@ -198,22 +205,18 @@ Com o servidor local no ar, os tokens e os componentes podem ser conferidos ao l
 - **Sessão:** o token fica no `sessionStorage`. Uma resposta 401 a uma chamada autenticada encerra a sessão.
 - **Erros da API:** seguem o formato Problem Details (RFC 9457). Nos formulários, os `campos` da resposta marcam cada campo, e as regras recusadas com 422 que dizem respeito a um campo, como o e-mail repetido, também vão para ele.
 - **Cadastros:** lista em tabela e formulário em diálogo, que devolve o foco a quem o abriu. Números aceitam vírgula ou ponto decimal, e as regras de validação são as mesmas da API.
-- **Acessibilidade:** os gráficos têm alternativa em texto ou tabela, e a informação não depende só da cor.
+- **Acessibilidade:** os gráficos têm alternativa em texto ou tabela, e a informação não depende só da cor. Os testes das telas do parceiro, de Relatórios, Indicadores, resultado, login e cabeçalho rodam o axe-core (`violacoesDeAcessibilidade`, em `src/test/acessibilidade.ts`); o contraste fica de fora no jsdom.
 
 ## Próximas tasks
 
 | Task | Entrega | Pronto quando | Depende de |
 |---|---|---|---|
-| **T17. Responsividade e acessibilidade** | Adaptar para tablet e celular, inclusive as tabelas e os diálogos de Cadastros, corrigir os ajustes pendentes em 1280 px e fazer a auditoria WCAG AA | Sem rolagem horizontal da página em 360 px e sem falhas AA abertas | — |
+| **T17. Responsividade e acessibilidade (restante)** | O cabeçalho, as telas do parceiro, Relatórios e Indicadores já se adaptam. Falta adaptar as telas do ADMIN (pesquisas, prévia e Cadastros, com tabelas e diálogos), corrigir os ajustes pendentes em 1280 px e fazer a auditoria WCAG AA com contraste no navegador | Sem rolagem horizontal da página em 360 px e sem falhas AA abertas | — |
 | **T18. Otimização e revisão final** | Dividir o código por rota, otimizar fontes e imagens, analisar o tamanho do pacote, adicionar favicon e comparar a tela inteira com o design | Lighthouse medido e registrado, sem pendências visuais abertas | T17 |
-
-Ainda sem task definida: as telas de Indicadores e Relatórios, que hoje aparecem desativadas no menu.
 
 Pendências do fluxo das pesquisas:
 
-- Quando a branch `feature/testes-cucumber` do backend entrar na `main` dele, rodar `npm run api:tipos` e usar `aceitaResposta` e `respostasAte` da pendência para desativar o formulário do parceiro e mostrar "Respostas até dd/mm/aaaa". O cálculo da tolerância fica na API
 - Diárias médias digitadas pela equipe (`/api/campanhas/{id}/diarias`) na prévia
-- Quando a branch `fix/prazos-e-resultado` do backend entrar, `GET /api/campanhas/{id}/resultado` e o `resultado.csv` passam a responder 422 para campanha não publicada e 404 só para campanha inexistente. A `ResultadoCampanhaPage` hoje trata 404 como "ainda não publicada": trocar para 422 e mostrar "campanha não encontrada" no 404
 - Há dois leitores de número digitado: `lerNumero` (`features/pesquisas/respostas.ts`, aceita ponto de milhar e deixa a contagem de casas para a validação) e `lerDecimal` (`lib/numeros.ts`, limita as casas e aceita sinal). Juntar num só quando a tela do parceiro for revista
 
 ## Decisões

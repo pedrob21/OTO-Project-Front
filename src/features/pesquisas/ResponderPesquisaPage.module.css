@@ -36,6 +36,17 @@
   font: var(--tipo-rotulo);
 }
 
+.prazoEncerrado {
+  margin-top: 16px;
+  padding: 10px var(--espaco-3);
+  border: 1px solid var(--cor-borda);
+  border-left: 4px solid var(--cor-negativo);
+  border-radius: var(--raio-chip);
+  background: var(--cor-superficie-suave);
+  color: var(--cor-texto-forte);
+  font: var(--tipo-corpo-forte);
+}
+
 .avisoPrazo {
   margin-top: 16px;
   padding: 10px var(--espaco-3);

@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/Badge'
 import { Card } from '@/components/ui/Card'
 import { EstadoVazio } from '@/components/ui/EstadoVazio'
 import type { Esquemas } from '@/types/dominio'
-import { textoDoPrazo } from '@/lib/datas'
+import { textoDoLimite } from '@/features/pesquisas/respostas'
 import styles from './PesquisasParceirosCard.module.css'
 
 type PendenciasParceiroCardProps = {
@@ -40,13 +40,15 @@ export function PendenciasParceiroCard({ pendencias, hoje, acao }: PendenciasPar
               <span className={styles.textos}>
                 <span className={styles.tituloLinha}>{pendencia.campanhaNome}</span>
                 <span className={styles.detalheLinha}>
-                  {pendencia.nomeFantasia} · {textoDoPrazo(pendencia.prazoResposta, hoje)}
+                  {pendencia.nomeFantasia} · {textoDoLimite(pendencia, hoje)}
                 </span>
               </span>
               {pendencia.respondida ? (
                 <Badge variante="publicada" icone={<IconeCheck tamanho={14} />}>
                   Respondida
                 </Badge>
+              ) : pendencia.aceitaResposta === false ? (
+                <Badge variante="inativa">Sem resposta</Badge>
               ) : (
                 <Badge variante="aberta" icone={<IconeRelogio tamanho={14} />}>
                   Pendente

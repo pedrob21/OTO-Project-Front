@@ -91,3 +91,32 @@ export function IconeCheck(props: IconeProps) {
     </Icone>
   )
 }
+
+export function IconeImpressora(props: IconeProps) {
+  return (
+    <Icone {...props}>
+      <path d="M6 9V3h12v6" />
+      <rect x="3" y="9" width="18" height="8" rx="2" />
+      <path d="M6 14h12v7H6z" />
+    </Icone>
+  )
+}
+
+export function IconeMenu(props: IconeProps) {
+  return (
+    <Icone {...props}>
+      <path d="M4 7h16" />
+      <path d="M4 12h16" />
+      <path d="M4 17h16" />
+    </Icone>
+  )
+}
+
+export function IconeFechar(props: IconeProps) {
+  return (
+    <Icone {...props}>
+      <path d="M6 6l12 12" />
+      <path d="M18 6 6 18" />
+    </Icone>
+  )
+}
