@@ -5,7 +5,7 @@ Interface web do **Observatório de Turismo de Olímpia (OTO)**. Reúne, em um p
 A API fica no repositório [OTO-Project](https://github.com/pedrob21/OTO-Project) (Spring Boot e PostgreSQL).
 
 > [!IMPORTANT]
-> **Concluído.** O login, a definição de senha, o fluxo das pesquisas (da criação à publicação), o resultado de cada campanha, os relatórios, os indicadores, os cadastros do ADMIN e o painel usam a API, e todas as telas funcionam em celular (360 px) e tablet. Não há mais tasks planejadas. O que ficou como melhoria está em [Pendências técnicas](#pendências-técnicas).
+> **Projeto concluído.** Todas as telas previstas estão prontas e usam a API: login, definição de senha, fluxo das pesquisas (da criação à publicação), resultado de cada campanha, relatórios, indicadores, cadastros do ADMIN, Meu estabelecimento e painel. Funcionam em celular (360 px), tablet e desktop, com axe-core, testes e2e e Lighthouse no CI. Não há mais tasks planejadas. O que ficou como melhoria, e o que depende do back, está em [Pendências técnicas](#pendências-técnicas).
 
 ## Sumário
 
@@ -26,6 +26,7 @@ A API fica no repositório [OTO-Project](https://github.com/pedrob21/OTO-Project
 - Login com JWT, expiração de sessão e controle de acesso por perfil
 - Definição de senha por link (`/definir-senha?token=...`), usada no convite e na redefinição, e troca da própria senha pelo menu do usuário (`/minha-senha`)
 - Página "Como calculamos a taxa de ocupação e o fluxo de turistas" (`/metodologia`), para todos os perfis
+- Código dividido por rota (as páginas fora do painel, do login e da metodologia carregam sob demanda), favicon e `meta description`
 - Cabeçalho, menu, rodapé, e cabeçalho e filtros fixos durante a rolagem. Abaixo de 1180 px, o menu fica recolhido no botão "Menu" (fecha com Esc ou ao trocar de página), e no celular o usuário aparece só pelas iniciais
 - Todas as telas em celular (360 px) e tablet, sem rolagem horizontal: as do parceiro (login, definição de senha, resposta às pesquisas e Meu estabelecimento) e as do ADMIN (pesquisas, prévia e Cadastros, com tabelas roláveis dentro do próprio container e diálogos ajustados abaixo de 600 px)
 - Criação de pesquisa com campanhas (modalidade, período, diárias e prazo), só para o ADMIN, em `/pesquisas/nova`
@@ -82,9 +83,12 @@ A referência visual é a [tela exportada do Figma](docs/referencia/painel-oto-d
 | Dados do servidor | TanStack Query 5 |
 | Gráficos | `d3-shape` com SVG próprio |
 | Estilos | CSS Modules e tokens em variáveis CSS |
-| Fontes | Bricolage Grotesque, Public Sans e Open Sans, via Fontsource |
-| Testes | Vitest e Testing Library |
+| Fontes | Bricolage Grotesque, Public Sans e Open Sans, via Fontsource, com fallbacks de `size-adjust` |
+| Testes | Vitest e Testing Library, com cobertura em V8 |
+| Testes e2e | Playwright, com a API simulada, e axe-core |
+| Desempenho | Lighthouse CI |
 | Qualidade | oxlint e Prettier |
+| CI | GitHub Actions: formatação, lint, tipos, testes, build, e2e e Lighthouse, com resumo no pull request |
 | Tipos da API | `openapi-typescript`, gerados a partir do OpenAPI do backend |
 
 ## Como rodar
@@ -127,12 +131,14 @@ Se o navegador acusar erro de CORS, confira `CORS_ORIGENS` no `.env` do backend.
 | `npm run preview` | Serve localmente a versão de produção |
 | `npm run typecheck` | Verifica os tipos |
 | `npm run lint` | Roda o oxlint |
-| `npm run format` | Formata `src` e `dev` |
+| `npm run format` | Formata `src`, `dev` e `e2e` |
 | `npm run format:check` | Confere a formatação sem alterar arquivos |
-| `npm test` | Roda os testes uma vez |
+| `npm test` | Roda os testes unitários uma vez |
+| `npm run test:coverage` | Roda os testes unitários com relatório de cobertura |
 | `npm run test:watch` | Roda os testes em modo de observação |
 | `npm run test:e2e` | Roda os testes e2e (Playwright) com a API simulada, no desktop e, os marcados com `@celular`, também em celular (360 px) e tablet (768 px) |
 | `npm run test:e2e:headed` | Roda os testes e2e com o navegador visível, um teste por vez |
+| `npm run test:e2e:ui` | Abre a interface do Playwright, com timeline e passo a passo |
 | `npm run api:tipos` | Gera `src/api/schema.d.ts` de novo. Precisa da API no ar |
 | `npm run lighthouse` | Gera o build em `artifacts/lighthouse/build/` e roda o Lighthouse CI com a API simulada (ver [Lighthouse](#lighthouse)) |
 
@@ -145,7 +151,7 @@ Por padrão o Playwright roda sem abrir o navegador (headless). Outras formas de
 
 ```bash
 npm run test:e2e:headed                          # navegador visível, um teste por vez
-npm run test:e2e -- --ui                         # interface do Playwright, com timeline e passo a passo
+npm run test:e2e:ui                              # interface do Playwright, com timeline e passo a passo
 npm run test:e2e -- --debug                      # inspector, pausando em cada ação
 npm run test:e2e -- e2e/login.spec.ts --headed   # só um arquivo
 npm run test:e2e -- --project=celular            # só as telas do parceiro no celular
@@ -195,15 +201,17 @@ O CLS do painel ainda fica em 0,15 a 0,17 no celular e 0,11 no desktop, por isso
     ├── assets/              # Logos
     ├── components/
     │   ├── charts/          # Gráficos reutilizáveis
-    │   └── ui/              # Botão, cartão, select, selo, tabela, diálogo, estados de vazio e de erro
+    │   └── ui/              # Botão, cartão, campos, selo, tabela, diálogo, confirmação, barra de progresso, estados de carregamento, vazio e erro
     ├── features/
     │   ├── auth/            # Contexto de sessão, login, definição e troca de senha e proteção de rotas
     │   ├── cadastros/       # Telas de cadastro do ADMIN, com formulário em diálogo (inclui o catálogo do inventário em `inventario/`)
     │   ├── estabelecimento/ # Meu estabelecimento do PARCEIRO: dados, capacidade e inventário
     │   ├── inventario/      # Editor de inventário de um estabelecimento (`EditorDeInventario`), reaproveitável por outros perfis
+    │   ├── indicadores/     # Indicadores mês a mês e por feriado, em gráfico e tabela
     │   ├── metodologia/     # Página estática do cálculo dos indicadores
     │   ├── painel/          # Página, cartões, regras de cálculo e dados fixos
     │   ├── pesquisas/       # Criação, lista, acompanhamento, resposta, prévia e publicação
+    │   ├── relatorios/      # Relatórios das campanhas publicadas, com filtros e CSV
     │   └── resultados/      # Resultado publicado de uma campanha e download do CSV
     ├── lib/                 # Formatadores pt-BR, leitura de decimais, download e regras de perfil
     ├── styles/              # Tokens do design e estilos globais
@@ -253,10 +261,10 @@ Não há decisões em aberto.
 3. Antes de abrir o pull request, confira se tudo passa:
 
    ```bash
-   npm run format:check && npm run lint && npm test && npm run build && npm run test:e2e
+   npm run format:check && npm run lint && npm run typecheck && npm test && npm run build && npm run test:e2e
    ```
 
-4. Abra o pull request para a `main`, descrevendo a mudança e como testá-la. Em mudanças visuais, compare com a tela de referência.
+4. Abra o pull request para a `main`, descrevendo a mudança e como testá-la. Em mudanças visuais, compare com a tela de referência. O CI roda as mesmas verificações e comenta no pull request o resumo de cobertura e do Lighthouse.
 
 Arquivos `.env` e `.env.*` ficam fora do Git, exceto o `.env.example`. Não envie segredos ao repositório.
 
