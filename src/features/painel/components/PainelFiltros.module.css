@@ -51,3 +51,21 @@
 .exportar button {
   width: 100%;
 }
+
+@media (max-width: 900px) {
+  .filtros {
+    grid-template-columns: 1fr 1fr;
+    row-gap: var(--espaco-3);
+  }
+}
+
+@media (max-width: 600px) {
+  .filtros {
+    position: static;
+    grid-template-columns: 1fr;
+  }
+
+  .filtros::before {
+    content: none;
+  }
+}
