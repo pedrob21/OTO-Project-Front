@@ -1,20 +1,8 @@
 import { expect, test, type Page } from '@playwright/test'
-
-const PARCEIRO = {
-  id: 2,
-  nome: 'Paula Reis',
-  email: 'paula@oto.test',
-  perfil: 'PARCEIRO',
-  ativo: true,
-}
-
-const RESUMO = (id: number, nomeFantasia: string, ativo = true) => ({
-  id,
-  nomeFantasia,
-  tipoHospedagemCodigo: 'POUSADA',
-  situacao: 'REGULAR',
-  ativo,
-})
+import { injetarSessao } from './sessao.ts'
+import { catalogoPadrao } from './fixtures/catalogo.ts'
+import { CAPACIDADE_ANTIGA, resumoDePousada } from './fixtures/estabelecimento.ts'
+import { PARCEIRO } from './fixtures/usuarios.ts'
 
 const CADASTRO = (id: number, nomeFantasia: string) => ({
   id,
@@ -40,62 +28,13 @@ const CADASTRO = (id: number, nomeFantasia: string) => ({
   },
 })
 
-const CAPACIDADE_ANTIGA = {
-  id: 1,
-  vigenteDesde: '2025-01-01',
-  qtdUh: 20,
-  qtdUhPcd: 1,
-  qtdLeitos: 50,
-  maxLeitosPorUh: 3,
-  leitosUteis: 40,
-}
-
-const CATALOGO = [
-  {
-    id: 1,
-    categoria: 'SERVICOS_EQUIPAMENTOS',
-    codigo: 'LAZER',
-    nome: 'Lazer',
-    exclusivoSecretaria: false,
-    ordem: 1,
-    ativo: true,
-    itens: [
-      {
-        id: 10,
-        codigo: 'PISCINA',
-        nome: 'Piscina',
-        permiteComplemento: true,
-        ordem: 1,
-        ativo: true,
-      },
-    ],
-  },
-  {
-    id: 3,
-    categoria: 'SUSTENTABILIDADE',
-    codigo: 'SELOS',
-    nome: 'Selos da Secretaria',
-    exclusivoSecretaria: true,
-    ordem: 1,
-    ativo: true,
-    itens: [
-      {
-        id: 30,
-        codigo: 'SELO',
-        nome: 'Selo verde',
-        permiteComplemento: false,
-        ordem: 1,
-        ativo: true,
-      },
-    ],
-  },
-]
+const CATALOGO = catalogoPadrao()
 
 type Envio = { metodo: string; caminho: string; corpo: unknown }
 type Recusa = { status: number; detail: string }
 
 type Estado = {
-  resumos: ReturnType<typeof RESUMO>[]
+  resumos: ReturnType<typeof resumoDePousada>[]
   cadastros: Record<number, ReturnType<typeof CADASTRO>>
   capacidades: Record<number, (typeof CAPACIDADE_ANTIGA)[]>
   envios: Envio[]
@@ -107,7 +46,7 @@ type Estado = {
 
 function novoEstado(): Estado {
   return {
-    resumos: [RESUMO(7, 'Pousada do Sol')],
+    resumos: [resumoDePousada(7, 'Pousada do Sol')],
     cadastros: { 7: CADASTRO(7, 'Pousada do Sol') },
     capacidades: { 7: [{ ...CAPACIDADE_ANTIGA }] },
     envios: [],
@@ -117,12 +56,7 @@ function novoEstado(): Estado {
 }
 
 async function entrar(page: Page, estado: Estado) {
-  await page.addInitScript(() => {
-    sessionStorage.setItem(
-      'oto.sessao',
-      JSON.stringify({ token: 'token-e2e', expiraEm: '2099-01-01T00:00:00Z' }),
-    )
-  })
+  await injetarSessao(page)
   await page.route('**/api/**', async (rota) => {
     const pedido = rota.request()
     const metodo = pedido.method()
@@ -282,7 +216,10 @@ test('mostra um cartão para cada estabelecimento vinculado, com o selo de inati
   page,
 }) => {
   const estado = novoEstado()
-  estado.resumos = [RESUMO(7, 'Pousada do Sol'), RESUMO(8, 'Pousada da Lua', false)]
+  estado.resumos = [
+    resumoDePousada(7, 'Pousada do Sol'),
+    resumoDePousada(8, 'Pousada da Lua', false),
+  ]
   estado.cadastros[8] = CADASTRO(8, 'Pousada da Lua')
   estado.capacidades[8] = []
   await entrar(page, estado)
@@ -513,12 +450,7 @@ test('o menu do parceiro leva ao cartão do estabelecimento', async ({ page }) =
 })
 
 test('o ADMIN não vê o item no menu e a tela diz que não tem permissão', async ({ page }) => {
-  await page.addInitScript(() => {
-    sessionStorage.setItem(
-      'oto.sessao',
-      JSON.stringify({ token: 'token-e2e', expiraEm: '2099-01-01T00:00:00Z' }),
-    )
-  })
+  await injetarSessao(page)
   await page.route('**/api/**', (rota) => {
     const { pathname } = new URL(rota.request().url())
     if (pathname === '/api/me') {

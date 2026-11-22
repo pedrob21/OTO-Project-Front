@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { injetarSessao } from './sessao.ts'
 
 const CAMPANHA = {
   campanhaId: 15,
@@ -28,12 +29,7 @@ function vigenteEm(lista: { vigenteDesde: string }[], data: string) {
 async function abrirPainel(page: Page) {
   const consultas: { recurso: string; data: string | null }[] = []
   await page.clock.setFixedTime(new Date('2026-11-22T10:00:00-03:00'))
-  await page.addInitScript(() => {
-    sessionStorage.setItem(
-      'oto.sessao',
-      JSON.stringify({ token: 'token-e2e', expiraEm: '2099-01-01T00:00:00Z' }),
-    )
-  })
+  await injetarSessao(page)
   await page.route('**/api/**', (rota) => {
     const url = new URL(rota.request().url())
     const { pathname } = url

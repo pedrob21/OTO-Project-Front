@@ -1,5 +1,6 @@
 import { expect, test, type Page, type Route } from '@playwright/test'
 import { irPeloMenu } from './navegacao.ts'
+import { injetarSessao } from './sessao.ts'
 
 function meses(valores: (number | null)[], origem = 'SISTEMA') {
   return valores.map((valor, indice) => ({
@@ -60,15 +61,7 @@ const FERIADOS = [
 async function abrir(page: Page, caminho = '/indicadores') {
   const consultas: string[] = []
 
-  await page.addInitScript(() => {
-    sessionStorage.setItem(
-      'oto.sessao',
-      JSON.stringify({
-        token: 'token-e2e',
-        expiraEm: new Date(Date.now() + 3_600_000).toISOString(),
-      }),
-    )
-  })
+  await injetarSessao(page)
 
   await page.route('**/api/**', (rota: Route) => {
     const url = new URL(rota.request().url())

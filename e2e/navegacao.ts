@@ -21,3 +21,11 @@ export async function semRolagemHorizontal(page: Page) {
   const tela = page.viewportSize()?.width ?? 0
   expect(conteudo, 'a página não deveria rolar para o lado').toBeLessThanOrEqual(tela)
 }
+
+/** Abre o submenu de Cadastros e segue para a tela. */
+export async function abrirCadastro(page: Page, tela: string) {
+  const cadastros = page.getByRole('button', { name: 'Cadastros' })
+  await cadastros.click()
+  await expect(cadastros).toHaveAttribute('aria-expanded', 'true')
+  await page.getByRole('link', { name: tela }).click()
+}

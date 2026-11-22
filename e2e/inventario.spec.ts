@@ -1,12 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
+import { abrirCadastro } from './navegacao.ts'
+import { ADMIN } from './fixtures/usuarios.ts'
 
-const ADMIN = {
-  id: 1,
-  nome: 'Ana Souza',
-  email: 'ana@oto.test',
-  perfil: 'ADMIN',
-  ativo: true,
-}
 const HOTEL = {
   id: 12,
   nomeFantasia: 'Hotel Exemplo',
@@ -143,13 +138,6 @@ async function mockarApi(page: Page) {
   })
 
   return { puts }
-}
-
-async function abrirCadastro(page: Page, tela: string) {
-  const cadastros = page.getByRole('button', { name: 'Cadastros' })
-  await cadastros.click()
-  await expect(cadastros).toHaveAttribute('aria-expanded', 'true')
-  await page.getByRole('link', { name: tela }).click()
 }
 
 test('cria grupo e item no catálogo e marca no inventário de um estabelecimento', async ({

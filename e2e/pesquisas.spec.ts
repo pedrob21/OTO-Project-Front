@@ -1,5 +1,6 @@
 import { expect, test, type Page, type Route } from '@playwright/test'
 import { irPeloMenu, semRolagemHorizontal } from './navegacao.ts'
+import { injetarSessao } from './sessao.ts'
 
 type Perfil = 'ADMIN' | 'PARCEIRO' | 'VISUALIZADOR'
 
@@ -32,15 +33,7 @@ const LEITOS_DO_PENDENTE = 300
 
 /** Sessão já salva, como depois do login: o teste começa na página. */
 async function entrar(page: Page) {
-  await page.addInitScript(() => {
-    sessionStorage.setItem(
-      'oto.sessao',
-      JSON.stringify({
-        token: 'token-e2e',
-        expiraEm: new Date(Date.now() + 3_600_000).toISOString(),
-      }),
-    )
-  })
+  await injetarSessao(page)
 }
 
 function percentual(leitos: number) {

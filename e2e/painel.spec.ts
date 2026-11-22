@@ -1,4 +1,5 @@
 import { expect, test, type Page, type Route } from '@playwright/test'
+import { injetarSessao } from './sessao.ts'
 
 const TIPOS = [
   { codigo: 'HOTEL', nome: 'Hotel', calculaReceita: true },
@@ -85,15 +86,7 @@ async function abrirPainel(
   const { publicadas = PUBLICADAS, falhas = {}, caminho = '/' } = opcoes
   const csv: string[] = []
 
-  await page.addInitScript(() => {
-    sessionStorage.setItem(
-      'oto.sessao',
-      JSON.stringify({
-        token: 'token-e2e',
-        expiraEm: new Date(Date.now() + 3_600_000).toISOString(),
-      }),
-    )
-  })
+  await injetarSessao(page)
 
   await page.route('**/api/**', (rota: Route) => {
     const { pathname } = new URL(rota.request().url())

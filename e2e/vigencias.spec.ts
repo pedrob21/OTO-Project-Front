@@ -1,12 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
-
-const ADMIN = {
-  id: 1,
-  nome: 'Ana Souza',
-  email: 'ana@oto.test',
-  perfil: 'ADMIN',
-  ativo: true,
-}
+import { abrirCadastro } from './navegacao.ts'
+import { injetarSessao } from './sessao.ts'
+import { ADMIN } from './fixtures/usuarios.ts'
 
 type Parametros = {
   id: number
@@ -62,12 +57,7 @@ type Estado = {
 
 /** API em memória: as vigências mudam com o que a tela grava. */
 async function entrar(page: Page, estado: Estado) {
-  await page.addInitScript(() => {
-    sessionStorage.setItem(
-      'oto.sessao',
-      JSON.stringify({ token: 'token-e2e', expiraEm: '2099-01-01T00:00:00Z' }),
-    )
-  })
+  await injetarSessao(page)
   await page.route('**/api/**', async (rota) => {
     const pedido = rota.request()
     const metodo = pedido.method()
@@ -123,12 +113,9 @@ function novoEstado(): Estado {
   return { parametros: [{ ...PARAMETROS_ANTIGOS }], rhc: [{ ...RHC_ANTIGO }], enviados: [] }
 }
 
-async function abrirCadastro(page: Page, tela: string, titulo: string) {
+async function abrirTelaDeCadastro(page: Page, tela: string, titulo: string) {
   await page.goto('/')
-  const cadastros = page.getByRole('button', { name: 'Cadastros' })
-  await cadastros.click()
-  await expect(cadastros).toHaveAttribute('aria-expanded', 'true')
-  await page.getByRole('link', { name: tela }).click()
+  await abrirCadastro(page, tela)
   await expect(page.getByRole('heading', { level: 1, name: titulo })).toBeVisible()
 }
 
@@ -147,7 +134,7 @@ test.describe('Parâmetros de cálculo', () => {
   test('lista as vigências e inclui uma nova com números em vírgula', async ({ page }) => {
     const estado = novoEstado()
     await entrar(page, estado)
-    await abrirCadastro(page, 'Parâmetros de cálculo', 'Parâmetros de cálculo')
+    await abrirTelaDeCadastro(page, 'Parâmetros de cálculo', 'Parâmetros de cálculo')
 
     const antiga = page.getByRole('row', { name: /01\/01\/2024/ })
     await expect(antiga).toContainText('15,15%')
@@ -190,7 +177,7 @@ test.describe('Parâmetros de cálculo', () => {
   }) => {
     const estado = novoEstado()
     await entrar(page, estado)
-    await abrirCadastro(page, 'Parâmetros de cálculo', 'Parâmetros de cálculo')
+    await abrirTelaDeCadastro(page, 'Parâmetros de cálculo', 'Parâmetros de cálculo')
 
     await page.getByRole('button', { name: 'Nova vigência' }).click()
     const dialogo = page.getByRole('dialog', { name: 'Nova vigência: Parâmetros' })
@@ -213,7 +200,7 @@ test.describe('Parâmetros de cálculo', () => {
       json: { status: 422, detail: 'Já existe uma vigência a partir desta data.' },
     }
     await entrar(page, estado)
-    await abrirCadastro(page, 'Parâmetros de cálculo', 'Parâmetros de cálculo')
+    await abrirTelaDeCadastro(page, 'Parâmetros de cálculo', 'Parâmetros de cálculo')
 
     await page.getByRole('button', { name: 'Nova vigência' }).click()
     const dialogo = page.getByRole('dialog', { name: 'Nova vigência: Parâmetros' })
@@ -227,7 +214,7 @@ test.describe('Parâmetros de cálculo', () => {
   test('corrige uma vigência e depois exclui', async ({ page }) => {
     const estado = novoEstado()
     await entrar(page, estado)
-    await abrirCadastro(page, 'Parâmetros de cálculo', 'Parâmetros de cálculo')
+    await abrirTelaDeCadastro(page, 'Parâmetros de cálculo', 'Parâmetros de cálculo')
 
     await page.getByRole('button', { name: 'Corrigir a vigência de 01/01/2024' }).click()
     const correcao = page.getByRole('dialog', { name: 'Corrigir a vigência de 01/01/2024' })
@@ -266,7 +253,7 @@ test.describe('Parâmetros de cálculo', () => {
       json: { status: 422, detail: 'A vigência já foi usada em um resultado publicado.' },
     }
     await entrar(page, estado)
-    await abrirCadastro(page, 'Parâmetros de cálculo', 'Parâmetros de cálculo')
+    await abrirTelaDeCadastro(page, 'Parâmetros de cálculo', 'Parâmetros de cálculo')
 
     await page.getByRole('button', { name: 'Excluir a vigência de 01/01/2024' }).click()
     const confirmacao = page.getByRole('dialog', { name: 'Excluir vigência' })
@@ -284,7 +271,7 @@ test.describe('Hospedagem caseira (RHC)', () => {
   test('mostra o total vigente, inclui uma vigência e atualiza a lista', async ({ page }) => {
     const estado = novoEstado()
     await entrar(page, estado)
-    await abrirCadastro(page, 'Hospedagem caseira (RHC)', 'Hospedagem caseira (RHC)')
+    await abrirTelaDeCadastro(page, 'Hospedagem caseira (RHC)', 'Hospedagem caseira (RHC)')
 
     await expect(
       page.getByText('Vigente hoje, desde 01/01/2024: 100 imóveis e 600 leitos úteis no cálculo.'),
@@ -323,7 +310,7 @@ test.describe('Hospedagem caseira (RHC)', () => {
     const estado = novoEstado()
     estado.rhc = []
     await entrar(page, estado)
-    await abrirCadastro(page, 'Hospedagem caseira (RHC)', 'Hospedagem caseira (RHC)')
+    await abrirTelaDeCadastro(page, 'Hospedagem caseira (RHC)', 'Hospedagem caseira (RHC)')
 
     await expect(
       page.getByText('Não há totais vigentes hoje: o RHC fica fora do fluxo de turistas.'),
@@ -334,7 +321,7 @@ test.describe('Hospedagem caseira (RHC)', () => {
   test('barra o máximo de pessoas por UH acima do limite sem chamar a API', async ({ page }) => {
     const estado = novoEstado()
     await entrar(page, estado)
-    await abrirCadastro(page, 'Hospedagem caseira (RHC)', 'Hospedagem caseira (RHC)')
+    await abrirTelaDeCadastro(page, 'Hospedagem caseira (RHC)', 'Hospedagem caseira (RHC)')
 
     await page.getByRole('button', { name: 'Nova vigência' }).click()
     const dialogo = page.getByRole('dialog', { name: 'Nova vigência: Totais do RHC' })

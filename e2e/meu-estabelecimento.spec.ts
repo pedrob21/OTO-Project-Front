@@ -1,76 +1,17 @@
 import { expect, test, type Page } from '@playwright/test'
 import { irPeloMenu, semRolagemHorizontal } from './navegacao.ts'
+import { catalogoPadrao } from './fixtures/catalogo.ts'
+import { CAPACIDADE_ANTIGA, resumoDePousada } from './fixtures/estabelecimento.ts'
+import { PARCEIRO } from './fixtures/usuarios.ts'
 
-const PARCEIRO = {
-  id: 2,
-  nome: 'Paula Reis',
-  email: 'paula@oto.test',
-  perfil: 'PARCEIRO',
-  ativo: true,
-}
-const RESUMO = {
-  id: 7,
-  nomeFantasia: 'Pousada do Sol',
-  tipoHospedagemCodigo: 'POUSADA',
-  situacao: 'REGULAR',
-  ativo: true,
-}
+const RESUMO = resumoDePousada(7, 'Pousada do Sol')
 const SECRETARIA = {
   tipoHospedagemCodigo: 'POUSADA',
   situacao: 'REGULAR',
   aceitaPesquisas: true,
   contatoNome: 'Maria da Secretaria',
 }
-const ANTIGA = {
-  id: 1,
-  vigenteDesde: '2025-01-01',
-  qtdUh: 20,
-  qtdUhPcd: 1,
-  qtdLeitos: 50,
-  maxLeitosPorUh: 3,
-  leitosUteis: 40,
-}
-
-const CATALOGO = [
-  {
-    id: 1,
-    categoria: 'SERVICOS_EQUIPAMENTOS',
-    codigo: 'LAZER',
-    nome: 'Lazer',
-    exclusivoSecretaria: false,
-    ordem: 1,
-    ativo: true,
-    itens: [
-      {
-        id: 10,
-        codigo: 'PISCINA',
-        nome: 'Piscina',
-        permiteComplemento: true,
-        ordem: 1,
-        ativo: true,
-      },
-    ],
-  },
-  {
-    id: 3,
-    categoria: 'SUSTENTABILIDADE',
-    codigo: 'SELOS',
-    nome: 'Selos da Secretaria',
-    exclusivoSecretaria: true,
-    ordem: 1,
-    ativo: true,
-    itens: [
-      {
-        id: 30,
-        codigo: 'SELO',
-        nome: 'Selo verde',
-        permiteComplemento: false,
-        ordem: 1,
-        ativo: true,
-      },
-    ],
-  },
-]
+const CATALOGO = catalogoPadrao()
 
 type Envio = { metodo: string; caminho: string; corpo: unknown }
 
@@ -82,7 +23,7 @@ async function mockarApi(page: Page) {
     dados: { nomeFantasia: 'Pousada do Sol' },
     secretaria: SECRETARIA,
   }
-  let capacidades = [ANTIGA]
+  let capacidades = [CAPACIDADE_ANTIGA]
   let inventario: { itemId: number; complemento?: string }[] = [{ itemId: 30 }]
   const envios: Envio[] = []
 
@@ -126,8 +67,8 @@ async function mockarApi(page: Page) {
         return rota.fulfill({ json: cadastro })
       }
       if (chave === 'POST /api/estabelecimentos/7/capacidades') {
-        const nova = { ...ANTIGA, id: 2, ...corpo, leitosUteis: 90 }
-        capacidades = [nova as typeof ANTIGA, ...capacidades]
+        const nova = { ...CAPACIDADE_ANTIGA, id: 2, ...corpo, leitosUteis: 90 }
+        capacidades = [nova as typeof CAPACIDADE_ANTIGA, ...capacidades]
         return rota.fulfill({ status: 201, json: nova })
       }
       if (chave === 'PUT /api/estabelecimentos/7/inventario') {

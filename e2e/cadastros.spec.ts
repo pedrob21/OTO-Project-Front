@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { abrirCadastro } from './navegacao.ts'
 
 type Usuario = {
   id: number
@@ -151,13 +152,6 @@ async function entrar(page: Page, usuario: Usuario) {
   await page.getByLabel('Senha').fill('senha-correta')
   await page.getByRole('button', { name: 'Entrar' }).click()
   await expect(page.getByRole('button', { name: new RegExp(usuario.nome) })).toBeVisible()
-}
-
-async function abrirCadastro(page: Page, tela: string) {
-  const cadastros = page.getByRole('button', { name: 'Cadastros' })
-  await cadastros.click()
-  await expect(cadastros).toHaveAttribute('aria-expanded', 'true')
-  await page.getByRole('link', { name: tela }).click()
 }
 
 test.describe('ADMIN', () => {

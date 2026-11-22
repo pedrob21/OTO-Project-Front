@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { injetarSessao } from './sessao.ts'
 
 const VISUALIZADOR = {
   id: 3,
@@ -21,12 +22,7 @@ const PARAMETROS = {
 }
 
 async function entrar(page: Page) {
-  await page.addInitScript(() => {
-    sessionStorage.setItem(
-      'oto.sessao',
-      JSON.stringify({ token: 'token-e2e', expiraEm: '2099-01-01T00:00:00Z' }),
-    )
-  })
+  await injetarSessao(page)
 }
 
 test('mostra a explicação e os parâmetros em vigor', async ({ page }) => {

@@ -1,12 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
+import { injetarSessao } from './sessao.ts'
+import { PARCEIRO } from './fixtures/usuarios.ts'
 
-const PARCEIRO = {
-  id: 2,
-  nome: 'Paula Reis',
-  email: 'paula@oto.test',
-  perfil: 'PARCEIRO',
-  ativo: true,
-}
 const VISUALIZADOR = { id: 3, nome: 'Vera Lima', email: 'vera@oto.test', perfil: 'VISUALIZADOR' }
 
 const RESUMO = (id: number, nomeFantasia: string) => ({
@@ -28,15 +23,6 @@ const TIPOS = [
   { codigo: 'HOTEL', nome: 'Hotel', calculaReceita: true },
   { codigo: 'RESORT', nome: 'Resort', calculaReceita: true },
 ]
-
-async function injetarSessao(page: Page) {
-  await page.addInitScript(() => {
-    sessionStorage.setItem(
-      'oto.sessao',
-      JSON.stringify({ token: 'token-e2e', expiraEm: '2099-01-01T00:00:00Z' }),
-    )
-  })
-}
 
 test.describe('E2E-01 primeiro acesso do parceiro', () => {
   test('define a senha pelo convite, entra e vê só o seu estabelecimento', async ({ page }) => {

@@ -1,13 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
-
-const ADMIN = { id: 1, nome: 'Ana Souza', email: 'ana@oto.test', perfil: 'ADMIN', ativo: true }
-const PARCEIRO = {
-  id: 2,
-  nome: 'Paula Reis',
-  email: 'paula@oto.test',
-  perfil: 'PARCEIRO',
-  ativo: true,
-}
+import { injetarSessao } from './sessao.ts'
+import { catalogoPadrao } from './fixtures/catalogo.ts'
+import { ADMIN, PARCEIRO } from './fixtures/usuarios.ts'
 
 type Marcado = { itemId: number; complemento?: string }
 type Item = {
@@ -39,46 +33,7 @@ type Estado = {
 function novoEstado(): Estado {
   return {
     usuario: ADMIN,
-    catalogo: [
-      {
-        id: 1,
-        categoria: 'SERVICOS_EQUIPAMENTOS',
-        codigo: 'LAZER',
-        nome: 'Lazer',
-        exclusivoSecretaria: false,
-        ordem: 1,
-        ativo: true,
-        itens: [
-          {
-            id: 10,
-            codigo: 'PISCINA',
-            nome: 'Piscina',
-            permiteComplemento: true,
-            ordem: 1,
-            ativo: true,
-          },
-        ],
-      },
-      {
-        id: 3,
-        categoria: 'SUSTENTABILIDADE',
-        codigo: 'SELOS',
-        nome: 'Selos da Secretaria',
-        exclusivoSecretaria: true,
-        ordem: 1,
-        ativo: true,
-        itens: [
-          {
-            id: 30,
-            codigo: 'SELO',
-            nome: 'Selo verde',
-            permiteComplemento: false,
-            ordem: 1,
-            ativo: true,
-          },
-        ],
-      },
-    ],
+    catalogo: catalogoPadrao(),
     inventario: [],
     puts: [],
   }
@@ -93,12 +48,7 @@ const RESUMO = {
 }
 
 async function mockarApi(page: Page, estado: Estado) {
-  await page.addInitScript(() => {
-    sessionStorage.setItem(
-      'oto.sessao',
-      JSON.stringify({ token: 'token-e2e', expiraEm: '2099-01-01T00:00:00Z' }),
-    )
-  })
+  await injetarSessao(page)
   let proximoId = 100
 
   await page.route('**/api/**', async (rota) => {

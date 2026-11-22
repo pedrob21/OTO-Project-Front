@@ -1,12 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
-
-const ADMIN = {
-  id: 1,
-  nome: 'Ana Souza',
-  email: 'ana@oto.test',
-  perfil: 'ADMIN',
-  ativo: true,
-}
+import { injetarSessao } from './sessao.ts'
+import { ADMIN } from './fixtures/usuarios.ts'
 
 const RODADAS = [
   { id: 4, codigo: '017/26', titulo: 'Anterior', status: 'ENCERRADA', campanhas: [] },
@@ -20,12 +14,7 @@ type Api = { envios: Envio[] }
 async function entrar(page: Page): Promise<Api> {
   const api: Api = { envios: [] }
   await page.clock.setFixedTime(new Date('2026-11-16T12:00:00-03:00'))
-  await page.addInitScript(() => {
-    sessionStorage.setItem(
-      'oto.sessao',
-      JSON.stringify({ token: 'token-e2e', expiraEm: '2099-01-01T00:00:00Z' }),
-    )
-  })
+  await injetarSessao(page)
   let ultimaCampanha = 100
   await page.route('**/api/**', async (rota) => {
     const pedido = rota.request()

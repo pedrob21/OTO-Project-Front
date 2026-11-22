@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { injetarSessao } from './sessao.ts'
 
 const ADMIN = { id: 1, nome: 'Ana Souza', perfil: 'ADMIN' }
 
@@ -83,12 +84,7 @@ function previa(estado: Estado) {
 }
 
 async function abrirPrevia(page: Page, estado: Estado) {
-  await page.addInitScript(() => {
-    sessionStorage.setItem(
-      'oto.sessao',
-      JSON.stringify({ token: 'token-e2e', expiraEm: '2099-01-01T00:00:00Z' }),
-    )
-  })
+  await injetarSessao(page)
   await page.route('**/api/**', (rota) => {
     const pedido = rota.request()
     const { pathname } = new URL(pedido.url())

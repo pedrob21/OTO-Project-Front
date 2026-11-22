@@ -1,12 +1,8 @@
 import { expect, test, type Page } from '@playwright/test'
-
-const ADMIN = {
-  id: 1,
-  nome: 'Ana Souza',
-  email: 'ana@oto.test',
-  perfil: 'ADMIN',
-  ativo: true,
-}
+import { abrirCadastro } from './navegacao.ts'
+import { injetarSessao } from './sessao.ts'
+import { grupoLazer, grupoSelos, itemAcademia, itemPiscina } from './fixtures/catalogo.ts'
+import { ADMIN } from './fixtures/usuarios.ts'
 
 type Item = {
   id: number
@@ -37,57 +33,14 @@ type Estado = {
 
 function novoEstado(): Estado {
   return {
-    catalogo: [
-      {
-        id: 1,
-        categoria: 'SERVICOS_EQUIPAMENTOS',
-        codigo: 'LAZER',
-        nome: 'Lazer',
-        exclusivoSecretaria: false,
-        ordem: 1,
-        ativo: true,
-        itens: [
-          {
-            id: 10,
-            codigo: 'PISCINA',
-            nome: 'Piscina',
-            permiteComplemento: true,
-            ordem: 1,
-            ativo: true,
-          },
-          {
-            id: 11,
-            codigo: 'ACADEMIA',
-            nome: 'Academia',
-            permiteComplemento: false,
-            ordem: 2,
-            ativo: false,
-          },
-        ],
-      },
-      {
-        id: 3,
-        categoria: 'SUSTENTABILIDADE',
-        codigo: 'SELOS',
-        nome: 'Selos da Secretaria',
-        exclusivoSecretaria: true,
-        ordem: 1,
-        ativo: true,
-        itens: [],
-      },
-    ],
+    catalogo: [grupoLazer([itemPiscina(), itemAcademia()]), grupoSelos([])],
     envios: [],
   }
 }
 
 /** API em memória: o catálogo muda com o que a tela grava. */
 async function entrar(page: Page, estado: Estado) {
-  await page.addInitScript(() => {
-    sessionStorage.setItem(
-      'oto.sessao',
-      JSON.stringify({ token: 'token-e2e', expiraEm: '2099-01-01T00:00:00Z' }),
-    )
-  })
+  await injetarSessao(page)
   let proximoId = 100
   const grupoDoItem = (itemId: number) =>
     estado.catalogo.find((grupo) => grupo.itens.some((item) => item.id === itemId))
@@ -161,10 +114,7 @@ async function entrar(page: Page, estado: Estado) {
 
 async function abrirCatalogo(page: Page) {
   await page.goto('/')
-  const cadastros = page.getByRole('button', { name: 'Cadastros' })
-  await cadastros.click()
-  await expect(cadastros).toHaveAttribute('aria-expanded', 'true')
-  await page.getByRole('link', { name: 'Inventário' }).click()
+  await abrirCadastro(page, 'Inventário')
   await expect(page.getByRole('heading', { level: 1, name: 'Inventário' })).toBeVisible()
 }
 

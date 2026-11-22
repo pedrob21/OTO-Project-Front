@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { irPeloMenu } from './navegacao.ts'
+import { injetarSessao } from './sessao.ts'
 
 const ADMIN = { id: 1, nome: 'Ana Souza', perfil: 'ADMIN' }
 
@@ -65,12 +66,7 @@ const NAO_PUBLICADA = { status: 422, json: { status: 422, detail: 'Campanha não
 
 async function mockarApi(page: Page, estado: Estado) {
   await page.clock.setFixedTime(new Date('2026-11-22T10:00:00-03:00'))
-  await page.addInitScript(() => {
-    sessionStorage.setItem(
-      'oto.sessao',
-      JSON.stringify({ token: 'token-e2e', expiraEm: '2099-01-01T00:00:00Z' }),
-    )
-  })
+  await injetarSessao(page)
 
   const rodada = () => ({
     id: 5,

@@ -1,12 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
-
-const ADMIN = {
-  id: 1,
-  nome: 'Ana Souza',
-  email: 'ana@oto.test',
-  perfil: 'ADMIN',
-  ativo: true,
-}
+import { injetarSessao } from './sessao.ts'
+import { ADMIN } from './fixtures/usuarios.ts'
 
 type Marcado = { itemId: number; complemento?: string }
 
@@ -90,12 +84,7 @@ function novoEstado(): Estado {
 }
 
 async function entrar(page: Page, estado: Estado) {
-  await page.addInitScript(() => {
-    sessionStorage.setItem(
-      'oto.sessao',
-      JSON.stringify({ token: 'token-e2e', expiraEm: '2099-01-01T00:00:00Z' }),
-    )
-  })
+  await injetarSessao(page)
   await page.route('**/api/**', async (rota) => {
     const pedido = rota.request()
     const metodo = pedido.method()

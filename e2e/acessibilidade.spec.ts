@@ -1,19 +1,13 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Locator, type Page, type Route } from '@playwright/test'
+import { injetarSessao } from './sessao.ts'
+import { PUBLICADA_AGOSTO, PUBLICADA_CARNAVAL, RESULTADO_AGOSTO } from './fixtures/resultado.ts'
+import { grupoLazer, grupoSelos, itemAcademia, itemPiscina } from './fixtures/catalogo.ts'
+import { ADMIN, PARCEIRO, VISUALIZADOR } from './fixtures/usuarios.ts'
 
 type Perfil = 'ADMIN' | 'PARCEIRO' | 'VISUALIZADOR'
 
-const USUARIOS: Record<Perfil, object> = {
-  ADMIN: { id: 1, nome: 'Ana Souza', email: 'ana@oto.test', perfil: 'ADMIN', ativo: true },
-  PARCEIRO: { id: 2, nome: 'Paula Reis', email: 'paula@oto.test', perfil: 'PARCEIRO', ativo: true },
-  VISUALIZADOR: {
-    id: 3,
-    nome: 'Vera Lima',
-    email: 'vera@oto.test',
-    perfil: 'VISUALIZADOR',
-    ativo: true,
-  },
-}
+const USUARIOS: Record<Perfil, object> = { ADMIN, PARCEIRO, VISUALIZADOR }
 
 const TIPOS = [
   { codigo: 'HOTEL', nome: 'Hotel', calculaReceita: true, ordem: 1 },
@@ -31,75 +25,10 @@ const REFERENCIAS = {
   ],
 }
 
-const PUBLICADAS = [
-  {
-    campanhaId: 15,
-    nome: 'Agosto de 2026',
-    modalidade: 'CONSOLIDADA',
-    tipoPeriodo: 'MENSAL',
-    periodoInicio: '2026-08-01',
-    periodoFim: '2026-08-31',
-    publicadaEm: '2026-09-18T12:00:00Z',
-    taxaOcupacao: 62.8,
-    faixa: { codigo: 'OTIMA', nome: 'Ótima' },
-    fluxoTotal: 496_660,
-  },
-  {
-    campanhaId: 9,
-    nome: 'Carnaval 2026',
-    modalidade: 'EXPECTATIVA',
-    tipoPeriodo: 'FERIADO',
-    periodoInicio: '2026-02-14',
-    periodoFim: '2026-02-17',
-    publicadaEm: '2026-02-10T12:00:00Z',
-    taxaOcupacao: 71.5,
-    faixa: { codigo: 'OTIMA', nome: 'Ótima' },
-    fluxoTotal: 60_210,
-  },
-]
+const PUBLICADAS = [PUBLICADA_AGOSTO, PUBLICADA_CARNAVAL]
 
 const RESULTADO = {
-  campanha: { id: 15, ...PUBLICADAS[0], qtdDiarias: 31, publicada: true },
-  publicado: true,
-  taxaOcupacao: 62.8,
-  faixa: { codigo: 'OTIMA', nome: 'Ótima' },
-  qtdMh: 72,
-  qtdMhRespondentes: 58,
-  percentualMhRespondentes: 80.6,
-  leitosTotal: 13_508,
-  leitosRespondentes: 12_346,
-  percentualLeitosRespondentes: 91.4,
-  fluxoMh: 365_620,
-  fluxoRhc: 55_795,
-  fluxoDayUse: 75_245,
-  fluxoTotal: 496_660,
-  fluxoMedioDiario: 16_021,
-  diariaMedia: 765,
-  receitaHospedagem: 89_000_000,
-  receitaSemHospedagem: 21_000_000,
-  porTipo: [
-    {
-      tipoHospedagemCodigo: 'RESORT',
-      nome: 'Resort',
-      qtdMh: 9,
-      qtdUh: 4_643,
-      taxaOcupacao: 66,
-      diariaMedia: 836,
-      revpar: 552,
-      receitaEstimada: 79_400_000,
-    },
-    {
-      tipoHospedagemCodigo: 'HOTEL',
-      nome: 'Hotel',
-      qtdMh: 2,
-      qtdUh: 120,
-      taxaOcupacao: null,
-      diariaMedia: null,
-      revpar: null,
-      receitaEstimada: null,
-      omitido: true,
-    },
-  ],
+  ...RESULTADO_AGOSTO,
   distribuicaoFaixas: [
     { codigo: 'BOA', nome: 'Boa', percentualMinimo: 41, qtdMh: 30 },
     { codigo: 'OTIMA', nome: 'Ótima', percentualMinimo: 61, qtdMh: 28 },
@@ -229,54 +158,7 @@ const CAPACIDADES = [
   },
 ]
 
-const CATALOGO = [
-  {
-    id: 1,
-    categoria: 'SERVICOS_EQUIPAMENTOS',
-    codigo: 'LAZER',
-    nome: 'Lazer',
-    exclusivoSecretaria: false,
-    ordem: 1,
-    ativo: true,
-    itens: [
-      {
-        id: 10,
-        codigo: 'PISCINA',
-        nome: 'Piscina',
-        permiteComplemento: true,
-        ordem: 1,
-        ativo: true,
-      },
-      {
-        id: 11,
-        codigo: 'ACADEMIA',
-        nome: 'Academia',
-        permiteComplemento: false,
-        ordem: 2,
-        ativo: false,
-      },
-    ],
-  },
-  {
-    id: 3,
-    categoria: 'SUSTENTABILIDADE',
-    codigo: 'SELOS',
-    nome: 'Selos da Secretaria',
-    exclusivoSecretaria: true,
-    ordem: 1,
-    ativo: true,
-    itens: [
-      {
-        id: 30,
-        codigo: 'SELO',
-        nome: 'Selo verde',
-        permiteComplemento: false,
-        ordem: 1,
-        ativo: true,
-      },
-    ],
-  },
-]
+const CATALOGO = [grupoLazer([itemPiscina(), itemAcademia()]), grupoSelos()]
 
 const PARAMETROS = [
   {
@@ -438,12 +320,7 @@ function respostaGet(perfil: Perfil, caminho: string, parametros: URLSearchParam
 async function abrir(page: Page, perfil: Perfil | undefined, caminho: string) {
   await page.clock.setFixedTime(new Date('2026-11-16T12:00:00-03:00'))
   if (perfil) {
-    await page.addInitScript(() => {
-      sessionStorage.setItem(
-        'oto.sessao',
-        JSON.stringify({ token: 'token-e2e', expiraEm: '2099-01-01T00:00:00Z' }),
-      )
-    })
+    await injetarSessao(page)
   }
   await page.route('**/api/**', (rota: Route) => {
     const url = new URL(rota.request().url())
@@ -495,6 +372,12 @@ const titulo = (nome: string | RegExp) => (page: Page) =>
   page.getByRole('heading', { level: 1, name: nome })
 const botao = (nome: string | RegExp) => (page: Page) =>
   page.getByRole('button', { name: nome }).first()
+
+const COM_VIGENCIA = {
+  perfil: 'ADMIN' as const,
+  pronta: (page: Page) => page.getByRole('row', { name: /01\/01\/2025/ }),
+  dialogo: botao('Nova vigência'),
+}
 
 const TELAS: Tela[] = [
   { nome: 'login', caminho: '/login', pronta: titulo('Entrar no painel') },
@@ -597,27 +480,9 @@ const TELAS: Tela[] = [
     pronta: (page) => page.getByRole('row', { name: /Hotel Exemplo/ }),
     dialogo: botao('Novo estabelecimento'),
   },
-  {
-    nome: 'capacidades',
-    caminho: '/cadastros/estabelecimentos/12/capacidades',
-    perfil: 'ADMIN',
-    pronta: (page) => page.getByRole('row', { name: /01\/01\/2025/ }),
-    dialogo: botao('Nova vigência'),
-  },
-  {
-    nome: 'parâmetros',
-    caminho: '/cadastros/parametros',
-    perfil: 'ADMIN',
-    pronta: (page) => page.getByRole('row', { name: /01\/01\/2025/ }),
-    dialogo: botao('Nova vigência'),
-  },
-  {
-    nome: 'RHC',
-    caminho: '/cadastros/rhc',
-    perfil: 'ADMIN',
-    pronta: (page) => page.getByRole('row', { name: /01\/01\/2025/ }),
-    dialogo: botao('Nova vigência'),
-  },
+  { nome: 'capacidades', caminho: '/cadastros/estabelecimentos/12/capacidades', ...COM_VIGENCIA },
+  { nome: 'parâmetros', caminho: '/cadastros/parametros', ...COM_VIGENCIA },
+  { nome: 'RHC', caminho: '/cadastros/rhc', ...COM_VIGENCIA },
   {
     nome: 'referências',
     caminho: '/cadastros/referencias',
