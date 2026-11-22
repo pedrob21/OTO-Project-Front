@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { irPeloMenu, semRolagemHorizontal } from './navegacao.ts'
 
 const PARCEIRO = {
   id: 2,
@@ -140,63 +141,66 @@ async function mockarApi(page: Page) {
   return { envios }
 }
 
-test('o parceiro atualiza dados, capacidade e inventário do seu estabelecimento', async ({
-  page,
-}) => {
-  const { envios } = await mockarApi(page)
-  await page.goto('/login')
-  await page.getByLabel('E-mail').fill(PARCEIRO.email)
-  await page.getByLabel('Senha').fill('senha-correta')
-  await page.getByRole('button', { name: 'Entrar' }).click()
-  await expect(page.getByRole('button', { name: new RegExp(PARCEIRO.nome) })).toBeVisible()
+test(
+  'o parceiro atualiza dados, capacidade e inventário do seu estabelecimento',
+  { tag: '@celular' },
+  async ({ page }) => {
+    const { envios } = await mockarApi(page)
+    await page.goto('/login')
+    await page.getByLabel('E-mail').fill(PARCEIRO.email)
+    await page.getByLabel('Senha').fill('senha-correta')
+    await page.getByRole('button', { name: 'Entrar' }).click()
+    await expect(page.getByRole('button', { name: new RegExp(PARCEIRO.nome) })).toBeVisible()
 
-  await page.getByRole('link', { name: 'Meu estabelecimento' }).click()
-  await expect(page).toHaveURL(/\/meu-estabelecimento$/)
-  await expect(page.getByRole('heading', { level: 1, name: 'Meu estabelecimento' })).toBeVisible()
-  await expect(page.getByText('Maria da Secretaria')).toBeVisible()
+    await irPeloMenu(page, 'Meu estabelecimento')
+    await expect(page).toHaveURL(/\/meu-estabelecimento$/)
+    await expect(page.getByRole('heading', { level: 1, name: 'Meu estabelecimento' })).toBeVisible()
+    await expect(page.getByText('Maria da Secretaria')).toBeVisible()
+    await semRolagemHorizontal(page)
 
-  await page.getByRole('button', { name: 'Editar dados de Pousada do Sol' }).click()
-  const dados = page.getByRole('dialog', { name: 'Editar dados de Pousada do Sol' })
-  await expect(dados.getByLabel('Tipo de hospedagem')).toHaveCount(0)
-  await dados.getByLabel('Nome fantasia').fill('Pousada Nova')
-  await dados.getByRole('button', { name: 'Salvar' }).click()
-  await expect(page.getByText('Dados atualizados.')).toBeVisible()
-  await expect(page.getByRole('heading', { name: 'Pousada Nova' })).toBeVisible()
+    await page.getByRole('button', { name: 'Editar dados de Pousada do Sol' }).click()
+    const dados = page.getByRole('dialog', { name: 'Editar dados de Pousada do Sol' })
+    await expect(dados.getByLabel('Tipo de hospedagem')).toHaveCount(0)
+    await dados.getByLabel('Nome fantasia').fill('Pousada Nova')
+    await dados.getByRole('button', { name: 'Salvar' }).click()
+    await expect(page.getByText('Dados atualizados.')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Pousada Nova' })).toBeVisible()
 
-  await page.getByRole('button', { name: /Informar nova capacidade/ }).click()
-  const capacidade = page.getByRole('dialog', { name: 'Informar nova capacidade' })
-  await capacidade.getByLabel('Vigente desde').fill('2026-11-20')
-  await capacidade.getByLabel('UH', { exact: true }).fill('35')
-  await capacidade.getByLabel('UH PCD').fill('2')
-  await capacidade.getByLabel('Leitos').fill('90')
-  await capacidade.getByLabel('Máximo de pessoas por UH').fill('4')
-  await capacidade.getByRole('button', { name: 'Incluir vigência' }).click()
-  await expect(page.getByText('Capacidade a partir de 20/11/2026 informada.')).toBeVisible()
-  await expect(page.getByRole('row', { name: /20\/11\/2026/ })).toBeVisible()
+    await page.getByRole('button', { name: /Informar nova capacidade/ }).click()
+    const capacidade = page.getByRole('dialog', { name: 'Informar nova capacidade' })
+    await capacidade.getByLabel('Vigente desde').fill('2026-11-20')
+    await capacidade.getByLabel('UH', { exact: true }).fill('35')
+    await capacidade.getByLabel('UH PCD').fill('2')
+    await capacidade.getByLabel('Leitos').fill('90')
+    await capacidade.getByLabel('Máximo de pessoas por UH').fill('4')
+    await capacidade.getByRole('button', { name: 'Incluir vigência' }).click()
+    await expect(page.getByText('Capacidade a partir de 20/11/2026 informada.')).toBeVisible()
+    await expect(page.getByRole('row', { name: /20\/11\/2026/ })).toBeVisible()
 
-  const inventario = page.getByRole('region', { name: 'Inventário' })
-  await expect(inventario.getByRole('group', { name: 'Selos da Secretaria' })).toHaveCount(0)
-  await inventario.getByRole('checkbox', { name: 'Piscina' }).check()
-  await inventario.getByLabel('Complemento de Piscina').fill('2 piscinas')
-  await inventario.getByRole('button', { name: 'Salvar inventário' }).click()
-  await expect(page.getByText('Inventário salvo.')).toBeVisible()
+    const inventario = page.getByRole('region', { name: 'Inventário' })
+    await expect(inventario.getByRole('group', { name: 'Selos da Secretaria' })).toHaveCount(0)
+    await inventario.getByRole('checkbox', { name: 'Piscina' }).check()
+    await inventario.getByLabel('Complemento de Piscina').fill('2 piscinas')
+    await inventario.getByRole('button', { name: 'Salvar inventário' }).click()
+    await expect(page.getByText('Inventário salvo.')).toBeVisible()
 
-  expect(envios.map(({ metodo, caminho }) => `${metodo} ${caminho}`)).toEqual([
-    'PUT /api/estabelecimentos/7',
-    'POST /api/estabelecimentos/7/capacidades',
-    'PUT /api/estabelecimentos/7/inventario',
-  ])
-  const [alteracao, vigencia, itens] = envios
-  expect(Object.keys(alteracao!.corpo as object)).toEqual(['dados'])
-  expect((alteracao!.corpo as { dados: { nomeFantasia: string } }).dados.nomeFantasia).toBe(
-    'Pousada Nova',
-  )
-  expect(vigencia!.corpo).toEqual({
-    vigenteDesde: '2026-11-20',
-    qtdUh: 35,
-    qtdUhPcd: 2,
-    qtdLeitos: 90,
-    maxLeitosPorUh: 4,
-  })
-  expect(itens!.corpo).toEqual({ itens: [{ itemId: 10, complemento: '2 piscinas' }] })
-})
+    expect(envios.map(({ metodo, caminho }) => `${metodo} ${caminho}`)).toEqual([
+      'PUT /api/estabelecimentos/7',
+      'POST /api/estabelecimentos/7/capacidades',
+      'PUT /api/estabelecimentos/7/inventario',
+    ])
+    const [alteracao, vigencia, itens] = envios
+    expect(Object.keys(alteracao!.corpo as object)).toEqual(['dados'])
+    expect((alteracao!.corpo as { dados: { nomeFantasia: string } }).dados.nomeFantasia).toBe(
+      'Pousada Nova',
+    )
+    expect(vigencia!.corpo).toEqual({
+      vigenteDesde: '2026-11-20',
+      qtdUh: 35,
+      qtdUhPcd: 2,
+      qtdLeitos: 90,
+      maxLeitosPorUh: 4,
+    })
+    expect(itens!.corpo).toEqual({ itens: [{ itemId: 10, complemento: '2 piscinas' }] })
+  },
+)

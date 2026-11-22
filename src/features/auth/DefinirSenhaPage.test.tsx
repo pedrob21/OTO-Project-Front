@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { Providers } from '@/app/Providers'
 import { rotas } from '@/app/rotas'
 import { limparSessao } from '@/api/sessao'
+import { violacoesDeAcessibilidade } from '@/test/acessibilidade'
 
 const fetchFalso = vi.fn<typeof fetch>()
 
@@ -42,6 +43,13 @@ describe('DefinirSenhaPage', () => {
     expect(screen.getByLabelText('Nova senha')).toHaveAttribute('type', 'password')
     expect(screen.getByLabelText('Confirmar senha')).toHaveAttribute('type', 'password')
     expect(screen.getByRole('button', { name: 'Definir senha' })).toBeEnabled()
+  })
+
+  it('não tem violações de acessibilidade', async () => {
+    abrir('/definir-senha?token=abc')
+    await screen.findByRole('heading', { name: 'Definir senha' })
+
+    expect(await violacoesDeAcessibilidade()).toEqual([])
   })
 
   it('FE-03: senha curta é barrada antes de chamar a API', async () => {

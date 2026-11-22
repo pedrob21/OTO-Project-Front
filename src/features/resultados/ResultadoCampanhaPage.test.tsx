@@ -6,12 +6,14 @@ import { AuthContext, type Auth } from '@/features/auth/AuthContext'
 import { abrirTela, simularApi } from '@/features/pesquisas/apiDeTeste'
 import type { Perfil } from '@/types/dominio'
 import { ResultadoCampanhaPage } from './ResultadoCampanhaPage'
+import { violacoesDeAcessibilidade } from '@/test/acessibilidade'
 
 const RESULTADO = {
   campanha: {
     id: 50,
     rodadaId: 5,
     nome: 'Consolidada de outubro de 2026',
+    modalidade: 'CONSOLIDADA',
     tipoPeriodo: 'MENSAL',
     periodoInicio: '2026-10-01',
     periodoFim: '2026-10-31',
@@ -124,6 +126,13 @@ describe('ResultadoCampanhaPage (FE-08)', () => {
     expect(screen.queryByRole('link', { name: 'Voltar ao acompanhamento' })).not.toBeInTheDocument()
   })
 
+  it('não tem violações de acessibilidade', async () => {
+    abrir()
+    await screen.findByRole('table', { name: 'Desempenho por tipo de hospedagem' })
+
+    expect(await violacoesDeAcessibilidade()).toEqual([])
+  })
+
   it('tipo oculto por sigilo mostra o aviso, e nunca "0"', async () => {
     abrir()
 
@@ -150,10 +159,10 @@ describe('ResultadoCampanhaPage (FE-08)', () => {
     )
   })
 
-  it('campanha sem publicação mostra o estado vazio', async () => {
+  it('campanha sem publicação (422) mostra o estado vazio', async () => {
     api.rotas['GET /api/campanhas/50/resultado'] = {
-      status: 404,
-      corpo: { detail: 'A campanha 50 ainda não tem resultado publicado.' },
+      status: 422,
+      corpo: { detail: 'A campanha 50 ainda não foi publicada.' },
     }
     abrir()
 
@@ -162,6 +171,37 @@ describe('ResultadoCampanhaPage (FE-08)', () => {
     ).toBeInTheDocument()
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Baixar CSV' })).not.toBeInTheDocument()
+  })
+
+  it('para o ADMIN, a campanha sem publicação leva às pesquisas, onde fica a prévia', async () => {
+    api.rotas['GET /api/campanhas/50/resultado'] = {
+      status: 422,
+      corpo: { detail: 'A campanha 50 ainda não foi publicada.' },
+    }
+    abrir('ADMIN')
+
+    expect(await screen.findByRole('link', { name: 'Ir para as pesquisas' })).toHaveAttribute(
+      'href',
+      '/pesquisas',
+    )
+  })
+
+  it('campanha inexistente (404) avisa que não foi encontrada', async () => {
+    api.rotas['GET /api/campanhas/50/resultado'] = {
+      status: 404,
+      corpo: { detail: 'Campanha 50 não encontrada.' },
+    }
+    abrir()
+
+    expect(await screen.findByText('Campanha não encontrada')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Ver relatórios' })).toHaveAttribute(
+      'href',
+      '/relatorios',
+    )
+    expect(
+      screen.queryByText('Esta campanha ainda não tem resultado publicado'),
+    ).not.toBeInTheDocument()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
   it('erro da API aparece com a opção de tentar de novo', async () => {
@@ -193,6 +233,48 @@ describe('ResultadoCampanhaPage (FE-08)', () => {
     const [url, init] = fetchDaApi.mock.calls.at(-1) ?? []
     expect(url).toBe('http://localhost:8080/api/campanhas/50/resultado.csv')
     expect(init?.headers).toMatchObject({ Authorization: 'Bearer abc' })
+  })
+
+  it('Gerar relatório (PDF) abre a impressão com o nome da campanha no título', async () => {
+    const imprimir = vi.fn(() => {
+      expect(document.title).toBe('Relatório OTO - Consolidada de outubro de 2026')
+    })
+    vi.stubGlobal('print', imprimir)
+    document.title = 'OTO'
+    abrir()
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Gerar relatório (PDF)' }))
+
+    expect(imprimir).toHaveBeenCalledOnce()
+    window.dispatchEvent(new Event('afterprint'))
+    expect(document.title).toBe('OTO')
+  })
+
+  it('a versão impressa traz o cabeçalho institucional e a nota metodológica', async () => {
+    abrir()
+
+    await screen.findByRole('heading', { level: 1, name: 'Consolidada de outubro de 2026' })
+    // o cabeçalho só aparece no papel (CSS de impressão), mas já está na página
+    expect(screen.getByText(/Relatório de resultado · Consolidada · Mensal/)).toBeInTheDocument()
+    const nota = screen.getByRole('region', { name: 'Nota metodológica' })
+    expect(nota).toHaveTextContent(/média ponderada pelas unidades habitacionais/)
+    expect(nota).toHaveTextContent(/valores ocultos para preservar o sigilo/)
+    expect(nota).toHaveTextContent(/Gerado em \d{2}\/\d{2}\/\d{4} às/)
+    expect(within(nota).getByRole('link', { name: 'Ler a metodologia completa' })).toHaveAttribute(
+      'href',
+      '/metodologia',
+    )
+  })
+
+  it('sem resultado, não oferece o PDF', async () => {
+    api.rotas['GET /api/campanhas/50/resultado'] = {
+      status: 422,
+      corpo: { detail: 'A campanha 50 ainda não foi publicada.' },
+    }
+    abrir()
+
+    await screen.findByText('Esta campanha ainda não tem resultado publicado')
+    expect(screen.queryByRole('button', { name: 'Gerar relatório (PDF)' })).not.toBeInTheDocument()
   })
 
   it('erro no download aparece sem sair da página', async () => {

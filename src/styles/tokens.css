@@ -119,3 +119,17 @@
   --altura-cabecalho: 122px;
   --borda-card: 1px solid var(--cor-borda);
 }
+
+/* Tablet e celular: margens e título de página menores. */
+@media (max-width: 1180px) {
+  :root {
+    --margem-pagina: 32px;
+  }
+}
+
+@media (max-width: 600px) {
+  :root {
+    --margem-pagina: 16px;
+    --tipo-titulo-pagina: 700 36px/40px var(--fonte-titulo);
+  }
+}

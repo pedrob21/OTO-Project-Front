@@ -83,3 +83,30 @@
 .acao:hover {
   background: var(--cor-destaque);
 }
+
+/* Com o menu recolhido, o botão "Menu" é que empurra o usuário para a direita. */
+@media (max-width: 1180px) {
+  .raiz {
+    margin-left: 0;
+  }
+}
+
+/* No celular, só as iniciais (o nome segue no texto do botão para leitores de tela). */
+@media (max-width: 600px) {
+  .chip {
+    min-width: 0;
+    height: 44px;
+  }
+
+  .nome {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .painel {
+    min-width: 220px;
+  }
+}

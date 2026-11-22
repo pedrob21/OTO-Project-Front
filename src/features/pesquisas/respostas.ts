@@ -76,7 +76,38 @@ export type CampanhaParaResponder = {
   periodo: string
   prazo: string
   prazoVencido: boolean
+  /** Falso depois do prazo mais a tolerância da API: só a equipe do OTO lança a resposta. */
+  aceitaResposta: boolean
+  /** Último dia em que o parceiro ainda responde, calculado pela API ("2026-12-30"). */
+  respostasAte: string | undefined
   estabelecimentos: Pendencia[]
+}
+
+/**
+ * Aviso para depois do prazo. Antes dele, não há aviso: o prazo oficial já está no subtítulo.
+ * A tolerância depois do prazo é regra da API; aqui só se mostra o que ela calculou.
+ */
+export function avisoDoPrazo(
+  campanha: Pick<CampanhaParaResponder, 'prazoVencido' | 'aceitaResposta' | 'respostasAte'>,
+): string | null {
+  if (!campanha.aceitaResposta) {
+    const ate = campanha.respostasAte ? ` em ${formatarData(campanha.respostasAte)}` : ''
+    return `O prazo para responder terminou${ate}. Para enviar ou corrigir a resposta, fale com a equipe do OTO.`
+  }
+  if (!campanha.prazoVencido) return null
+  return campanha.respostasAte
+    ? `O prazo terminou, mas você ainda pode responder até ${formatarData(campanha.respostasAte)}.`
+    : 'O prazo terminou, mas a pesquisa ainda aceita respostas até o OTO encerrá-la.'
+}
+
+/** Texto curto do prazo para listas: o prazo oficial, ou o limite de resposta depois dele. */
+export function textoDoLimite(pendencia: Pendencia, hoje: string): string {
+  if (pendencia.aceitaResposta === false) return 'Prazo para responder encerrado'
+  const vencido = (diasAte(pendencia.prazoResposta ?? '', hoje) ?? 0) < 0
+  if (vencido && pendencia.respostasAte) {
+    return `Prazo encerrado · respostas até ${formatarData(pendencia.respostasAte)}`
+  }
+  return textoDoPrazo(pendencia.prazoResposta, hoje)
 }
 
 /** Uma campanha por cartão, com os estabelecimentos do parceiro; prazo mais próximo primeiro. */
@@ -100,6 +131,9 @@ export function campanhasParaResponder(
         periodo: `${formatarData(primeira?.periodoInicio)} a ${formatarData(primeira?.periodoFim)}`,
         prazo: textoDoPrazo(primeira?.prazoResposta, hoje),
         prazoVencido: (diasAte(primeira?.prazoResposta ?? '', hoje) ?? 0) < 0,
+        // Sem o campo (API antiga), o parceiro continua podendo responder.
+        aceitaResposta: primeira?.aceitaResposta !== false,
+        respostasAte: primeira?.respostasAte,
         prazoOrdenacao: primeira?.prazoResposta ?? '9999',
         estabelecimentos: itens.toSorted((a, b) =>
           (a.nomeFantasia ?? '').localeCompare(b.nomeFantasia ?? '', 'pt-BR'),

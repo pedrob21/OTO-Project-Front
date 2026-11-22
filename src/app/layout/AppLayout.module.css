@@ -10,3 +10,10 @@
   margin-inline: auto;
   padding-bottom: 66px;
 }
+
+@media print {
+  .conteudo {
+    width: auto;
+    padding: 0;
+  }
+}

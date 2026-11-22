@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { criarApiFalsa, type RotasFalsas } from '@/test/apiFalsa'
 import { abrirTela, preencherCampo } from '@/test/telas'
 import { MeuEstabelecimentoPage } from './MeuEstabelecimentoPage'
+import { violacoesDeAcessibilidade } from '@/test/acessibilidade'
 
 const PARCEIRO = {
   id: 2,
@@ -114,6 +115,15 @@ describe('meu estabelecimento', () => {
     expect(within(secretaria).getByText('Maria')).toBeVisible()
     expect(screen.getByRole('heading', { name: 'Pousada da Lua' })).toBeVisible()
     expect(screen.getAllByRole('button', { name: /^Editar dados de/ })).toHaveLength(2)
+  })
+
+  it('não tem violações de acessibilidade', async () => {
+    preparar()
+    abrir()
+    await screen.findByRole('heading', { name: 'Pousada do Sol' })
+    await screen.findByText('12345678000190')
+
+    expect(await violacoesDeAcessibilidade()).toEqual([])
   })
 
   it('edita só os dados cadastrais e envia o pedido sem o bloco da Secretaria', async () => {

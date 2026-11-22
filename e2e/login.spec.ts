@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { semRolagemHorizontal } from './navegacao.ts'
 
 const usuario = { id: 1, nome: 'Ana Souza', email: 'ana@oto.test', perfil: 'ADMIN', ativo: true }
 
@@ -30,14 +31,16 @@ test.beforeEach(async ({ page }) => {
   await mockarApi(page)
 })
 
-test('redireciona para o login sem sessão', async ({ page }) => {
+test('redireciona para o login sem sessão', { tag: '@celular' }, async ({ page }) => {
   await page.goto('/')
   await expect(page).toHaveURL(/\/login$/)
   await expect(page.getByRole('heading', { name: 'Entrar no painel' })).toBeVisible()
 })
 
-test('mostra erro com credenciais inválidas', async ({ page }) => {
+test('mostra erro com credenciais inválidas', { tag: '@celular' }, async ({ page }) => {
   await page.goto('/login')
+  await expect(page.getByRole('button')).not.toHaveCount(0)
+  await semRolagemHorizontal(page)
   await page.getByLabel('E-mail').fill(usuario.email)
   await page.getByLabel('Senha').fill('errada')
   await page.getByRole('button', { name: 'Entrar' }).click()
@@ -45,7 +48,7 @@ test('mostra erro com credenciais inválidas', async ({ page }) => {
   await expect(page).toHaveURL(/\/login$/)
 })
 
-test('entra no painel e sai', async ({ page }) => {
+test('entra no painel e sai', { tag: '@celular' }, async ({ page }) => {
   await page.goto('/login')
   await page.getByLabel('E-mail').fill(usuario.email)
   await page.getByLabel('Senha').fill('senha-correta')

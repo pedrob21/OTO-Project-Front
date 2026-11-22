@@ -1,4 +1,5 @@
 .cabecalho {
+  position: relative;
   display: flex;
   align-items: center;
   width: var(--largura-util);
@@ -28,4 +29,81 @@
   flex: none;
   margin-bottom: 3px;
   margin-right: 75px;
+}
+
+/* Só aparece quando o menu não cabe em linha. */
+.botaoMenu {
+  display: none;
+}
+
+/* Tablet e celular: logos menores e o menu num painel. */
+@media (max-width: 1180px) {
+  .cabecalho {
+    gap: var(--espaco-3);
+    height: auto;
+    min-height: 76px;
+    margin-top: 12px;
+    padding-block: var(--espaco-2);
+    padding-left: 0;
+  }
+
+  .logoOto {
+    margin: -8px 0 0;
+  }
+
+  .logoOto img {
+    width: 77px;
+    height: auto;
+  }
+
+  .logoPrefeitura {
+    width: 135px;
+    height: auto;
+    margin: 0;
+  }
+
+  .botaoMenu {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-2);
+    min-height: 44px;
+    margin-left: auto;
+    padding: 0 var(--espaco-3);
+    border: 1px solid var(--cor-borda-botao);
+    border-radius: var(--raio-chip);
+    background: var(--cor-superficie);
+    color: var(--cor-texto-titulo);
+    font: var(--tipo-botao);
+    cursor: pointer;
+  }
+
+  .navegacao {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + var(--espaco-1));
+    right: 0;
+    left: 0;
+    display: none;
+    padding: var(--espaco-3);
+    background: var(--cor-superficie);
+    border: var(--borda-card);
+    border-radius: var(--raio-controle);
+    box-shadow: 0 12px 24px rgb(15 37 41 / 12%);
+  }
+
+  .navegacao[data-aberto='true'] {
+    display: block;
+  }
+}
+
+@media (max-width: 600px) {
+  .logoPrefeitura {
+    display: none;
+  }
+}
+
+@media print {
+  .cabecalho {
+    display: none;
+  }
 }

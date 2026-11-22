@@ -6,6 +6,7 @@ import { lerToken, limparSessao, salvarSessao } from '@/api/sessao'
 import { RequirePerfil } from '@/features/auth/RequirePerfil'
 import { Providers } from './Providers'
 import { rotas } from './rotas'
+import { violacoesDeAcessibilidade } from '@/test/acessibilidade'
 
 const fetchFalso = vi.fn<typeof fetch>()
 
@@ -132,6 +133,13 @@ describe('login', () => {
     const caminhos = fetchFalso.mock.calls.map(([url]) => new URL(String(url)).pathname)
     expect(caminhos[0]).toBe('/api/auth/login')
     expect(caminhos).not.toContain('/api/me')
+  })
+
+  it('a tela de login não tem violações de acessibilidade', async () => {
+    abrir('/login')
+    await screen.findByRole('heading', { name: 'Entrar no painel' })
+
+    expect(await violacoesDeAcessibilidade(document.body, { verificarRegioes: true })).toEqual([])
   })
 
   it('senha errada mostra a mensagem da API e continua no login', async () => {
@@ -322,6 +330,8 @@ describe('acesso por perfil', () => {
       perfis: PERFIS,
     },
     { caminho: '/pesquisas/nova', titulo: 'Nova pesquisa', perfis: ['ADMIN'] },
+    { caminho: '/relatorios', titulo: 'Relatórios', perfis: PERFIS },
+    { caminho: '/indicadores', titulo: 'Indicadores', perfis: PERFIS },
   ]
 
   function responder(perfil: string) {
@@ -329,6 +339,7 @@ describe('acesso por perfil', () => {
       const { pathname } = new URL(String(url))
       if (pathname === '/api/me') return json(200, { ...ADMIN, perfil })
       if (pathname === '/api/campanhas/publicadas') return json(200, [{ campanhaId: 15 }])
+      if (pathname === '/api/dashboard/serie-mensal') return json(200, { anos: [] })
       return json(200, pathname === '/api/parametros-calculo/vigente' ? {} : [])
     })
   }

@@ -85,3 +85,48 @@
   color: var(--cor-primaria-escura);
   font: var(--tipo-nome);
 }
+
+/* Dentro do painel do celular e do tablet: um item por linha, com área de toque maior. */
+@media (max-width: 1180px) {
+  .lista {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .link,
+  .item {
+    display: flex;
+    width: 100%;
+    min-height: 44px;
+    align-items: center;
+    padding: 0 var(--espaco-3);
+    border-radius: var(--raio-chip);
+  }
+
+  .link[aria-current='page'] {
+    background: var(--cor-destaque);
+  }
+
+  .link[aria-current='page']::after {
+    display: none;
+  }
+
+  .item svg {
+    margin-left: auto;
+  }
+
+  .submenu {
+    position: static;
+    min-width: 0;
+    padding: 0 0 var(--espaco-2) var(--espaco-4);
+    border: 0;
+  }
+
+  .itemSubmenu {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    white-space: normal;
+  }
+}

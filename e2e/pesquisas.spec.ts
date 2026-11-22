@@ -1,4 +1,5 @@
 import { expect, test, type Page, type Route } from '@playwright/test'
+import { irPeloMenu, semRolagemHorizontal } from './navegacao.ts'
 
 type Perfil = 'ADMIN' | 'PARCEIRO' | 'VISUALIZADOR'
 
@@ -214,73 +215,118 @@ test('ADMIN acompanha a rodada, lança a resposta que faltava e publica (E2E-02)
   await expect(page.getByRole('button', { name: 'Cancelar publicação' })).toBeVisible()
 })
 
-test('PARCEIRO responde e, com a pesquisa fechada, o erro mantém o que digitou (FE-06)', async ({
-  page,
-}) => {
-  await entrar(page)
-  const estado = { fechada: false, versao: 0 }
-  await page.route('**/api/**', (rota) => {
-    const { pathname } = new URL(rota.request().url())
-    const chave = `${rota.request().method()} ${pathname}`
-    if (chave === 'GET /api/me') return rota.fulfill({ json: USUARIOS.PARCEIRO })
-    if (chave === 'GET /api/respostas/pendencias') {
-      return rota.fulfill({
-        json: [
-          {
-            campanhaId: 50,
-            campanhaNome: CAMPANHA.nome,
-            periodoInicio: CAMPANHA.periodoInicio,
-            periodoFim: CAMPANHA.periodoFim,
-            rodadaCodigo: '005/26',
-            prazoResposta: '2099-11-30',
-            estabelecimentoId: 8,
-            nomeFantasia: 'Pousada do Sol',
-            respondida: estado.versao > 0,
-            versao: estado.versao || undefined,
-          },
-        ],
-      })
-    }
-    if (chave === 'PUT /api/campanhas/50/respostas/8') {
-      if (estado.fechada) {
+test(
+  'PARCEIRO responde e, com a pesquisa fechada, o erro mantém o que digitou (FE-06)',
+  { tag: '@celular' },
+  async ({ page }) => {
+    await entrar(page)
+    const estado = { fechada: false, versao: 0 }
+    await page.route('**/api/**', (rota) => {
+      const { pathname } = new URL(rota.request().url())
+      const chave = `${rota.request().method()} ${pathname}`
+      if (chave === 'GET /api/me') return rota.fulfill({ json: USUARIOS.PARCEIRO })
+      if (chave === 'GET /api/respostas/pendencias') {
         return rota.fulfill({
-          status: 422,
-          json: { status: 422, detail: 'A pesquisa 005/26 não está aberta para respostas.' },
+          json: [
+            {
+              campanhaId: 50,
+              campanhaNome: CAMPANHA.nome,
+              periodoInicio: CAMPANHA.periodoInicio,
+              periodoFim: CAMPANHA.periodoFim,
+              rodadaCodigo: '005/26',
+              prazoResposta: '2099-11-30',
+              estabelecimentoId: 8,
+              nomeFantasia: 'Pousada do Sol',
+              respondida: estado.versao > 0,
+              versao: estado.versao || undefined,
+            },
+          ],
         })
       }
-      estado.versao += 1
-      return rota.fulfill({
-        json: { id: 301, ...rota.request().postDataJSON(), versao: estado.versao },
-      })
-    }
-    return rota.fulfill({ json: [] })
-  })
+      if (chave === 'PUT /api/campanhas/50/respostas/8') {
+        if (estado.fechada) {
+          return rota.fulfill({
+            status: 422,
+            json: { status: 422, detail: 'A pesquisa 005/26 não está aberta para respostas.' },
+          })
+        }
+        estado.versao += 1
+        return rota.fulfill({
+          json: { id: 301, ...rota.request().postDataJSON(), versao: estado.versao },
+        })
+      }
+      return rota.fulfill({ json: [] })
+    })
 
-  await page.goto('/')
-  await page
-    .getByRole('navigation', { name: 'Principal' })
-    .getByRole('link', { name: 'Pesquisas' })
-    .click()
-  await expect(page).toHaveURL(/\/pesquisas\/responder$/)
+    await page.goto('/')
+    await irPeloMenu(page, 'Pesquisas')
+    await expect(page).toHaveURL(/\/pesquisas\/responder$/)
+    await semRolagemHorizontal(page)
 
-  const pousada = page.getByRole('listitem', { name: 'Pousada do Sol' })
-  const taxa = pousada.getByLabel('Taxa de ocupação (%)')
-  const diaria = pousada.getByLabel(/Diária média/)
-  await taxa.fill('80,5')
-  await pousada.getByRole('button', { name: 'Enviar resposta' }).click()
-  await expect(pousada.getByText(/Resposta salva como versão 1/)).toBeVisible()
+    const pousada = page.getByRole('listitem', { name: 'Pousada do Sol' })
+    const taxa = pousada.getByLabel('Taxa de ocupação (%)')
+    const diaria = pousada.getByLabel(/Diária média/)
+    await taxa.fill('80,5')
+    await pousada.getByRole('button', { name: 'Enviar resposta' }).click()
+    await expect(pousada.getByText(/Resposta salva como versão 1/)).toBeVisible()
 
-  estado.fechada = true
-  await taxa.fill('82')
-  await diaria.fill('395,90')
-  await pousada.getByRole('button', { name: /Enviar resposta|Salvar correção/ }).click()
+    estado.fechada = true
+    await taxa.fill('82')
+    await diaria.fill('395,90')
+    await pousada.getByRole('button', { name: /Enviar resposta|Salvar correção/ }).click()
 
-  await expect(pousada.getByRole('alert')).toContainText(
-    'A pesquisa 005/26 não está aberta para respostas.',
-  )
-  await expect(taxa).toHaveValue('82')
-  await expect(diaria).toHaveValue('395,90')
-})
+    await expect(pousada.getByRole('alert')).toContainText(
+      'A pesquisa 005/26 não está aberta para respostas.',
+    )
+    await expect(taxa).toHaveValue('82')
+    await expect(diaria).toHaveValue('395,90')
+  },
+)
+
+test(
+  'PARCEIRO depois do limite de resposta vê o formulário bloqueado e não envia nada',
+  { tag: '@celular' },
+  async ({ page }) => {
+    await entrar(page)
+    const envios: string[] = []
+    await page.route('**/api/**', (rota) => {
+      const { pathname } = new URL(rota.request().url())
+      const chave = `${rota.request().method()} ${pathname}`
+      if (chave === 'GET /api/me') return rota.fulfill({ json: USUARIOS.PARCEIRO })
+      if (chave === 'GET /api/respostas/pendencias') {
+        return rota.fulfill({
+          json: [
+            {
+              campanhaId: 50,
+              campanhaNome: CAMPANHA.nome,
+              periodoInicio: CAMPANHA.periodoInicio,
+              periodoFim: CAMPANHA.periodoFim,
+              rodadaCodigo: '005/26',
+              prazoResposta: '2026-10-01',
+              respostasAte: '2026-10-31',
+              aceitaResposta: false,
+              estabelecimentoId: 8,
+              nomeFantasia: 'Pousada do Sol',
+              respondida: false,
+            },
+          ],
+        })
+      }
+      if (rota.request().method() === 'PUT') envios.push(chave)
+      return rota.fulfill({ json: [] })
+    })
+
+    await page.goto('/pesquisas/responder')
+
+    await expect(page.getByRole('alert')).toContainText(
+      'O prazo para responder terminou em 31/10/2026. Para enviar ou corrigir a resposta, fale com a equipe do OTO.',
+    )
+    const pousada = page.getByRole('listitem', { name: 'Pousada do Sol' })
+    await expect(pousada.getByLabel('Taxa de ocupação (%)')).toBeDisabled()
+    await expect(pousada.getByRole('button', { name: 'Enviar resposta' })).toBeDisabled()
+    expect(envios).toEqual([])
+  },
+)
 
 test('VISUALIZADOR vê o resultado publicado com o tipo oculto por sigilo', async ({ page }) => {
   await entrar(page)

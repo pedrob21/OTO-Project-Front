@@ -15,6 +15,14 @@ describe('itensDoPerfil', () => {
     expect(rotulos('VISUALIZADOR')).toEqual(['Painel', 'Indicadores', 'Relatórios'])
   })
 
+  it('Indicadores e Relatórios levam às páginas para todos os perfis', () => {
+    for (const perfil of ['ADMIN', 'PARCEIRO', 'VISUALIZADOR'] as const) {
+      const itens = itensDoPerfil(perfil)
+      expect(itens.find((i) => i.rotulo === 'Indicadores')?.para).toBe('/indicadores')
+      expect(itens.find((i) => i.rotulo === 'Relatórios')?.para).toBe('/relatorios')
+    }
+  })
+
   it('Cadastros só aparece para o ADMIN, com o submenu', () => {
     const cadastros = itensDoPerfil('ADMIN').find((item) => item.rotulo === 'Cadastros')
 

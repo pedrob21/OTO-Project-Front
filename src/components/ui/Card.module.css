@@ -26,3 +26,13 @@
   font: var(--tipo-subtitulo);
   color: var(--cor-texto);
 }
+
+@media (max-width: 600px) {
+  .card {
+    padding: var(--espaco-4);
+  }
+
+  .cabecalho {
+    flex-wrap: wrap;
+  }
+}

@@ -69,6 +69,8 @@ export const RespostaEstabelecimento = memo(function RespostaEstabelecimento({
   usuarioId,
 }: RespostaEstabelecimentoProps) {
   const { campanhaId = 0, estabelecimentoId = 0 } = pendencia
+  // Depois do prazo mais a tolerância, a API recusa o envio do parceiro: o formulário fica só em leitura.
+  const encerrada = pendencia.aceitaResposta === false
   const queryClient = useQueryClient()
   const [taxa, setTaxa] = useState(() => paraCampo(pendencia.taxaOcupacao))
   const [diaria, setDiaria] = useState(() => paraCampo(pendencia.diariaMedia))
@@ -119,11 +121,12 @@ export const RespostaEstabelecimento = memo(function RespostaEstabelecimento({
   const alterado =
     valorTaxa !== (ultima?.taxaOcupacao ?? null) ||
     (lerNumero(diaria) ?? null) !== (ultima?.diariaMedia ?? null)
-  const podeEnviar = !envio.isPending && (!respondida || alterado)
+  const podeEnviar = !encerrada && !envio.isPending && (!respondida || alterado)
 
   function enviar(evento: FormEvent) {
     evento.preventDefault()
     setTentouEnviar(true)
+    if (encerrada) return
     if (erros.taxa) return taxaRef.current?.focus()
     if (erros.diaria) return diariaRef.current?.focus()
     if (podeEnviar) envio.mutate()
@@ -145,6 +148,8 @@ export const RespostaEstabelecimento = memo(function RespostaEstabelecimento({
           <Badge variante="publicada" icone={<IconeCheck tamanho={14} />}>
             Enviada
           </Badge>
+        ) : encerrada ? (
+          <Badge variante="inativa">Sem resposta</Badge>
         ) : (
           <Badge variante="aberta" icone={<IconeRelogio tamanho={14} />}>
             Pendente
@@ -153,8 +158,8 @@ export const RespostaEstabelecimento = memo(function RespostaEstabelecimento({
       </div>
       {respondida && (
         <p className={styles.meta}>
-          Versão {ultima?.versao}, enviada em {formatarDataHora(ultima?.enviadoEm)}. Você pode
-          corrigir enquanto a pesquisa estiver aberta.
+          Versão {ultima?.versao}, enviada em {formatarDataHora(ultima?.enviadoEm)}.
+          {encerrada ? '' : ' Você pode corrigir enquanto a pesquisa estiver aberta.'}
         </p>
       )}
 
@@ -167,6 +172,7 @@ export const RespostaEstabelecimento = memo(function RespostaEstabelecimento({
             inputMode="decimal"
             autoComplete="off"
             value={taxa}
+            disabled={encerrada}
             onChange={(evento) => setTaxa(evento.target.value)}
             onBlur={() => setTocados((atual) => ({ ...atual, taxa: true }))}
             erro={erroDaTaxa}
@@ -190,6 +196,7 @@ export const RespostaEstabelecimento = memo(function RespostaEstabelecimento({
           inputMode="decimal"
           autoComplete="off"
           value={diaria}
+          disabled={encerrada}
           onChange={(evento) => setDiaria(evento.target.value)}
           onBlur={() => setTocados((atual) => ({ ...atual, diaria: true }))}
           erro={erroDaDiaria}
