@@ -101,6 +101,6 @@ export function ultimaAlteracao(informadas: Informada[]): string | undefined {
   return informadas
     .map((d) => d.registradoEm)
     .filter((data): data is string => Boolean(data))
-    .toSorted()
+    .toSorted((a, b) => a.localeCompare(b))
     .at(-1)
 }
