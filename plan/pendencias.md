@@ -4,26 +4,17 @@ Levantamento feito a partir do Documento de Requisitos e do Plano de Testes, com
 
 ## Front
 
-### Pode ser feito já, por ordem de prioridade
+### Pode ser feito já
 
 | # | Item | Requisito (prioridade) | Base nas páginas existentes |
 |---|---|---|---|
-| 1 | Ligar os botões "Acompanhamento completo", "Ver pendências" e "Lançar resposta" do cartão de pesquisas do painel | RF-35 (Should) | Links para o acompanhamento e o lançamento, que já existem |
-| 2 | Painel com dados reais (T15): seletor de campanha, filtro por tipo, destaque, resumo, ocupação mensal, faixas, fluxo, expectativa x realizado e desempenho por tipo | RF-25, RF-27 a RF-34 (Must e Should) | Os componentes já existem; trocar `fixtures.ts` pelas chamadas, como no cartão de pesquisas |
-| 3 | Inventário do ADMIN: catálogo de grupos e itens e o inventário de cada estabelecimento | RF-06 (Must) | Catálogo como "Referências" (abas, tabela e diálogo); inventário do estabelecimento como "Capacidades" |
-| 6 | Meu estabelecimento do PARCEIRO: dados, nova capacidade e inventário | RF-07 (Should) | Formulários de Cadastros, um card por estabelecimento como em "Responder pesquisa" |
 | 8 | Responsividade das telas do ADMIN em 360 px e tablet, incluindo tabelas e diálogos de Cadastros (cabeçalho, telas do parceiro, Relatórios e Indicadores já feitos) | RNF-01 | Mesmos pontos de quebra (1180 e 600 px) e o teste `semRolagemHorizontal` |
-| 11 | Otimização: código dividido por rota, favicon e Lighthouse | T18 | |
+| 11 | Otimização: Lighthouse no CI e análise do tamanho do pacote (o código já é dividido por rota e o favicon já existe) | T18 | |
 
-Todas as telas do menu já existem. Sobra deste bloco o item 8 (responsividade das telas do ADMIN em 360 px e tablet, incluindo tabelas e diálogos de Cadastros) e o item 11 (otimização).
+Todas as telas do menu já existem. O que sobra do front sem depender do back:
 
-Decisões em aberto do README que o front pode fechar sozinho, sem Figma:
-
-- **D2:** o filtro por tipo afeta só o que a API separa por tipo.
-- **D3:** sem fonte na API, o bloco ou a variação fica escondido.
-- **D5:** "Exportar" vira um botão direto de CSV.
-- **D7:** o PARCEIRO continua com o cartão de pendências.
-- **D8:** o código da rodada sai do texto dos filtros.
+- Lighthouse medido e registrado no pipeline, mais a análise do tamanho do pacote (T18).
+- Decidir se as contagens de estabelecimentos e UH de um tipo oculto por sigilo ficam visíveis no painel e no resultado.
 
 ### Depende do back
 
@@ -55,6 +46,7 @@ Decisões em aberto do README que o front pode fechar sozinho, sem Figma:
 | RF-18 a RF-21: diárias informadas pela equipe na prévia (incluir, corrigir e remover) | `test/e2e-suite` |
 | RNF-06 e FE-10: axe-core em todas as telas (unitário) e no navegador com contraste (`e2e/acessibilidade.spec.ts`), painel e responder pesquisa sem rolagem lateral em 360 px | `test/e2e-suite` |
 | FE-09: teste de contrato dos caminhos e métodos de `src/api` contra o `schema.d.ts` | `test/e2e-suite` |
+| Favicon, e tabelas de Indicadores roláveis por teclado | `test/e2e-suite` |
 | E2E-01, 04, 05, 08, 09 e 10 automatizados no Playwright; painel passa a consultar parâmetros e RHC pela data do fim do período | `test/e2e-suite` |
 
 ## Back
