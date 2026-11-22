@@ -9,11 +9,11 @@ Levantamento feito a partir do Documento de Requisitos e do Plano de Testes, com
 | # | Item | Requisito (prioridade) | Base nas páginas existentes |
 |---|---|---|---|
 | 8 | Responsividade das telas do ADMIN em 360 px e tablet, incluindo tabelas e diálogos de Cadastros (cabeçalho, telas do parceiro, Relatórios e Indicadores já feitos) | RNF-01 | Mesmos pontos de quebra (1180 e 600 px) e o teste `semRolagemHorizontal` |
-| 11 | Otimização: Lighthouse no CI e análise do tamanho do pacote (o código já é dividido por rota e o favicon já existe) | T18 | |
+| 11 | Otimização: análise do tamanho do pacote e CLS do painel (0,17 no celular, causado pela troca da fonte web: preload ou fallback com `size-adjust`). O código já é dividido por rota, o favicon existe e o Lighthouse já roda no CI | T18 | Notas do Lighthouse no comentário do PR |
 
 Todas as telas do menu já existem. O que sobra do front sem depender do back:
 
-- Lighthouse medido e registrado no pipeline, mais a análise do tamanho do pacote (T18).
+- Análise do tamanho do pacote e correção do CLS do painel (T18). O Lighthouse já está no pipeline.
 - Decidir se as contagens de estabelecimentos e UH de um tipo oculto por sigilo ficam visíveis no painel e no resultado.
 
 ### Depende do back
@@ -46,7 +46,8 @@ Todas as telas do menu já existem. O que sobra do front sem depender do back:
 | RF-18 a RF-21: diárias informadas pela equipe na prévia (incluir, corrigir e remover) | `test/e2e-suite` |
 | RNF-06 e FE-10: axe-core em todas as telas (unitário) e no navegador com contraste (`e2e/acessibilidade.spec.ts`), painel e responder pesquisa sem rolagem lateral em 360 px | `test/e2e-suite` |
 | FE-09: teste de contrato dos caminhos e métodos de `src/api` contra o `schema.d.ts` | `test/e2e-suite` |
-| Favicon, e tabelas de Indicadores roláveis por teclado | `test/e2e-suite` |
+| Favicon, `meta description` e tabelas de Indicadores roláveis por teclado | `test/e2e-suite` |
+| T18 (parte): Lighthouse no CI (celular e desktop, 5 páginas, com limites) e comentário do PR com badges de cobertura e Lighthouse | `test/e2e-suite` |
 | E2E-01, 04, 05, 08, 09 e 10 automatizados no Playwright; painel passa a consultar parâmetros e RHC pela data do fim do período | `test/e2e-suite` |
 
 ## Back

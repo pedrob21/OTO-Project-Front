@@ -63,7 +63,7 @@ Os 21 itens aplicáveis do plano (FE-01 a FE-10 e E2E-01 a E2E-11, menos E2E-11)
 
 Todas as lacunas da tabela foram fechadas, exceto E2E-11 (fora do escopo).
 
-- Vitest: 95 arquivos, 1032 testes. Cobertura: 99,25% de linhas, 93,03% de branches, 98,73% de funções, 98,86% de statements. Limites no `vite.config.ts` (linhas 98, funções 97, statements 98, branches 92), aplicados no CI por `npm run test:coverage`.
+- Vitest: 95 arquivos, 1032 testes. Cobertura: 99,26% de linhas, 93,02% de branches, 98,74% de funções, 98,87% de statements. Limites no `vite.config.ts` (linhas 98, funções 97, statements 98, branches 92), aplicados no CI por `npm run test:coverage`.
 - Playwright: 188 testes nos projetos chromium, celular e tablet, todos passando.
 - DIA: bloco "Diárias informadas pela equipe" na prévia. A API só tem GET e PUT, então remover é um PUT sem o item.
 - FE-10b: o axe no navegador achou 2 violações reais (nome acessível dos botões de grupo do inventário e tabela com rolagem sem acesso por teclado) e 2 estouros de largura em 360 px (painel e responder pesquisa). Todos corrigidos. Contraste: nenhuma violação.
@@ -71,4 +71,7 @@ Todas as lacunas da tabela foram fechadas, exceto E2E-11 (fora do escopo).
 - Cache: a prévia agora invalida a lista de campanhas publicadas ao publicar e ao cancelar a publicação.
 - `e2e/navegacao.ts`: `semRolagemHorizontal` passou a comparar com a largura do viewport. Antes, nos projetos de celular, `innerWidth` crescia junto com o conteúdo e o teste nunca falhava.
 
-Pendente: `IndicadoresPage.tsx` tem o mesmo wrapper de rolagem sem acesso por teclado que `Tabela.tsx` tinha (correção de uma linha, fora da lista de telas do celular).
+- `IndicadoresPage.tsx`: as tabelas de rolagem lateral também ganharam acesso por teclado.
+- Quality Gate do SonarCloud: duplicação em código novo caiu de 5,4% para 0,9% com fixtures e helpers compartilhados, o bug do `sort` sem comparação foi corrigido e as vulnerabilidades do job do Lighthouse (log sem sanitizar e `npm ci` sem `--ignore-scripts`) foram resolvidas.
+- Lighthouse no CI (`lighthouserc.cjs`, `lighthouse/servidor.mjs`): 5 páginas em celular e desktop. Acessibilidade e boas práticas abaixo de 0,95 reprovam o job, o restante só avisa. Com a `meta description`, o SEO subiu de 91 para 100.
+- O job `resumo` comenta no PR, e atualiza a cada push, badges e tabelas de cobertura e Lighthouse (`scripts/resumo-pr.mjs`).
