@@ -36,4 +36,4 @@ dist-ssr
 .vercel
 
 # Tudo o que os testes, a cobertura e o Lighthouse geram
-/artefatos/
+/artifacts/

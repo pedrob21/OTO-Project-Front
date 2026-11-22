@@ -18,7 +18,7 @@
     "format": "prettier --write src dev e2e",
     "format:check": "prettier --check src dev e2e",
     "api:tipos": "npx -y -p openapi-typescript@7 -p typescript@5 openapi-typescript http://localhost:8080/v3/api-docs -o src/api/schema.d.ts",
-    "lighthouse": "VITE_API_URL=http://localhost:4179 vite build --outDir artefatos/lighthouse/build --emptyOutDir && cd artefatos/lighthouse && lhci autorun --config=../../lighthouserc.cjs"
+    "lighthouse": "VITE_API_URL=http://localhost:4179 vite build --outDir artifacts/lighthouse/build --emptyOutDir && cd artifacts/lighthouse && lhci autorun --config=../../lighthouserc.cjs"
   },
   "dependencies": {
     "@fontsource-variable/bricolage-grotesque": "^5.3.0",

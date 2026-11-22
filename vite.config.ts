@@ -18,7 +18,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text-summary', 'html', 'json-summary'],
-      reportsDirectory: 'artefatos/cobertura',
+      reportsDirectory: 'artifacts/coverage',
       include: ['src/**/*.{ts,tsx}'],
       exclude: [
         'src/**/*.test.{ts,tsx}',

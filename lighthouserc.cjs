@@ -40,7 +40,7 @@ module.exports = {
     },
     upload: {
       target: 'filesystem',
-      outputDir: path.join(__dirname, 'artefatos/lighthouse/relatorios', perfil),
+      outputDir: path.join(__dirname, 'artifacts/lighthouse/reports', perfil),
     },
   },
 }

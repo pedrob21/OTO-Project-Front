@@ -34,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cobertura
-          path: artefatos/cobertura/coverage-summary.json
+          path: artifacts/coverage/coverage-summary.json
           if-no-files-found: ignore
           retention-days: 7
 
@@ -65,7 +65,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: relatorio-e2e
-          path: artefatos/e2e/relatorio
+          path: artifacts/e2e/report
           retention-days: 7
 
   lighthouse:
@@ -94,7 +94,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: relatorio-lighthouse-${{ matrix.perfil }}
-          path: artefatos/lighthouse/relatorios
+          path: artifacts/lighthouse/reports
           retention-days: 7
 
   resumo:
@@ -115,14 +115,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: cobertura
-          path: artefatos/cobertura
+          path: artifacts/coverage
         continue-on-error: true
 
       - name: Baixar os relatórios do Lighthouse
         uses: actions/download-artifact@v4
         with:
           pattern: relatorio-lighthouse-*
-          path: artefatos/lighthouse/relatorios
+          path: artifacts/lighthouse/reports
           merge-multiple: true
         continue-on-error: true
 
